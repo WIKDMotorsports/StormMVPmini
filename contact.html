@@ -19,6 +19,7 @@
         
         /* CSS Variables */
         :root {
+            color-scheme: dark; /* Signals browser to use dark-themed native UI/tooltips */
             --color-bg-primary: #050505;
             --color-bg-secondary: #0a0a0a;
             --color-bg-tertiary: #111111;
@@ -419,9 +420,21 @@
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value || 'N/A';
+            const phoneVal = document.getElementById('phone').value;
             const company = document.getElementById('company').value;
             const message = document.getElementById('message').value;
+
+            // Minimal Phone validation (if provided)
+            const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
+            if (phoneVal && !phoneRegex.test(phoneVal)) {
+                const submitBtn = contactForm.querySelector('.btn-primary');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Invalid Phone Number';
+                setTimeout(() => submitBtn.textContent = originalText, 2000);
+                return;
+            }
+
+            const phone = phoneVal || 'N/A';
 
             // Construct email link
             const subject = encodeURIComponent(`Inquiry from ${firstName} ${lastName} - ${company}`);
@@ -433,13 +446,489 @@
                 `Message:\n${message}`
             );
 
-            // Open mail client
-            window.location.href = `mailto:sales@stormpmc.com?subject=${subject}&body=${body}`;
+            // Open mail client - UPDATED EMAIL TO contact@syberstorm.com
+            window.location.href = `mailto:contact@syberstorm.com?subject=${subject}&body=${body}`;
 
             // Show success UI
-            const submitBtn = contactForm.querySelector('.btn-primary');
-            submitBtn.textContent = 'Opening Mail...';
-            submitBtn.disabled = true;
+            const finalBtn = contactForm.querySelector('.btn-primary');
+            finalBtn.textContent = 'Opening Mail...';
+            finalBtn.disabled = true;
+            
+            setTimeout(() => {
+                formContent.classList.add('hidden');
+                formSuccess.classList.add('show');
+            }, 1000);
+        });
+
+        // Map Logic
+        const targetLocation = [33.2133976, -96.610987];
+        const map = L.map('map', { zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false, dragging: true }).setView(targetLocation, 16);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
+        
+        const customPingIcon = L.divIcon({
+            className: '',
+            html: `<div class="ping-container"><div class="ping-circle"></div><div class="ping-dot"></div></div>`,
+            iconSize: [50, 50],
+            iconAnchor: [25, 25]
+        });
+        L.marker(targetLocation, { icon: customPingIcon }).addTo(map);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact StormPMC - Get in touch with our sales team to discuss your asset tracking requirements.">
+    <title>Contact Us | StormPMC</title>
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           STORMPMC - GLOBAL STYLES
+           Military-Grade Asset Tracking
+           ============================================ */
+        
+        /* CSS Variables */
+        :root {
+            color-scheme: dark; /* Signals browser to use dark-themed native UI/tooltips */
+            --color-bg-primary: #050505;
+            --color-bg-secondary: #0a0a0a;
+            --color-bg-tertiary: #111111;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(255, 255, 255, 0.15);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            --color-accent: #4ade80;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            --border-radius-xl: 20px;
+        }
+        
+        /* Reset & Base */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-normal);
+        }
+        
+        ul, ol {
+            list-style: none;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+        }
+
+        /* ============================================
+           BACKGROUND EFFECTS
+           ============================================ */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .glow-orb {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -300px;
+            right: -300px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: var(--font-primary);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 16px 36px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .btn-primary {
+            background: var(--color-text-primary);
+            color: var(--color-bg-primary);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* ============================================
+           SECTION STYLES
+           ============================================ */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 120px 0;
+        }
+        
+        /* ============================================
+           FORMS
+           ============================================ */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+        }
+        
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            font-size: 14px;
+            transition: var(--transition-normal);
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            cursor: pointer;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Page Specific Inline Styles */
+        .contact-form-wrapper {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .contact-form-header {
+            margin-bottom: 40px;
+        }
+        
+        .contact-form-header h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .contact-form-header p {
+            color: var(--color-text-tertiary);
+            font-size: 14px;
+        }
+        
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+        
+        .form-success.show {
+            display: block;
+        }
+        
+        .form-success h3 {
+            font-family: var(--font-display);
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .form-success p {
+            color: var(--color-text-secondary);
+            font-size: 15px;
+        }
+        
+        .form-content.hidden {
+            display: none;
+        }
+        
+        /* ============================================
+           MAP STYLES
+           ============================================ */
+        #map-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        #map {
+            width: 100%; height: 100%;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: var(--color-bg-primary);
+            transform: scale(1.1);
+        }
+        .leaflet-container {
+            background-color: var(--color-bg-primary) !important;
+        }
+        .ping-container { width: 50px; height: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .ping-dot { width: 10px; height: 10px; background-color: #00ced1; border-radius: 50%; box-shadow: 0 0 8px 3px #00ced1b3; position: absolute; transform: scale(1); opacity: 1; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.3s ease 0.1s; }
+        .ping-circle { width: 40px; height: 40px; border: 2px solid #00ced1; border-radius: 50%; box-shadow: inset 0 0 4px 1px #00ced180, 0 0 8px 2px #00ced1b3; position: absolute; animation: ping-animation 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1); transition: opacity 0.3s ease; }
+        
+        @keyframes ping-animation { 0% { transform: scale(0); opacity: 0.8; } 80% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
+
+        .product-image {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 640px) {
+            .contact-form-wrapper {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb"></div>
+
+    <!-- Contact Section -->
+    <section class="section" style="padding-bottom: 40px;">
+        <div class="container">
+            <div class="contact-form-wrapper">
+                <div class="form-content" id="formContent">
+                    <div class="contact-form-header">
+                        <h3>Send Us a Message</h3>
+                        <p>Fill out the form below and we'll get back to you within 24 hours.</p>
+                    </div>
+                    
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="John" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Smith" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="john@company.com" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 (555) 123-4567">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="company">Company / Organization *</label>
+                            <input type="text" id="company" name="company" class="form-input" placeholder="Company Name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="message">Message *</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="Tell us about your requirements..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Submit Inquiry</button>
+                    </form>
+                </div>
+                
+                <div class="form-success" id="formSuccess">
+                    <div style="width: 80px; height: 80px; background: rgba(74, 222, 128, 0.1); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Message Sent!</h3>
+                    <p>Our team will review your inquiry and get back to you within 24 hours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="product-image" style="max-width: 800px; margin: 0 auto;">
+                <div id="map-wrapper" style="border-radius: inherit; overflow: hidden;">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Form submission logic
+        const contactForm = document.getElementById('contactForm');
+        const formContent = document.getElementById('formContent');
+        const formSuccess = document.getElementById('formSuccess');
+        
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phoneVal = document.getElementById('phone').value;
+            const company = document.getElementById('company').value;
+            const message = document.getElementById('message').value;
+
+            // Minimal Phone validation (if provided)
+            const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
+            if (phoneVal && !phoneRegex.test(phoneVal)) {
+                const submitBtn = contactForm.querySelector('.btn-primary');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Invalid Phone Number';
+                setTimeout(() => submitBtn.textContent = originalText, 2000);
+                return;
+            }
+
+            const phone = phoneVal || 'N/A';
+
+            // Construct email link
+            const subject = encodeURIComponent(`Inquiry from ${firstName} ${lastName} - ${company}`);
+            const body = encodeURIComponent(
+                `Name: ${firstName} ${lastName}\n` +
+                `Email: ${email}\n` +
+                `Phone: ${phone}\n` +
+                `Company: ${company}\n\n` +
+                `Message:\n${message}`
+            );
+
+            // Open mail client - UPDATED EMAIL TO contact@syberstorm.com
+            window.location.href = `mailto:contact@syberstorm.com?subject=${subject}&body=${body}`;
+
+            // Show success UI
+            const finalBtn = contactForm.querySelector('.btn-primary');
+            finalBtn.textContent = 'Opening Mail...';
+            finalBtn.disabled = true;
             
             setTimeout(() => {
                 formContent.classList.add('hidden');
