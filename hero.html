@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>StormPMC | Total Asset Awareness</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1a1a1a;
+            /* Balanced #242424 */
+            --bg: #242424;
             --text: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.5);
             --font-display: 'Space Grotesk', sans-serif;
             --font-body: 'Inter', sans-serif;
+            /* Reduced mouse glow opacity for subtlety */
+            --accent-glow: rgba(74, 222, 128, 0.12); 
+            --title-glow: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -22,25 +26,36 @@
             box-sizing: border-box;
         }
 
-        body {
+        /* Smooth scrolling for anchor links */
+        html {
+            scroll-behavior: smooth;
+            height: 100%;
             background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-body);
-            overflow-x: hidden;
-            line-height: 1.2;
         }
 
-        /* 1. FIXED BACKGROUND TITLE */
-        /* Stays stuck at the top (50px padding) */
+        body {
+            color: var(--text);
+            font-family: var(--font-body);
+            background-color: var(--bg);
+            overflow-x: hidden;
+            line-height: 1.2;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 1. FIXED BACKGROUND LAYER */
         .fixed-header-bg {
             position: fixed;
-            top: 50px; /* Specific request: 50px from top */
-            left: 0;
+            inset: 0;
             width: 100%;
-            z-index: 1;
-            pointer-events: none;
+            height: 100dvh;
+            z-index: 1; 
+            pointer-events: none; 
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 8vh;
+            will-change: transform;
         }
 
         .title-container {
@@ -51,58 +66,116 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            padding: 0 20px;
+            padding: 0 5vw;
         }
 
         .title-line {
-            /* Fluid scaling that prevents wrapping to 3 lines */
-            font-size: clamp(40px, 14.5vw, 200px); 
+            font-size: clamp(32px, 11vh, 9vw); 
             line-height: 0.85;
-            letter-spacing: -0.04em;
-            white-space: nowrap; /* Forces 2 lines max */
+            letter-spacing: -0.05em;
+            white-space: nowrap; 
             display: block;
+            text-shadow: 
+                0 0 30px var(--title-glow),
+                0 0 60px rgba(255, 255, 255, 0.05);
         }
 
-        /* 2. SCROLLING FOREGROUND LAYER */
-        /* This whole container slides UP over the title */
+        /* HERO CTA BUTTONS */
+        .hero-ctas {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            pointer-events: auto; 
+            position: relative;
+            z-index: 5;
+        }
+
+        /* MOUSE GLOW */
+        .glow-orb {
+            position: fixed;
+            width: 50vmax; 
+            height: 50vmax;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: 2;
+            filter: blur(120px);
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            will-change: transform;
+            opacity: 1;
+        }
+
+        /* 2. SCROLLING LAYERS */
         .scrolling-layer {
             position: relative;
-            z-index: 10; /* Higher than fixed title */
+            z-index: 10; 
             width: 100%;
+            pointer-events: none; 
         }
 
-        /* HERO SECTION (Transparent so title shows through initially) */
         .hero-section {
-            height: 100vh;
+            position: relative;
+            height: 85dvh; 
             width: 100%;
             display: flex;
-            align-items: flex-end; /* Pins image to the bottom */
+            flex-direction: column;
+            justify-content: flex-end; 
             background: transparent;
+            overflow: hidden;
+            contain: paint;
+        }
+
+        /* GRID PARALLAX */
+        .grid-overlay {
+            position: absolute;
+            top: -50%; 
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black, transparent 90%);
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
         }
 
         .product-image-container {
             width: 100%;
-            max-width: 1800px;
+            max-width: 1100px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 0 5vw;
+            will-change: transform;
+            line-height: 0;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            pointer-events: none; 
         }
 
         .product-image-container img {
             width: 100%;
             height: auto;
             display: block;
-            /* No shadow, no hover as requested */
+            margin: 0 auto;
+            padding: 0;
         }
 
-        /* CONTENT SECTION (Solid background to "wipe" over the title) */
+        /* CONTENT SECTION */
         .details-section {
-            background: var(--bg);
-            padding: 120px 20px;
+            background-color: var(--bg);
+            padding: 20vh 20px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             position: relative;
+            z-index: 11;
+            pointer-events: auto; 
         }
 
         .details-content {
@@ -111,7 +184,7 @@
 
         .tagline {
             font-family: var(--font-display);
-            font-size: clamp(32px, 6vw, 56px);
+            font-size: clamp(28px, 6vw, 56px);
             text-transform: uppercase;
             margin-bottom: 24px;
             letter-spacing: -0.02em;
@@ -133,86 +206,157 @@
             justify-content: center;
         }
 
-        /* Button Styling */
+        .empty-section {
+            height: 80dvh;
+            width: 100%;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+        }
+
+        .scroll-indicator {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            opacity: 0.2;
+        }
+
+        /* BUTTONS */
         .btn {
             font-family: var(--font-body);
             font-weight: 700;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             text-decoration: none;
-            padding: 20px 40px;
+            padding: 18px 36px;
             border-radius: 4px;
             letter-spacing: 1px;
-            transition: transform 0.2s ease, background 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), background 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
         }
 
         .btn-primary {
             background: var(--text);
-            color: #000;
+            color: var(--bg); 
         }
 
         .btn-primary:hover {
             background: #e0e0e0;
+            transform: translateY(-2px);
         }
 
         .btn-secondary {
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: var(--text);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
             border-color: var(--text);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
         }
 
-        /* MOBILE OVERRIDES */
+        /* MOBILE FIXES */
         @media (max-width: 768px) {
             .fixed-header-bg {
-                top: 50px;
+                padding-top: 10vh;
+                left: 0;
+                right: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
             
             .title-line {
-                font-size: 13vw; /* Scale down to ensure 2 lines */
-            }
-
-            .cta-container {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .btn {
+                /* Reduced marginally to 15vw to avoid clipping */
+                font-size: clamp(38px, 15vw, 75px); 
+                letter-spacing: -0.04em;
                 width: 100%;
                 text-align: center;
             }
+
+            .hero-ctas {
+                flex-direction: row; 
+                justify-content: center;
+                width: 100%;
+                padding: 0 40px; 
+                margin-top: 20px; 
+                gap: 10px;
+                pointer-events: auto;
+            }
+
+            .product-image-container {
+                padding: 0;
+                transform: scale(1.75); 
+                transform-origin: bottom center; 
+                width: 100%;
+            }
+
+            .cta-container {
+                flex-direction: row; 
+                width: 100%;
+                padding: 0 20px;
+                gap: 10px;
+            }
+
+            .btn {
+                flex: 1; 
+                min-width: 0; 
+                text-align: center;
+                padding: 12px 14px; 
+                font-size: 10px; 
+                letter-spacing: 0.5px;
+            }
             
             .hero-section {
-                height: 80vh; /* Shorter hero on mobile to get to text faster */
+                height: 85dvh; 
+            }
+
+            .details-section {
+                padding: 12vh 24px;
+            }
+
+            .glow-orb {
+                display: none; 
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- FIXED BG LAYER -->
-    <div class="fixed-header-bg">
+    <div class="glow-orb" id="mouseGlow"></div>
+
+    <div class="fixed-header-bg" id="parallaxTitle">
         <h1 class="title-container">
             <span class="title-line">Total Asset</span>
             <span class="title-line">Awareness</span>
         </h1>
+        
+        <div class="hero-ctas">
+            <a href="#details" class="btn btn-secondary">Explore</a>
+            <a href="#" class="btn btn-primary">Contact</a>
+        </div>
     </div>
 
-    <!-- SCROLLING FG LAYER -->
     <main class="scrolling-layer">
         
-        <!-- Part 1: Bottom Pinned Image -->
-        <section class="hero-section">
+        <section class="hero-section" id="hero">
+            <div class="grid-overlay" id="parallaxGrid"></div>
+            
             <div class="product-image-container">
                 <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" alt="MTRAC Asset Tracking Device">
             </div>
         </section>
 
-        <!-- Part 2: The Sliding Content -->
-        <section class="details-section">
+        <section class="details-section" id="details">
             <div class="details-content">
                 <h2 class="tagline">Elite Asset Tracking</h2>
                 <p class="description">
@@ -226,7 +370,66 @@
             </div>
         </section>
 
+        <section class="empty-section">
+            <span class="scroll-indicator">[ END OF VIEW ]</span>
+        </section>
+
     </main>
+
+    <script>
+        const grid = document.getElementById('parallaxGrid');
+        const orb = document.getElementById('mouseGlow');
+        const title = document.getElementById('parallaxTitle');
+        const details = document.getElementById('details');
+
+        let targetX = window.innerWidth / 2;
+        let targetY = window.innerHeight / 2;
+        let currentX = targetX;
+        let currentY = targetY;
+        
+        let targetScroll = 0;
+        let currentScroll = 0;
+
+        const lerpAmount = 0.07; 
+
+        window.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+
+        window.addEventListener('scroll', () => {
+            targetScroll = window.pageYOffset || document.documentElement.scrollTop;
+        }, { passive: true });
+
+        function animate() {
+            currentX += (targetX - currentX) * lerpAmount;
+            currentY += (targetY - currentY) * lerpAmount;
+            currentScroll += (targetScroll - currentScroll) * lerpAmount;
+            
+            orb.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
+            grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
+            title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
+
+            const detailsRect = details.getBoundingClientRect();
+            // Start fading out the fixed CTAs and Title as they get covered
+            if (detailsRect.top < 400) {
+                title.style.opacity = Math.max(0, detailsRect.top / 400);
+                orb.style.opacity = Math.max(0, detailsRect.top / 400);
+            } else {
+                title.style.opacity = '1';
+                orb.style.opacity = '1';
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            targetX = window.innerWidth / 2;
+            targetY = window.innerHeight / 2;
+        });
+
+        animate();
+    </script>
 
 </body>
 </html>
