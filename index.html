@@ -69,30 +69,23 @@
            HERO & PARALLAX STYLES
            ============================================ */
         
-        /* NEW: Hero Background Gradient Anchor
-           - Positioned Absolute (Scrolls with page/image)
-           - Behind Fixed Title (z-index 0 vs 1)
-           - Short height (100vh) for intensity
-        */
         .hero-gradient-anchor {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            /* Gradient from Super Dark (#050505) to Intense Grey (#3D3D3D) */
             background: linear-gradient(180deg, #050505 0%, #3D3D3D 100%);
             z-index: 0;
             pointer-events: none;
         }
 
-        /* Fixed Background Layer for Title */
         .fixed-header-bg {
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100dvh;
-            z-index: 1; /* Sits ON TOP of gradient, BEHIND content */
+            z-index: 1; 
             pointer-events: none; 
             display: flex;
             flex-direction: column;
@@ -169,13 +162,12 @@
             transform: translateY(-2px);
         }
 
-        /* Mouse Glow */
         .glow-orb {
             position: fixed;
             width: 50vmax; 
             height: 50vmax;
             background: radial-gradient(circle, var(--hero-accent-glow) 0%, transparent 70%);
-            z-index: 2; /* On top of Title */
+            z-index: 2; 
             filter: blur(120px);
             pointer-events: none;
             top: 0;
@@ -184,15 +176,13 @@
             opacity: 1;
         }
 
-        /* Scrolling Layer Wrapper */
         .scrolling-layer {
             position: relative;
-            z-index: 10; /* Content sits on top of everything */
+            z-index: 10; 
             width: 100%;
             pointer-events: none; 
         }
 
-        /* Transparent Top Section */
         .hero-section {
             position: relative;
             height: 85dvh; 
@@ -205,7 +195,16 @@
             contain: paint;
         }
 
-        /* Parallax Grid */
+        .hero-gradient-anchor {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, transparent 60%, #3D3D3D 100%);
+            z-index: -1; 
+            pointer-events: none;
+        }
+
         .hero-grid-overlay {
             position: absolute;
             top: -50%; 
@@ -217,7 +216,7 @@
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 60px 60px;
             mask-image: radial-gradient(circle at center, black, transparent 90%);
-            z-index: -1;
+            z-index: -2; 
             pointer-events: none;
             will-change: transform;
         }
@@ -257,25 +256,22 @@
         .logo { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
         .logo-icon { width: 32px; height: 32px; border: 2px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-        /* Standard Buttons */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); }
         .btn-primary { background: var(--color-text-primary); color: var(--color-bg-primary); }
         .btn-secondary { background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        /* Sections */
         .section { position: relative; z-index: 11; padding: 120px 0; pointer-events: auto; background: var(--color-bg-primary); }
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 80px; }
         .section-label { display: inline-block; padding: 8px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 30px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 30px; }
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
 
-        /* Specs Bar */
         .stats-bar { 
             background: var(--color-bg-tertiary); 
             border-top: 1px solid var(--color-border); 
             border-bottom: 1px solid var(--color-border); 
             position: relative; 
-            z-index: 11; /* Ensure above fixed background */
+            z-index: 11; 
             overflow: hidden; 
             pointer-events: auto;
         }
@@ -307,7 +303,6 @@
 
         .ticker-only { display: none; }
 
-        /* Features & Cards */
         .flagship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .flagship-image { 
             height: 500px; 
@@ -323,26 +318,54 @@
         .flagship-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        
+        /* Default Card (for Icons) */
         .card { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 40px; transition: var(--transition-normal); }
         .card:hover { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
-        
-        .card-image {
+
+        /* Full Bleed Industry Card */
+        .industry-card {
+            background: var(--color-bg-card); 
+            border: 1px solid var(--color-border); 
+            border-radius: var(--border-radius-lg);
+            padding: 0; /* REMOVED PADDING */
+            overflow: hidden; /* Clips image corners */
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-normal);
+        }
+        .industry-card:hover { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
+
+        .industry-card .card-image {
             width: 100%;
             aspect-ratio: 16 / 9;
             background: var(--color-bg-tertiary);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            border: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            margin: 0;
+            border-radius: 0; /* Flush edges */
         }
-        .card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        .industry-card .card-image img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: top center; 
+            display: block; 
+        }
+
+        /* Wrapper for text content inside Industry Cards */
+        .industry-card .card-content {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
 
         .card-icon { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; font-size: 22px; color: var(--color-text-secondary); }
         .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 12px; }
         .card-text { font-size: 14px; color: var(--color-text-tertiary); line-height: 1.7; }
         .card-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-secondary); }
 
-        /* Ecosystem Collapsible */
         .ecosystem-container { margin-top: 60px; border-top: 1px solid var(--color-border); }
         .collapsible-trigger {
             width: 100%; padding: 40px 0; background: none; border: none;
@@ -451,6 +474,8 @@
         <!-- Hero Image Section -->
         <section class="hero-section" id="hero">
             <div class="hero-grid-overlay" id="parallaxGrid"></div>
+            <!-- ANCHORED GRADIENT: Now inside the section to scroll with image -->
+            <div class="hero-gradient-anchor"></div>
             
             <div class="product-image-container">
                 <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" alt="MTRAC Asset Tracking Device">
@@ -625,29 +650,38 @@
                 </div>
                 
                 <div class="features-grid">
-                    <div class="card">
+                    <!-- Defense & Military -->
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
                         </div>
-                        <h3 class="card-title">Defense & Military</h3>
-                        <p class="card-text">Track high-value equipment across global operations.</p>
-                        <a href="#" class="card-link">Learn More &rarr;</a>
+                        <div class="card-content">
+                            <h3 class="card-title">Defense & Military</h3>
+                            <p class="card-text">Track high-value equipment across global operations.</p>
+                            <a href="#" class="card-link">Learn More &rarr;</a>
+                        </div>
                     </div>
-                    <div class="card">
+                    <!-- Energy & Utilities -->
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
                         </div>
-                        <h3 class="card-title">Energy & Utilities</h3>
-                        <p class="card-text">Monitor remote infrastructure and pipeline equipment.</p>
-                        <a href="#" class="card-link">Learn More &rarr;</a>
+                        <div class="card-content">
+                            <h3 class="card-title">Energy & Utilities</h3>
+                            <p class="card-text">Monitor remote infrastructure and pipeline equipment.</p>
+                            <a href="#" class="card-link">Learn More &rarr;</a>
+                        </div>
                     </div>
-                    <div class="card">
+                    <!-- Heavy Equipment -->
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
                         </div>
-                        <h3 class="card-title">Heavy Equipment</h3>
-                        <p class="card-text">Track construction and mining equipment in rugged conditions.</p>
-                        <a href="#" class="card-link">Learn More &rarr;</a>
+                        <div class="card-content">
+                            <h3 class="card-title">Heavy Equipment</h3>
+                            <p class="card-text">Track construction and mining equipment in rugged conditions.</p>
+                            <a href="#" class="card-link">Learn More &rarr;</a>
+                        </div>
                     </div>
                 </div>
             </div>
