@@ -49,7 +49,6 @@
         ul { list-style: none; }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
-        @media (max-width: 768px) { .container { padding: 0 24px; } }
 
         /* Background Effects */
         .grid-overlay {
@@ -84,10 +83,24 @@
         /* MANDATORY EMPTY HERO SECTION */
         .hero-spacer { height: 40vh; width: 100%; position: relative; z-index: 1; }
 
-        /* Technical Specs Bar */
-        .stats-bar { background: var(--color-bg-tertiary); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); position: relative; z-index: 1; }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 0; }
-        .stat-item { text-align: center; }
+        /* Technical Specs Bar & Ticker logic */
+        .stats-bar { 
+            background: var(--color-bg-tertiary); 
+            border-top: 1px solid var(--color-border); 
+            border-bottom: 1px solid var(--color-border); 
+            position: relative; 
+            z-index: 1; 
+            overflow: hidden; 
+        }
+        
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            padding: 40px 0; 
+        }
+
+        .stat-item { text-align: center; flex-shrink: 0; }
         .stat-value { 
             display: block;
             font-family: var(--font-display); 
@@ -105,6 +118,8 @@
             white-space: nowrap;
         }
 
+        .ticker-only { display: none; }
+
         /* Flagship Feature Grid */
         .flagship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .flagship-image { 
@@ -119,7 +134,6 @@
             overflow: hidden; 
         }
         
-        /* UPDATED: Image scales to vertical height and clips horizontally */
         .flagship-image img { 
             width: 100%; 
             height: 100%; 
@@ -131,6 +145,24 @@
         .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
         .card { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 40px; transition: var(--transition-normal); }
         .card:hover { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
+        
+        /* Card Image - Locked to 16:9 */
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 1px solid var(--color-border);
+        }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .card-icon { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; font-size: 22px; color: var(--color-text-secondary); }
         .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 12px; }
         .card-text { font-size: 14px; color: var(--color-text-tertiary); line-height: 1.7; }
@@ -157,9 +189,30 @@
         .expansion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
         .expansion-category { margin-bottom: 40px; }
         .expansion-header { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent); margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; display: block; }
+        
+        /* Category Specific Header Colors */
+        .expansion-header.green { color: #00FF44; border-bottom-color: rgba(0, 255, 68, 0.2); }
+        .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
+        .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+
         .expansion-item { margin-bottom: 24px; }
         .expansion-name { font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-muted); font-weight: 400; text-transform: uppercase; }
+        
+        /* Ecosystem Badge Styles */
+        .expansion-name span { 
+            font-size: 9px; 
+            padding: 2px 8px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--color-border); 
+            border-radius: 4px; 
+            color: var(--color-text-muted); 
+            font-weight: 400; 
+            text-transform: uppercase; 
+        }
+        .expansion-name span.badge-green { color: #00FF44; border-color: rgba(0, 255, 68, 0.3); }
+        .expansion-name span.badge-magenta { color: #FF00FF; border-color: rgba(255, 0, 255, 0.3); }
+        .expansion-name span.badge-cyan { color: #12FBFD; border-color: rgba(18, 251, 253, 0.3); }
+
         .expansion-desc { font-size: 14px; color: var(--color-text-tertiary); line-height: 1.6; }
 
         /* CTA Section */
@@ -172,10 +225,68 @@
         .footer { background: var(--color-bg-secondary); border-top: 1px solid var(--color-border); padding: 80px 0 40px; position: relative; z-index: 1; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
+        /* ============================================
+           RESPONSIVE BREAKPOINTS
+           ============================================ */
         @media (max-width: 1024px) {
-            .flagship-grid, .expansion-grid, .features-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .flagship-image { height: 350px; }
+            .container { padding: 0 40px; }
+            .nav { padding: 15px 40px; }
+            .flagship-grid, .expansion-grid, .features-grid { grid-template-columns: 1fr; gap: 40px; }
+            
+            /* Left Justify Mobile Overhaul */
+            .section-header { text-align: left; margin-left: 0; }
+            .cta-section { text-align: left; }
+            .cta-content { margin-left: 0; max-width: 100%; }
+            .cta-content div { justify-content: flex-start !important; }
+            .stat-item { text-align: left; }
+
+            /* Ticker Implementation */
+            .stats-bar .container { padding: 0; max-width: none; }
+            .stats-grid { 
+                display: flex; 
+                width: max-content; 
+                grid-template-columns: none; 
+                gap: 0; 
+                animation: ticker-scroll 25s linear infinite;
+                pointer-events: none; 
+                padding: 30px 0; 
+            }
+            .stat-item { padding: 0 60px; min-width: 280px; }
+            .ticker-only { display: block; }
+            
+            .flagship-image { height: 400px; }
+            .flagship-content { text-align: left; } 
+            .flagship-content div { justify-content: flex-start; }
+            .section { padding: 70px 0; }
+        }
+
+        @keyframes ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 24px; }
+            .nav { padding: 15px 24px; }
+            .logo { font-size: 16px; letter-spacing: 2px; }
+            .nav-btn { font-size: 11px; padding: 10px 16px; }
+            .section-title { font-size: 32px; }
+            .section-header { margin-bottom: 32px; } 
+            .section { padding: 50px 0; } 
+            .hero-spacer { height: 15vh; } 
+            .flagship-image { height: 300px; border-radius: var(--border-radius-lg); }
+            .card { padding: 24px; } 
+            .collapsible-trigger { padding: 24px 0; } 
+            .footer-bottom { flex-direction: column; gap: 15px; text-align: left; align-items: flex-start; }
+        }
+
+        @media (max-width: 480px) {
+            .section { padding: 40px 0; } 
+            .hero-spacer { height: 10vh; }
+            .btn { width: 100%; padding: 16px 20px; }
+            .flagship-content div { flex-direction: column; }
+            .collapsible-trigger { font-size: 16px; }
+            .stats-grid { padding: 20px 0; }
         }
     </style>
 </head>
@@ -189,17 +300,18 @@
             STORMPMC
         </a>
         <div class="nav-right">
-            <a href="contact.html" class="btn btn-secondary" style="padding: 10px 20px; border-radius: 4px;">Contact Sales</a>
+            <a href="contact.html" class="btn btn-secondary nav-btn" style="padding: 10px 20px; border-radius: 4px;">Contact Sales</a>
         </div>
     </nav>
 
     <!-- MANDATORY EMPTY HERO SECTION -->
     <div class="hero-spacer"></div>
 
-    <!-- Technical Specs Bar -->
+    <!-- Technical Specs Bar (Ticker on Mobile) -->
     <section class="stats-bar">
         <div class="container">
             <div class="stats-grid">
+                <!-- Original Items -->
                 <div class="stat-item">
                     <span class="stat-value">10+ Years</span>
                     <span class="stat-label">Battery Life</span>
@@ -213,6 +325,23 @@
                     <span class="stat-label">Ingress Protection</span>
                 </div>
                 <div class="stat-item">
+                    <span class="stat-value">MIL-STD-810H</span>
+                    <span class="stat-label">Certified</span>
+                </div>
+                <!-- Duplicate Items (Shown only on Mobile for Infinite Scroll) -->
+                <div class="stat-item ticker-only">
+                    <span class="stat-value">10+ Years</span>
+                    <span class="stat-label">Battery Life</span>
+                </div>
+                <div class="stat-item ticker-only">
+                    <span class="stat-value">-40° to +85°C</span>
+                    <span class="stat-label">Operating Range</span>
+                </div>
+                <div class="stat-item ticker-only">
+                    <span class="stat-value">IP69K</span>
+                    <span class="stat-label">Ingress Protection</span>
+                </div>
+                <div class="stat-item ticker-only">
                     <span class="stat-value">MIL-STD-810H</span>
                     <span class="stat-label">Certified</span>
                 </div>
@@ -230,7 +359,7 @@
                 <div class="flagship-content">
                     <span class="section-label" style="color: var(--color-accent);">Flagship System</span>
                     <h1 class="section-title">MTRAC Asset Tracker</h1>
-                    <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker with 10-year battery life, global satellite connectivity, and full MIL-STD-810H certification. Engineered for mission-critical reliability in the world's most demanding environments.</p>
+                    <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker engineered for long-duration operations in austere and contested environments. MTRAC delivers decade-long battery life, resilient communications, and full MIL-STD-810H certification to support accountability of mission-critical assets anywhere on Earth.</p>
                     <div style="display: flex; gap: 16px;">
                         <a href="contact.html" class="btn btn-primary">Request Details</a>
                         <a href="#" class="btn btn-secondary">Documentation</a>
@@ -241,7 +370,7 @@
             <!-- Single Collapsible: Ecosystem Expansion -->
             <div class="ecosystem-container">
                 <button class="collapsible-trigger" id="expandBtn">
-                    View Ecosystem Expansion & Future Products
+                    View Ecosystem Expansion & Future Products →
                     <span class="icon">+</span>
                 </button>
                 <div class="collapsible-content" id="expandContent">
@@ -249,37 +378,41 @@
                         
                         <!-- Trackers -->
                         <div class="expansion-category">
-                            <span class="expansion-header">Asset Trackers</span>
+                            <span class="expansion-header green">Asset Trackers</span>
                             <div class="expansion-item">
-                                <h3 class="expansion-name">MTRAC Lite <span>Coming Soon</span></h3>
+                                <h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3>
+                                <p class="expansion-desc">Deployment-ready flagship system. Full-spectrum accountability in infrastructure-denied environments.</p>
+                            </div>
+                            <div class="expansion-item">
+                                <h3 class="expansion-name">MTRAC Lite <span class="badge-cyan">Coming Soon</span></h3>
                                 <p class="expansion-desc">Compact tracker for smaller assets and equipment. Same rugged DNA in a lighter form factor.</p>
                             </div>
                             <div class="expansion-item">
-                                <h3 class="expansion-name">MTRAC Container <span>Coming Soon</span></h3>
+                                <h3 class="expansion-name">MTRAC Container <span class="badge-green">Coming Soon</span></h3>
                                 <p class="expansion-desc">Specialized tracker for shipping containers with door sensors and tamper detection.</p>
                             </div>
                         </div>
 
                         <!-- Gateways -->
                         <div class="expansion-category">
-                            <span class="expansion-header">Gateways</span>
+                            <span class="expansion-header magenta">Gateways</span>
                             <div class="expansion-item">
-                                <h3 class="expansion-name">Storm Gateway <span>Available</span></h3>
+                                <h3 class="expansion-name">Storm Gateway <span class="badge-magenta">Coming Soon</span></h3>
                                 <p class="expansion-desc">Long-range mesh gateway for remote deployments. Creates robust network coverage in challenging terrain.</p>
                             </div>
                             <div class="expansion-item">
-                                <h3 class="expansion-name">Gateway Mobile <span>Coming Soon</span></h3>
+                                <h3 class="expansion-name">Gateway Mobile <span class="badge-magenta">Coming Soon</span></h3>
                                 <p class="expansion-desc">Vehicle-mounted gateway for mobile command posts and convoy operations.</p>
                             </div>
                             <div class="expansion-item">
-                                <h3 class="expansion-name">Gateway Solar <span>Coming Soon</span></h3>
+                                <h3 class="expansion-name">Gateway Solar <span class="badge-magenta">Coming Soon</span></h3>
                                 <p class="expansion-desc">Self-powered gateway with integrated solar panel for off-grid installations.</p>
                             </div>
                         </div>
 
                         <!-- Accessories -->
                         <div class="expansion-category">
-                            <span class="expansion-header">Accessories</span>
+                            <span class="expansion-header white">Accessories</span>
                             <div class="expansion-item">
                                 <h3 class="expansion-name">Power Pack <span>Coming Soon</span></h3>
                                 <p class="expansion-desc">Extended battery module for multi-year deployments where replacement isn't an option.</p>
@@ -296,7 +429,7 @@
 
                         <!-- Platform -->
                         <div class="expansion-category">
-                            <span class="expansion-header">StormCloud Platform</span>
+                            <span class="expansion-header white">StormCloud Platform</span>
                             <div class="expansion-item">
                                 <h3 class="expansion-name">Real-Time Dashboard</h3>
                                 <p class="expansion-desc">Unified view of all assets with live location updates, status monitoring, and customizable alerts.</p>
@@ -319,7 +452,7 @@
             <div class="section-header">
                 <span class="section-label">Why StormPMC</span>
                 <h2 class="section-title">Engineered for the Impossible</h2>
-                <p class="section-subtitle">When standard tracking fails, StormPMC delivers. Our technology is built from the ground up for mission-critical operations.</p>
+                <p class="section-subtitle">When standard tracking fails, StormPMC delivers. Our systems are designed by veterans and built to maintain asset awareness during high-risk, infrastructure-limited operations.</p>
             </div>
             
             <div class="features-grid">
@@ -346,7 +479,7 @@
                 <div class="card">
                     <div class="card-icon">△</div>
                     <h3 class="card-title">Mesh Networking</h3>
-                    <p class="card-text">Devices communicate via encrypted mesh network, extending range and ensuring data delivery.</p>
+                    <p class="card-text">Devices communicate via encrypted mesh networking to extend range and ensure data delivery.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon">○</div>
@@ -367,17 +500,29 @@
             </div>
             
             <div class="features-grid">
+                <!-- Defense & Military -->
                 <div class="card">
+                    <div class="card-image">
+                        <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector Application" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                    </div>
                     <h3 class="card-title">Defense & Military</h3>
                     <p class="card-text">Track high-value equipment, vehicles, and containers across global operations and forward deployments.</p>
                     <a href="#" class="card-link">Learn More &rarr;</a>
                 </div>
+                <!-- Energy & Utilities -->
                 <div class="card">
+                    <div class="card-image">
+                        <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector Application" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                    </div>
                     <h3 class="card-title">Energy & Utilities</h3>
                     <p class="card-text">Monitor remote infrastructure, pipeline equipment, and mobile assets across challenging terrain.</p>
                     <a href="#" class="card-link">Learn More &rarr;</a>
                 </div>
+                <!-- Heavy Equipment -->
                 <div class="card">
+                    <div class="card-image">
+                        <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector Application" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                    </div>
                     <h3 class="card-title">Heavy Equipment</h3>
                     <p class="card-text">Track construction and mining equipment in rugged conditions where standard trackers fail.</p>
                     <a href="#" class="card-link">Learn More &rarr;</a>
@@ -391,10 +536,10 @@
         <div class="container">
             <div class="cta-content">
                 <h2 class="cta-title">Ready to Get Started?</h2>
-                <p class="cta-text">Connect with our team to discuss your tracking requirements and see how StormPMC can solve your toughest logistics challenges.</p>
+                <p class="cta-text">Connect with our team to discuss your tracking requirements and see how StormPMC can support mission-critical asset accountability.</p>
                 <div style="display: flex; gap: 16px; justify-content: center;">
                     <a href="contact.html" class="btn btn-primary">Contact Sales</a>
-                    <a href="#" class="btn btn-secondary">View Products</a>
+                    <a href="#" class="btn btn-secondary">Explore MTRAC</a>
                 </div>
             </div>
         </div>
