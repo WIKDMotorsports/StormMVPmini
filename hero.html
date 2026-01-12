@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StormPMC | Total Asset Awareness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.2;
+        }
+
+        /* 1. FIXED BACKGROUND TITLE */
+        /* Stays stuck at the top (50px padding) */
+        .fixed-header-bg {
+            position: fixed;
+            top: 50px; /* Specific request: 50px from top */
+            left: 0;
+            width: 100%;
+            z-index: 1;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .title-container {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .title-line {
+            /* Fluid scaling that prevents wrapping to 3 lines */
+            font-size: clamp(40px, 14.5vw, 200px); 
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            white-space: nowrap; /* Forces 2 lines max */
+            display: block;
+        }
+
+        /* 2. SCROLLING FOREGROUND LAYER */
+        /* This whole container slides UP over the title */
+        .scrolling-layer {
+            position: relative;
+            z-index: 10; /* Higher than fixed title */
+            width: 100%;
+        }
+
+        /* HERO SECTION (Transparent so title shows through initially) */
+        .hero-section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: flex-end; /* Pins image to the bottom */
+            background: transparent;
+        }
+
+        .product-image-container {
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* No shadow, no hover as requested */
+        }
+
+        /* CONTENT SECTION (Solid background to "wipe" over the title) */
+        .details-section {
+            background: var(--bg);
+            padding: 120px 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .details-content {
+            max-width: 800px;
+        }
+
+        .tagline {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 6vw, 56px);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .description {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        /* Button Styling */
+        .btn {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* MOBILE OVERRIDES */
+        @media (max-width: 768px) {
+            .fixed-header-bg {
+                top: 50px;
+            }
+            
+            .title-line {
+                font-size: 13vw; /* Scale down to ensure 2 lines */
+            }
+
+            .cta-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .hero-section {
+                height: 80vh; /* Shorter hero on mobile to get to text faster */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FIXED BG LAYER -->
+    <div class="fixed-header-bg">
+        <h1 class="title-container">
+            <span class="title-line">Total Asset</span>
+            <span class="title-line">Awareness</span>
+        </h1>
+    </div>
+
+    <!-- SCROLLING FG LAYER -->
+    <main class="scrolling-layer">
+        
+        <!-- Part 1: Bottom Pinned Image -->
+        <section class="hero-section">
+            <div class="product-image-container">
+                <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" alt="MTRAC Asset Tracking Device">
+            </div>
+        </section>
+
+        <!-- Part 2: The Sliding Content -->
+        <section class="details-section">
+            <div class="details-content">
+                <h2 class="tagline">Elite Asset Tracking</h2>
+                <p class="description">
+                    Industrial-grade telemetry systems built for the most extreme environments. 
+                    Real-time monitoring, zero compromise.
+                </p>
+                <div class="cta-container">
+                    <a href="#" class="btn btn-primary">Configure Units</a>
+                    <a href="#" class="btn btn-secondary">Network Status</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
