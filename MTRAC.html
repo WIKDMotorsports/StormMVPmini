@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MTRAC Asset Tracker - Military-grade GPS tracking with 10-year battery life, MIL-STD-810H certified, IP69K rated.">
+    <title>MTRAC Asset Tracker | StormPMC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://raw.githack.com/WIKDMotorsports/StormMVPmini/refs/heads/main/styles.css">
+    
+    <!-- External Dependencies for Animated Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+
+    <style>
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(255, 255, 255, 0.15);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            
+            /* Industry & Badge Accents */
+            --accent-defense: #4ade80;
+            --accent-energy: #a78bfa;
+            --accent-heavy: #fb923c;
+            --accent-logistics: #38bdf8;
+            --color-cyan: #00FFFF;
+
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --transition-normal: 0.3s ease;
+            --border-radius-lg: 16px;
+        }
+
+        /* Global Fixes */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Standardized Section Padding */
+        .section {
+            padding: 3.5rem 0 !important;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem !important;
+        }
+
+        /* Section Labels / Badges (Master Style) */
+        .section-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px; /* Homogenized rectangular shape */
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-flagship {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .nav {
+            overflow: visible !important;
+        }
+
+        /* Product Hero Styling */
+        .product-hero {
+            margin-top: 80px; 
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+        }
+
+        .product-hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .product-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3; 
+            overflow: hidden;
+            border-radius: 16px;
+            background: #111;
+        }
+
+        .product-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        /* Industry Grid Module CSS */
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .industry-grid { grid-template-columns: 1fr; }
+            .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .product-image { aspect-ratio: 16 / 9; }
+        }
+
+        .industry-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .industry-card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-4px);
+        }
+
+        .industry-info { flex: 1; }
+
+        /* Homogenized Industry Label Style */
+        .industry-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--color-border);
+            border-radius: 4px; /* Rectangular shape to match rest of page */
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px; /* Standardized spacing */
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .card-defense .industry-label { color: var(--accent-defense); border-color: rgba(74, 222, 128, 0.2); }
+        .card-energy .industry-label { color: var(--accent-energy); border-color: rgba(167, 139, 250, 0.2); }
+        .card-heavy .industry-label { color: var(--accent-heavy); border-color: rgba(251, 146, 60, 0.2); }
+        .card-logistics .industry-label { color: var(--accent-logistics); border-color: rgba(56, 189, 248, 0.2); }
+
+        .industry-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .industry-desc {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .gallery-module {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.1);
+            transition: opacity 1.5s ease, transform 3s ease;
+            z-index: 1;
+        }
+
+        .gallery-slide.active { opacity: 1; transform: scale(1); z-index: 2; }
+
+        .gallery-vignette {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .gallery-ui {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .gallery-coords { display: flex; flex-direction: column; }
+
+        .gallery-coords-label {
+            font-size: 9px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        .gallery-app-text {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            min-height: 20px;
+            white-space: pre;
+        }
+
+        .gallery-progress { display: flex; gap: 4px; margin-bottom: 4px; }
+        .gallery-dot { height: 2px; width: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; transition: all 0.5s ease; }
+        .gallery-dot.active { width: 16px; background: #fff; }
+
+        /* Technical Specifications & Works With CSS */
+        .specs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .specs-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .specs-group summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 1.25rem 1.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #fff;
+            user-select: none;
+        }
+
+        .specs-group summary::-webkit-details-marker { display: none; }
+
+        .specs-group .summary-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .specs-group[open] .summary-icon { transform: rotate(180deg); color: rgba(255, 255, 255, 0.8); }
+
+        .specs-content {
+            padding: 1rem 2rem 2rem 2rem;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .expansion-grid-spec { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 24px 40px; 
+        }
+
+        .expansion-header { 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; 
+            border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; 
+            grid-column: 1 / -1;
+        }
+        
+        .expansion-header.green { color: #4ade80; border-bottom-color: rgba(74, 222, 128, 0.2); }
+        .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
+        .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+
+        .expansion-item { margin-bottom: 0; }
+        .expansion-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #fff; }
+        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; font-weight: 400; text-transform: uppercase; white-space: nowrap; }
+        
+        .expansion-name span.badge-green { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); }
+        .expansion-name span.badge-magenta { color: #FF00FF; border-color: rgba(255, 0, 255, 0.3); }
+        .expansion-name span.badge-cyan { color: var(--color-cyan); border-color: rgba(0, 255, 255, 0.3); }
+        
+        .expansion-desc { font-size: 14px; color: rgba(255, 255, 255, 0.5); line-height: 1.6; }
+
+        /* Animated Icon Containers */
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            min-height: 50px;
+            width: 50px; 
+            margin-left: auto;
+            margin-right: auto;
+            overflow: visible;
+        }
+
+        .card-icon animated-icons { display: block; margin: 0 auto; }
+
+        @media (max-width: 768px) {
+            .section { padding: 2.5rem 0 !important; }
+            .expansion-grid-spec { grid-template-columns: 1fr; gap: 24px; }
+            .specs-content { padding: 1rem 1.5rem; }
+            .industry-card { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb"></div>
+
+    <nav class="nav" id="navbar">
+        <a href="index.html" class="logo"><div class="logo-icon">S</div>STORMPMC</a>
+        <div class="nav-center">
+            <a href="product-mtrac.html" class="nav-link active">MTRAC</a>
+        </div>
+        <div class="nav-right">
+            <a href="contact.html" class="nav-btn">Contact Sales</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <nav class="mobile-nav">
+            <a href="product-mtrac.html" class="mobile-nav-link active">MTRAC</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </nav>
+        <div class="mobile-nav-footer"><a href="contact.html" class="btn btn-primary" style="width: 100%;">Contact Sales</a></div>
+    </div>
+
+    <!-- Product Hero -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="product-hero-grid">
+                <div class="product-image">
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/MTRAC_3Q_F_W.webp?raw=true" alt="MTRAC Asset Tracker Optimized View">
+                </div>
+                <div class="product-info">
+                    <span class="section-label badge-flagship">flagship system</span>
+                    <h1 class="product-title">MTRAC</h1>
+                    <p class="product-tagline">Military-grade asset tracking built for decades of service in extreme environments.</p>
+                    <p class="product-description">The MTRAC is our flagship ruggedized asset tracker, engineered to withstand the harshest conditions on Earth. With a 10+ year battery life, global satellite connectivity, and full MIL-STD-810H certification, it's the definitive solution for tracking high-value assets in demanding operational theaters.</p>
+                    <div class="product-cta">
+                        <a href="contact.html" class="btn btn-primary">Request Quote</a>
+                        <a href="contact.html" class="btn btn-secondary">Request Demo</a>
+                    </div>
+                    <div class="product-highlights">
+                        <div class="highlight-item"><div class="highlight-value">10+ Years</div><div class="highlight-label">Battery Life</div></div>
+                        <div class="highlight-item"><div class="highlight-value">IP69K</div><div class="highlight-label">Sealed Rating</div></div>
+                        <div class="highlight-item"><div class="highlight-value">MIL-STD</div><div class="highlight-label">810H Certified</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="section" style="background: var(--color-bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Capabilities</span>
+                <h2 class="section-title">Engineered for the Impossible</h2>
+                <p class="section-subtitle">Every component of the MTRAC is designed to exceed expectations in the most demanding scenarios.</p>
+            </div>
+            <div class="features-grid">
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Freeze&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Extreme Temperature</h3>
+                    <p class="card-text" style="text-align: center;">Operates reliably from -40°C to +85°C, covering everything from arctic operations to desert deployments.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Security&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Shock & Vibration</h3>
+                    <p class="card-text" style="text-align: center;">MIL-STD-810H tested for shock, drop, and continuous vibration. Built to survive rough handling.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=location&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Multi-Mode GPS</h3>
+                    <p class="card-text" style="text-align: center;">High-sensitivity GPS with GLONASS, Galileo, and BeiDou support for global positioning accuracy.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Wireless&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Satellite Connectivity</h3>
+                    <p class="card-text" style="text-align: center;">Global satellite network ensures connectivity anywhere on Earth—no cellular coverage required.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Multi%20Cluster&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Mesh Networking</h3>
+                    <p class="card-text" style="text-align: center;">Communicate with other MTRAC units and Storm Gateways via encrypted mesh network.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Sensor&style=minimalistic&token=66ff3706-138c-41fa-a993-dee03566e48c" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Tamper Detection</h3>
+                    <p class="card-text" style="text-align: center;">Built-in accelerometer and tamper alerts notify you immediately of unauthorized movement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industry Grid Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Field Deployment</span>
+                <h2 class="section-title">Industry Solutions</h2>
+                <p class="section-subtitle">Storm hardware is purpose-built to survive environments where traditional electronics fail.</p>
+            </div>
+            <div class="industry-grid">
+                <!-- Defense & Military -->
+                <div class="industry-card card-defense">
+                    <div class="industry-info">
+                        <span class="industry-label">Defense & Military</span>
+                        <h3 class="industry-title">Mission-Critical Logistics</h3>
+                        <p class="industry-desc">Track high-value equipment, vehicles, containers, and supplies across global operations in contested environments.</p>
+                    </div>
+                    <div id="gallery-defense" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Energy & Utilities -->
+                <div class="industry-card card-energy">
+                    <div class="industry-info">
+                        <span class="industry-label">Energy & Utilities</span>
+                        <h3 class="industry-title">Remote Infrastructure</h3>
+                        <p class="industry-desc">Monitor equipment across pipelines and remote pump stations where site visits are expensive and infrequent.</p>
+                    </div>
+                    <div id="gallery-energy" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heavy Equipment -->
+                <div class="industry-card card-heavy">
+                    <div class="industry-info">
+                        <span class="industry-label">Heavy Equipment</span>
+                        <h3 class="industry-title">Built for the Job Site</h3>
+                        <p class="industry-desc">Track construction and mining equipment in harsh conditions that destroy consumer-grade trackers.</p>
+                    </div>
+                    <div id="gallery-construction" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistics & Supply Chain -->
+                <div class="industry-card card-logistics">
+                    <div class="industry-info">
+                        <span class="industry-label">Logistics & Supply Chain</span>
+                        <h3 class="industry-title">End-to-End Visibility</h3>
+                        <p class="industry-desc">Track containers and high-value shipments across global supply chains with integrated tamper detection.</p>
+                    </div>
+                    <div id="gallery-logistics" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specifications -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header" style="text-align: center;">
+                <span class="section-label">Technical Data</span>
+                <h2 class="section-title">Technical Specifications</h2>
+                <p class="section-subtitle">Detailed performance metrics and environmental ratings.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group" open>
+                    <summary>Physical & Environmental<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Environmental Ratings</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Ingress Protection <span>IP69K</span></h3><p class="expansion-desc">Rating for protection against high-pressure steam jet cleaning and submersion.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Operating Temp <span>-40°C to +85°C</span></h3><p class="expansion-desc">Operational reliability across a thermal range of -40°C to +85°C.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Military Standard <span>MIL-STD-810H</span></h3><p class="expansion-desc">Certified to meet MIL-STD-810H standards for ruggedized performance.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Dimensions <span>TBD</span></h3><p class="expansion-desc">Physical footprint and dimensions currently to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Enclosure Material <span>TBD</span></h3><p class="expansion-desc">Outer casing material specifications to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Storage Temperature <span>TBD</span></h3><p class="expansion-desc">Safe storage temperature thresholds to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Weight <span>TBD</span></h3><p class="expansion-desc">Final weight of the unit to be determined.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group">
+                    <summary>Connectivity & GNSS<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Signal & Positioning</span>
+                        <div class="expansion-item"><h3 class="expansion-name">GNSS Support <span>GPS, GLONASS, Galileo, BeiDou</span></h3><p class="expansion-desc">Comprehensive support for major global navigation satellite systems.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Connectivity <span>Satellite, LTE-M, Mesh</span></h3><p class="expansion-desc">Multi-mode data transmission via Satellite, LTE-M, and local Mesh Network.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Encryption <span>AES-256</span></h3><p class="expansion-desc">Secured with AES-256 hardware-level encryption.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">GPS Sensitivity <span>TBD</span></h3><p class="expansion-desc">Signal acquisition and tracking sensitivity to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Position Accuracy <span>TBD</span></h3><p class="expansion-desc">Horizontal and vertical positioning accuracy to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Mesh Range <span>TBD</span></h3><p class="expansion-desc">Maximum distance for local mesh node communication to be determined.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group">
+                    <summary>Power & Intelligence<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">System Intelligence</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Battery Life <span>10+ Years</span></h3><p class="expansion-desc">Lifespan of 10+ years under typical use conditions.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Sensors <span>Accelerometer, Temp, Tamper</span></h3><p class="expansion-desc">Integrated 3-axis accelerometer, temperature probe, and chassis tamper detection.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Mounting <span>Bolt-on, Magnetic, Adhesive</span></h3><p class="expansion-desc">Compatible with Bolt-on, Magnetic, and Adhesive mounting solutions.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Battery Type <span>TBD</span></h3><p class="expansion-desc">Specific battery chemistry and configuration to be determined.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Certifications <span>TBD</span></h3><p class="expansion-desc">Compliance and industry certifications to be determined.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Works With Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Ecosystem</span>
+                <h2 class="section-title">Works With</h2>
+                <p class="section-subtitle">Expand your tracking capabilities with compatible hardware and future-ready solutions.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group" open>
+                    <summary>Asset Trackers<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header green">Tracking Devices</span>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3><p class="expansion-desc">Our flagship ruggedized tracker with 10-year battery and global satellite connectivity.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC Lite <span class="badge-cyan">Coming Soon</span></h3><p class="expansion-desc">Compact tracker for smaller assets and equipment. Same rugged DNA.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC Container <span class="badge-green">Coming Soon</span></h3><p class="expansion-desc">Specialized tracker for shipping containers with door sensors and tamper detection.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group">
+                    <summary>Gateways<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header magenta">Network Infrastructure</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Storm Gateway <span class="badge-magenta">Coming Soon</span></h3><p class="expansion-desc">Long-range mesh gateway for remote deployments. Creates robust network coverage.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Gateway Mobile <span class="badge-magenta">Coming Soon</span></h3><p class="expansion-desc">Vehicle-mounted gateway for mobile command posts and convoy operations.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Gateway Solar <span class="badge-magenta">Coming Soon</span></h3><p class="expansion-desc">Self-powered gateway with integrated solar panel for off-grid installations.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group">
+                    <summary>Accessories<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header white">Integration & Power</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Power Pack <span>Coming Soon</span></h3><p class="expansion-desc">Extended battery module for multi-year deployments.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Universal Mount <span>Coming Soon</span></h3><p class="expansion-desc">Heavy-duty mounting solutions for any surface. Bolt-on and magnetic options.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group">
+                    <summary>StormCloud Platform<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header white">Software & Analytics</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Real-Time Dashboard</h3><p class="expansion-desc">Unified view of all assets with live location updates and customizable alerts.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">API Integration</h3><p class="expansion-desc">RESTful API for seamless integration with existing logistics and ERP systems.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Deploy MTRAC?</h2>
+                <p class="cta-text">Contact our team to discuss your requirements, request pricing, or schedule a demonstration.</p>
+                <div class="cta-buttons">
+                    <a href="contact.html" class="btn btn-primary">Request Quote</a>
+                    <a href="products.html" class="btn btn-secondary">View All Products</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">S</div>
+                        STORMPMC
+                    </a>
+                    <p>Military-grade asset tracking solutions engineered for the world's most demanding environments.</p>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="product-mtrac.html">MTRAC Tracker</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Sales</a></li>
+                        <li><a href="mailto:support@stormpmc.com">Technical Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2026 StormPMC. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global Navbar & Menu Logic
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => { if (window.scrollY > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled'); });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        function openMobileMenu() { mobileMenu.classList.add('active'); mobileMenuBtn.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeMobileMenu() { mobileMenu.classList.remove('active'); mobileMenuBtn.classList.remove('active'); document.body.style.overflow = ''; }
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+
+        // Industry Gallery Class (YOUR EXACT LOGIC)
+        class GalleryModule {
+            constructor(elementId, slideData) {
+                this.container = document.getElementById(elementId);
+                this.slideData = slideData;
+                this.activeIdx = 0;
+                this.isAnimating = false;
+                this.interval = 5000 + (Math.random() * 2000); 
+                this.typewriterTimeout = null;
+                if (this.container) this.init();
+            }
+            init() {
+                this.slideData.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `gallery-slide ${index === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${item.img}')`;
+                    slide.dataset.index = index;
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = "position:absolute; inset:0; background: rgba(0,0,0,0.1);";
+                    slide.appendChild(overlay);
+                    this.container.prepend(slide);
+                    const dot = document.createElement('div');
+                    dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
+                    this.container.querySelector('.gallery-progress').appendChild(dot);
+                });
+                const textEl = this.container.querySelector('.gallery-app-text');
+                if (textEl) textEl.textContent = this.slideData[0].text;
+                setInterval(() => this.nextSlide(), this.interval);
+            }
+            nextSlide() {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                this.activeIdx = (this.activeIdx + 1) % this.slideData.length;
+                const slides = this.container.querySelectorAll('.gallery-slide');
+                const dots = this.container.querySelectorAll('.gallery-dot');
+                const textEl = this.container.querySelector('.gallery-app-text');
+                slides.forEach(s => s.classList.remove('active'));
+                slides.forEach(s => { if(parseInt(s.dataset.index) === this.activeIdx) s.classList.add('active'); });
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === this.activeIdx));
+                if (textEl) this.runTypewriter(textEl, this.slideData[this.activeIdx].text);
+                setTimeout(() => { this.isAnimating = false; }, 1500);
+            }
+            runTypewriter(element, targetText) {
+                if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
+                const currentText = element.textContent;
+                let i = currentText.length;
+                const del = () => {
+                    if (i > 0) {
+                        element.textContent = currentText.substring(0, i - 1);
+                        i--;
+                        this.typewriterTimeout = setTimeout(del, 30);
+                    } else {
+                        let j = 0;
+                        const type = () => {
+                            if (j < targetText.length) {
+                                element.textContent = targetText.substring(0, j + 1);
+                                j++;
+                                this.typewriterTimeout = setTimeout(type, 50);
+                            }
+                        };
+                        this.typewriterTimeout = setTimeout(type, 100);
+                    }
+                };
+                del();
+            }
+        }
+
+        const industryData = {
+            defense: [
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%204.png?raw=true", text: "Vehicle Tracking" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera.png?raw=true", text: "Supply Chain Visibility" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_detail-Camera%203.png?raw=true", text: "Asset Accountability" }
+            ],
+            energy: [
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera%202.png?raw=true", text: "Pipeline Monitoring" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera%203.png?raw=true", text: "Remote Pump Stations" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true", text: "Infrastructure Safety" }
+            ],
+            construction: [
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true", text: "Earthmovers & Excavators" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%204.png?raw=true", text: "Heavy Tool Tracking" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera.png?raw=true", text: "Active Job Sites" }
+            ],
+            logistics: [
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Logistics-Camera%202.png?raw=true", text: "Container Tracking" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Logistics-Camera%204.png?raw=true", text: "High-Value Cargo" },
+                { img: "https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Logistics-Camera.png?raw=true", text: "Global Asset Hub" }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new GalleryModule('gallery-defense', industryData.defense);
+            new GalleryModule('gallery-energy', industryData.energy);
+            new GalleryModule('gallery-construction', industryData.construction);
+            new GalleryModule('gallery-logistics', industryData.logistics);
+        });
+    </script>
+</body>
+</html>
