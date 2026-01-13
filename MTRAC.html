@@ -25,7 +25,7 @@
             --color-text-tertiary: rgba(255, 255, 255, 0.4);
             --color-text-muted: rgba(255, 255, 255, 0.3);
             
-            /* Industry & Badge Accents */
+            /* Industry Accents */
             --accent-defense: #4ade80;
             --accent-energy: #a78bfa;
             --accent-heavy: #fb923c;
@@ -45,7 +45,7 @@
             position: relative;
         }
 
-        /* Standardized Section Padding */
+        /* Standardized Section Padding - Tighter Gaps */
         .section {
             padding: 3.5rem 0 !important;
         }
@@ -60,7 +60,7 @@
             padding: 6px 12px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px; /* Homogenized rectangular shape */
+            border-radius: 4px;
             font-size: 10px;
             font-weight: 600;
             letter-spacing: 2px;
@@ -113,7 +113,7 @@
             display: block;
         }
 
-        /* Industry Grid Module CSS */
+        /* Industry Grid Module CSS (YOUR EXACT CODE) */
         .industry-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -147,16 +147,15 @@
 
         .industry-info { flex: 1; }
 
-        /* Homogenized Industry Label Style */
         .industry-label {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--color-border);
-            border-radius: 4px; /* Rectangular shape to match rest of page */
+            border-radius: 4px; /* Homogenized rectangular shape */
             font-size: 10px;
             font-weight: 600;
-            letter-spacing: 2px; /* Standardized spacing */
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-bottom: 20px;
         }
@@ -240,7 +239,7 @@
             font-weight: 500;
             color: #fff;
             min-height: 20px;
-            white-space: pre;
+            white-space: pre; /* Essential for typewriter spaces */
         }
 
         .gallery-progress { display: flex; gap: 4px; margin-bottom: 4px; }
@@ -305,7 +304,7 @@
         }
 
         .expansion-header { 
-            font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; 
             border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; 
             grid-column: 1 / -1;
         }
@@ -700,18 +699,21 @@
         mobileMenuBtn.addEventListener('click', openMobileMenu);
         mobileMenuClose.addEventListener('click', closeMobileMenu);
 
-        // Industry Gallery Class (YOUR EXACT LOGIC)
+        // Industry Gallery Class
         class GalleryModule {
-            constructor(elementId, slideData) {
+            constructor(elementId, slideData, staggerDelay = 0) {
                 this.container = document.getElementById(elementId);
                 this.slideData = slideData;
                 this.activeIdx = 0;
                 this.isAnimating = false;
-                this.interval = 5000 + (Math.random() * 2000); 
+                this.interval = 8000; 
                 this.typewriterTimeout = null;
-                if (this.container) this.init();
+                if (this.container) {
+                    this.initStatic();
+                    setTimeout(() => this.startCycle(), staggerDelay);
+                }
             }
-            init() {
+            initStatic() {
                 this.slideData.forEach((item, index) => {
                     const slide = document.createElement('div');
                     slide.className = `gallery-slide ${index === 0 ? 'active' : ''}`;
@@ -721,13 +723,16 @@
                     overlay.style.cssText = "position:absolute; inset:0; background: rgba(0,0,0,0.1);";
                     slide.appendChild(overlay);
                     this.container.prepend(slide);
+
                     const dot = document.createElement('div');
                     dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
                     this.container.querySelector('.gallery-progress').appendChild(dot);
                 });
                 const textEl = this.container.querySelector('.gallery-app-text');
                 if (textEl) textEl.textContent = this.slideData[0].text;
-                setInterval(() => this.nextSlide(), this.interval);
+            }
+            startCycle() {
+                this.cycleInterval = setInterval(() => this.nextSlide(), this.interval);
             }
             nextSlide() {
                 if (this.isAnimating) return;
@@ -791,10 +796,10 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            new GalleryModule('gallery-defense', industryData.defense);
-            new GalleryModule('gallery-energy', industryData.energy);
-            new GalleryModule('gallery-construction', industryData.construction);
-            new GalleryModule('gallery-logistics', industryData.logistics);
+            new GalleryModule('gallery-defense', industryData.defense, 0);
+            new GalleryModule('gallery-energy', industryData.energy, 2000);
+            new GalleryModule('gallery-construction', industryData.construction, 4000);
+            new GalleryModule('gallery-logistics', industryData.logistics, 6000);
         });
     </script>
 </body>
