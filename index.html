@@ -13,7 +13,7 @@
     
     <style>
         /* ============================================
-           GLOBAL VARIABLES
+            GLOBAL VARIABLES
            ============================================ */
         :root {
             /* Site Palette */
@@ -42,6 +42,11 @@
             --transition-normal: 0.3s ease;
             --border-radius-lg: 16px; 
             --border-radius-xl: 20px;
+
+            /* Custom Cursor Variables */
+            --cursor-theme: #00E676;
+            --cursor-bg: rgba(20, 20, 20, 0.4);
+            --cursor-border: rgba(255, 255, 255, 0.9);
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,8 +54,8 @@
         html { 
             scroll-behavior: smooth; 
             height: 100%;
-            overflow-x: hidden; /* Critical to stop the "pulling apart" */
-            overscroll-behavior-x: none; /* Prevents swipe navigation/bounce on some mobile browsers */
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
         }
         
         body {
@@ -69,10 +74,79 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
 
         /* ============================================
-           HERO & PARALLAX STYLES
+            CUSTOM CERAMIC CURSOR STYLES
+           ============================================ */
+        #wikd-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 999999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none; /* Hidden by default, shown via JS */
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            #wikd-cursor { display: block; }
+            /* Hide system cursor ONLY in hero section */
+            .hero-section, .hero-section *, .nav, .nav * {
+                cursor: none !important;
+            }
+        }
+
+        .cursor-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--cursor-bg);
+            border: 2px solid var(--cursor-border);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        /* Central Dot */
+        .cursor-body::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--cursor-theme);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cursor-theme);
+        }
+
+        /* Pulsing Ring */
+        .cursor-body::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 1px solid var(--cursor-theme);
+            opacity: 0;
+            animation: cursor-pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes cursor-pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.0); opacity: 0; }
+        }
+
+        /* Interaction States */
+        #wikd-cursor.active .cursor-body {
+            border-color: var(--cursor-theme);
+            background: rgba(0, 230, 118, 0.1);
+        }
+
+        /* ============================================
+            HERO & PARALLAX STYLES
            ============================================ */
         
-        /* The gradient background that gives depth (Global Background) */
         .hero-bg-gradient {
             position: absolute;
             top: 0;
@@ -84,14 +158,13 @@
             pointer-events: none;
         }
 
-        /* The container for the fixed elements (Title, Glow) */
         .fixed-header-bg {
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100vh;
             z-index: 1; 
-            pointer-events: none; /* Allows clicks to pass through to scrolling content if needed */
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -133,15 +206,12 @@
             left: 0;
             will-change: transform, opacity;
             opacity: 1;
-            /* Default to showing, logic handled in JS/CSS */
         }
 
-        /* The container that actually scrolls */
         .scrolling-layer {
             position: relative;
             z-index: 10; 
             width: 100%;
-            /* This layer sits ON TOP of the fixed header conceptually */
         }
 
         .hero-section {
@@ -152,13 +222,12 @@
             flex-direction: column;
             justify-content: flex-end; 
             overflow: hidden;
-            background: transparent; /* Transparent so we see the fixed elements behind/around */
+            background: transparent;
         }
 
-        /* Internal Hero Gradient Blend */
         .hero-internal-blend {
              position: absolute;
-             inset: 0; /* Full cover */
+             inset: 0;
              width: 100%;
              height: 100%;
              background: linear-gradient(to bottom, transparent 0%, transparent 60%, #3D3D3D 100%);
@@ -166,7 +235,6 @@
              pointer-events: none;
         }
 
-        /* Grid sits nicely on top of background */
         .hero-grid-overlay {
             position: absolute;
             top: -50%; 
@@ -193,7 +261,6 @@
             will-change: transform;
             line-height: 0;
             pointer-events: none; 
-            /* Default desktop behavior */
             transform-origin: bottom center;
         }
 
@@ -205,7 +272,7 @@
         }
 
         /* ============================================
-           SITE COMPONENT STYLES
+            SITE COMPONENT STYLES
            ============================================ */
         
         .nav {
@@ -217,7 +284,6 @@
         .logo { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
         .logo-icon { width: 32px; height: 32px; border: 2px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-        /* Nav Buttons */
         .nav-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
         .nav-btn:hover { background: rgba(255,255,255,0.05); }
 
@@ -225,15 +291,14 @@
         .btn-primary { background: var(--color-text-primary); color: var(--color-bg-primary); }
         .btn-secondary { background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        /* SECTION PADDING REDUCED */
         .section { position: relative; z-index: 11; padding: 50px 0; pointer-events: auto; background: var(--color-bg-primary); }
-        .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; } /* Reduced margin */
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; } 
         .section-label { display: inline-block; padding: 8px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 30px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-accent); margin-bottom: 30px; }
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
 
         /* ============================================
-           STATS BAR (Responsive Logic)
+            STATS BAR
            ============================================ */
         .stats-bar { 
             background: var(--color-bg-tertiary); 
@@ -249,7 +314,7 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            padding: 30px 0; /* Reduced padding here too */
+            padding: 30px 0;
         }
 
         .stat-item { text-align: center; flex-shrink: 0; }
@@ -273,15 +338,12 @@
             white-space: nowrap;
         }
 
-        /* Hide the duplicate items on desktop (Preventing double stats) */
         @media (min-width: 1025px) {
-            .ticker-duplicate {
-                display: none;
-            }
+            .ticker-duplicate { display: none; }
         }
 
         /* ============================================
-           FEATURES, INDUSTRIES & CARDS
+            FEATURES, INDUSTRIES & CARDS
            ============================================ */
         .flagship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .flagship-image { 
@@ -299,7 +361,6 @@
         
         .industries-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
-        /* LIGHTING ENGINE GRID */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -330,8 +391,7 @@
 
         .card-visual {
             width: 100%; 
-            /* height: 180px; REMOVED FIXED HEIGHT */
-            aspect-ratio: 16/9; /* ADDED ASPECT RATIO */
+            aspect-ratio: 16/9; 
             border-top: 1px solid var(--color-border);
             position: relative;
             display: flex; align-items: center; justify-content: center;
@@ -339,7 +399,6 @@
             background: #050505;
         }
 
-        /* Lighting Effect (Desktop) */
         .card-visual::before {
             content: '';
             position: absolute; inset: 0; z-index: 2; pointer-events: none;
@@ -366,7 +425,6 @@
 
         .card:hover .card-visual img, .card.is-hovered .card-visual img { transform: scale(1.05); }
 
-        /* Full Bleed Industry Card */
         .industry-card {
             background: var(--color-bg-card); 
             border: 1px solid var(--color-border); 
@@ -392,11 +450,10 @@
             object-fit: cover; 
             object-position: top center; 
             display: block; 
-            filter: grayscale(100%); /* Default Greyscale */
+            filter: grayscale(100%); 
             transition: filter 0.5s ease;
         }
 
-        /* Restore color on hover or scroll-active state */
         .industry-card:hover .card-image img, 
         .industry-card.is-hovered .card-image img {
             filter: grayscale(0%);
@@ -418,12 +475,9 @@
         .collapsible-trigger .icon { font-size: 24px; transition: transform 0.3s ease; }
         .collapsible-trigger.active .icon { transform: rotate(45deg); }
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        /* Reduced padding for open state */
         .collapsible-content.open { max-height: 5000px; padding-bottom: 40px; }
 
-        /* Tightened Grid Gaps */
         .expansion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        /* Removed bottom margin on category to let grid handle it */
         .expansion-category { margin-bottom: 0; }
         
         .expansion-header { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent); margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; }
@@ -431,7 +485,6 @@
         .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
         .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
         
-        /* Tightened item spacing */
         .expansion-item { margin-bottom: 16px; }
         .expansion-name { font-family: var(--font-display); font-size: 16px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-muted); font-weight: 400; text-transform: uppercase; white-space: nowrap; }
@@ -451,7 +504,7 @@
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
         /* ============================================
-           MOBILE & RESPONSIVE REFACTOR (FIXED)
+            MOBILE & RESPONSIVE
            ============================================ */
         
         @media (max-width: 1024px) {
@@ -463,66 +516,52 @@
             .cta-content { margin-left: 0; max-width: 100%; }
             .cta-content div { justify-content: flex-start !important; }
 
-            /* 1. RESTORE FIXED HEADER ON MOBILE (The "Cool" factor) */
             .fixed-header-bg {
-                /* We keep it fixed, but ensure it doesn't break overflow */
                 position: fixed;
                 width: 100%;
                 left: 0; top: 0;
                 height: 100vh;
-                padding-top: 15vh; /* REDUCED to bring title closer to top */
-                pointer-events: none; /* KEY: Let clicks pass through to scroll */
+                padding-top: 15vh;
+                pointer-events: none;
                 z-index: 1;
             }
 
-            /* Adjust title size so it's not overwhelming on mobile */
             .hero-title-container { padding: 0 20px; align-items: center; }
             .hero-title-line { 
-                font-size: clamp(32px, 12vw, 50px); /* Slightly smaller than desktop max */
+                font-size: clamp(32px, 12vw, 50px);
                 text-align: center; 
                 width: 100%; 
-                white-space: normal; /* Allow wrapping if needed, but flex keeps it tight */
+                white-space: normal;
                 line-height: 0.95;
             }
 
             .hero-section {
-                /* Make hero section transparent so we see fixed bg */
                 background: transparent;
-                /* Height needs to be sufficient to scroll "over" the fixed title */
-                /* REDUCED FROM 80VH to 45VH to fix "too tall" feel */
                 min-height: 45vh; 
             }
             
-            /* 2. FIX THE "PULLING APART" / HORIZONTAL SCROLL */
             .product-image-container {
-                /* We remove the transform: scale(1.5) to stop overflow */
-                /* But we keep the image large enough to look good */
-                width: 100%; /* Changed back to 100% per your request to fix scaling */
+                width: 100%;
                 margin-left: 0; 
                 margin-top: 0;
                 transform: none !important; 
             }
             
-            /* Hide heavy effects to save performance, but keep the vibe */
             .hero-grid-overlay { opacity: 0.5; } 
             
-            /* MOBILE STATS TICKER (Kept this because it works well) */
             .stats-bar .container { padding: 0; max-width: none; }
             
             .stats-grid { 
                 display: flex; 
                 width: max-content; 
                 gap: 60px; 
-                padding: 12px 0; /* REDUCED PADDING SIGNIFICANTLY */
+                padding: 12px 0;
                 animation: ticker-scroll 40s linear infinite;
                 grid-template-columns: none;
             }
             
-            .stat-value {
-                font-size: 14px; /* SMALLER TEXT ON MOBILE */
-            }
+            .stat-value { font-size: 14px; }
 
-            /* Legitimacy Fades */
             .stats-bar::before, .stats-bar::after {
                 content: '';
                 position: absolute; top: 0; width: 40px; height: 100%;
@@ -531,12 +570,9 @@
             .stats-bar::before { left: 0; background: linear-gradient(to right, var(--color-bg-tertiary), transparent); }
             .stats-bar::after { right: 0; background: linear-gradient(to left, var(--color-bg-tertiary), transparent); }
 
-            /* REDUCE PADDING IN EXPANSION AREA ON MOBILE - EVEN MORE */
             .expansion-grid { gap: 16px; }
-            .expansion-category { margin-bottom: 0; }
             .collapsible-content.open { padding-bottom: 24px; }
 
-            /* MOBILE TEXT SWAPS FOR TICKER */
             .stat-label { display: none; }
             .stat-value .desktop-text { display: none; }
             .stat-value .mobile-text { display: inline; }
@@ -550,24 +586,21 @@
         @media (max-width: 768px) {
             .container { padding: 0 24px; }
             .nav { padding: 15px 24px; }
-            .section { padding: 30px 0; } /* TIGHTER MOBILE PADDING */
+            .section { padding: 30px 0; }
             .flagship-image { height: 300px; }
             .footer-bottom { flex-direction: column; gap: 15px; align-items: flex-start; }
-            
-            /* Button Optimization (Still used for other buttons) */
-            .hero-btn { flex: 1; padding: 14px 20px; font-size: 11px; text-align: center; }
-            
             .features-grid { grid-template-columns: 1fr; }
-            
-            /* STATIC LIGHTING FALLBACK for Touch (Overridden by Scroll Logic now) */
-            /* We want scroll to trigger hover state, so we reduce the default override */
-            /* The JS will add .is-hovered which uses same styles as desktop hover */
         }
     </style>
 </head>
 <body>
 
-    <!-- RESTORED: Background Gradient -->
+    <!-- CUSTOM CERAMIC CURSOR -->
+    <div id="wikd-cursor">
+        <div class="cursor-body"></div>
+    </div>
+
+    <!-- Background Gradient -->
     <div class="hero-bg-gradient"></div>
 
     <!-- Navigation -->
@@ -581,9 +614,9 @@
         </div>
     </nav>
 
-    <!-- Header Content (FIXED on Desktop AND Mobile now) -->
+    <!-- Header Content -->
     <div class="fixed-header-bg" id="parallaxTitle">
-        <!-- Mouse Glow (Now wanders automatically when idle) -->
+        <!-- Mouse Glow -->
         <div class="glow-orb" id="mouseGlow"></div>
 
         <h1 class="hero-title-container">
@@ -597,7 +630,7 @@
         
         <!-- Hero Image Section -->
         <section class="hero-section" id="hero">
-            <!-- Anchor Gradient to blend fixed background into scrolling content -->
+            <!-- Anchor Gradient -->
             <div class="hero-internal-blend"></div>
             
             <div class="hero-grid-overlay" id="parallaxGrid"></div>
@@ -610,7 +643,6 @@
         <!-- Technical Specs Bar -->
         <section class="stats-bar" id="stats">
             <div class="container">
-                <!-- We duplicate content for the infinite ticker effect on mobile -->
                 <div class="stats-grid">
                     <!-- Set 1 -->
                     <div class="stat-item">
@@ -633,7 +665,7 @@
                         <span class="stat-label">Certified</span>
                     </div>
 
-                    <!-- Set 2 (Visible only during scroll on mobile - Hidden on Desktop via class) -->
+                    <!-- Set 2 (Ticker Mobile) -->
                     <div class="stat-item ticker-duplicate">
                         <span class="stat-value">
                             <span class="desktop-text">10+ Years</span>
@@ -661,7 +693,7 @@
         <section class="section">
             <div class="container">
                 <div class="section-header" style="max-width: 800px;">
-                    <span class="section-label" style="color: var(--color-accent);">Our Mission</span>
+                    <span class="section-label">Our Mission</span>
                     <h2 class="section-title">Visibility Without Compromise</h2>
                     <p class="section-subtitle" style="font-size: 18px; color: var(--color-text-primary); opacity: 0.9;">
                         StormPMC delivers reliable asset awareness in extreme and denied environments. Designed and built by veterans with firsthand operational experience, our products meet military standards because real-world missions demand nothing less.
@@ -675,10 +707,10 @@
             <div class="container">
                 <div class="flagship-grid">
                     <div class="flagship-image">
-                        <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/In%20Case-Camera%203.png?raw=true" alt="MTRAC Asset Tracker Primary Visual" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                        <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/In%20Case-Camera%203.png?raw=true" alt="MTRAC Asset Tracker Primary Visual">
                     </div>
                     <div class="flagship-content">
-                        <span class="section-label" style="color: var(--color-accent);">Flagship System</span>
+                        <span class="section-label">Flagship System</span>
                         <h1 class="section-title">MTRAC Asset Tracker</h1>
                         <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker engineered for long-duration operations in austere and contested environments. MTRAC delivers decade-long battery life, resilient communications, and full MIL-STD-810H certification.</p>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap;">
@@ -694,91 +726,68 @@
                         <span class="trigger-text" data-mobile-text="Ecosystem & Future">View Ecosystem Expansion & Future Products</span>
                         <span class="icon">+</span>
                     </button>
-                    <!-- Updated Content Block with reduced padding and full list -->
                     <div class="collapsible-content" id="expandContent">
                         <div style="margin-bottom: 24px; color: var(--color-text-tertiary); font-size: 14px; border-bottom: 1px solid var(--color-border); padding-bottom: 16px;">
                             A complete ecosystem of ruggedized tracking hardware designed to work together in the world's most demanding environments.
                         </div>
                         <div class="expansion-grid">
-                            
-                            <!-- ASSET TRACKERS -->
                             <div class="expansion-category">
                                 <span class="expansion-header green">Asset Trackers</span>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3>
                                     <p class="expansion-desc">Our flagship ruggedized tracker with 10-year battery, global satellite connectivity, and full MIL-STD-810H certification.</p>
                                 </div>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">MTRAC Lite <span class="badge-green">Coming Soon</span></h3>
                                     <p class="expansion-desc">Compact tracker for smaller assets and equipment. Same rugged DNA in a lighter form factor.</p>
                                 </div>
-
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">MTRAC Container <span class="badge-green">Coming Soon</span></h3>
                                     <p class="expansion-desc">Specialized tracker for shipping containers with door sensors and tamper detection.</p>
                                 </div>
                             </div>
 
-                            <!-- GATEWAYS -->
                             <div class="expansion-category">
                                 <span class="expansion-header magenta">Gateways</span>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Storm Gateway <span class="badge-magenta">Coming Soon</span></h3>
                                     <p class="expansion-desc">Long-range mesh gateway for remote deployments. Creates robust network coverage in challenging terrain.</p>
                                 </div>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Gateway Mobile <span class="badge-magenta">Coming Soon</span></h3>
                                     <p class="expansion-desc">Vehicle-mounted gateway for mobile command posts and convoy operations.</p>
                                 </div>
-
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Gateway Solar <span class="badge-magenta">Coming Soon</span></h3>
                                     <p class="expansion-desc">Self-powered gateway with integrated solar panel for off-grid installations.</p>
                                 </div>
                             </div>
                             
-                            <!-- ACCESSORIES -->
                             <div class="expansion-category">
                                 <span class="expansion-header white">Accessories</span>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Power Pack <span class="badge-white">Coming Soon</span></h3>
                                     <p class="expansion-desc">Extended battery module for multi-year deployments where replacement isn't an option.</p>
                                 </div>
-
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Universal Mount <span class="badge-white">Coming Soon</span></h3>
                                     <p class="expansion-desc">Heavy-duty mounting solutions for any surface. Includes bolt-on and magnetic options.</p>
                                 </div>
-
-                                <div class="expansion-item">
-                                    <h3 class="expansion-name">Wiring Harness <span class="badge-white">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Vehicle integration harness for powered installations with CAN bus support.</p>
-                                </div>
                             </div>
-                            
-                            <!-- PLATFORM -->
+
                             <div class="expansion-category">
                                 <span class="expansion-header white">StormCloud Platform</span>
-                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Real-Time Dashboard</h3>
                                     <p class="expansion-desc">Unified view of all assets with live location updates, status monitoring, and customizable alerts.</p>
                                 </div>
-
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">API Integration</h3>
                                     <p class="expansion-desc">RESTful API for seamless integration with existing logistics, ERP, and asset management systems.</p>
                                 </div>
                             </div>
-
                         </div>
 
-                        <!-- BOTTOM COLLAPSE BUTTON -->
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--color-border);">
                             <button id="collapseBtnBottom" style="background: none; border: none; color: var(--color-text-tertiary); font-family: var(--font-display); font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; padding: 10px; transition: color 0.3s ease;">
                                 ↑ Collapse Section
@@ -790,7 +799,7 @@
         </section>
 
         <!-- FEATURES SECTION -->
-        <section class="section" style="background: var(--color-bg-primary);">
+        <section class="section">
             <div class="container">
                 <div class="section-header">
                     <span class="section-label">System Capabilities</span>
@@ -799,7 +808,6 @@
                 </div>
                 
                 <div class="features-grid">
-                    <!-- Card 1 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -812,7 +820,6 @@
                         </div>
                     </div>
                     
-                    <!-- Card 2 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -825,7 +832,6 @@
                         </div>
                     </div>
                     
-                    <!-- Card 3 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -838,7 +844,6 @@
                         </div>
                     </div>
                     
-                    <!-- Card 4 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -851,7 +856,6 @@
                         </div>
                     </div>
                     
-                    <!-- Card 5 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -864,7 +868,6 @@
                         </div>
                     </div>
                     
-                    <!-- Card 6 -->
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
@@ -889,10 +892,9 @@
                 </div>
                 
                 <div class="industries-grid">
-                    <!-- Defense & Military -->
                     <div class="industry-card">
                         <div class="card-image">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector">
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">Defense & Military</h3>
@@ -900,10 +902,9 @@
                             <a href="#" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <!-- Energy & Utilities -->
                     <div class="industry-card">
                         <div class="card-image">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector">
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">Energy & Utilities</h3>
@@ -911,10 +912,9 @@
                             <a href="#" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <!-- Heavy Equipment -->
                     <div class="industry-card">
                         <div class="card-image">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector" onerror="this.parentElement.innerHTML='IMAGE_UNAVAILABLE'">
+                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector">
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">Heavy Equipment</h3>
@@ -954,25 +954,82 @@
 
     <script>
         // -----------------------------------------------------------------
-        // MOBILE TEXT SWAPPING (Small & Efficient)
+        // CUSTOM CERAMIC CURSOR LOGIC
+        // -----------------------------------------------------------------
+        const cursor = document.getElementById('wikd-cursor');
+        const heroSection = document.getElementById('hero');
+        const navBar = document.querySelector('.nav');
+        
+        let mouseX = 0, mouseY = 0;
+        let posX = 0, posY = 0;
+        let isCursorActive = false;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Visibility Logic: Only show when hovering the hero or the nav
+            // (The fixed header area is visually part of the landing hero)
+            const isOverHeroArea = e.target.closest('#hero') || 
+                                   e.target.closest('#parallaxTitle') || 
+                                   e.target.closest('.nav');
+            
+            if (isOverHeroArea && window.innerWidth > 1024) {
+                cursor.style.opacity = "1";
+            } else {
+                cursor.style.opacity = "0";
+            }
+        });
+
+        // Smooth movement loop
+        function updateCursorPosition() {
+            const ease = 0.15; 
+            
+            posX += (mouseX - posX) * ease;
+            posY += (mouseY - posY) * ease;
+            
+            const activeScale = cursor.classList.contains('active') ? 1.4 : 1;
+            cursor.style.transform = `translate3d(${posX - 12}px, ${posY - 12}px, 0) scale(${activeScale})`;
+            
+            requestAnimationFrame(updateCursorPosition);
+        }
+        updateCursorPosition();
+
+        // Hover Effects (Active State)
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('a') || e.target.closest('button')) {
+                cursor.classList.add('active');
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest('a') || e.target.closest('button')) {
+                cursor.classList.remove('active');
+            }
+        });
+
+        // Click visual feedback
+        document.addEventListener('mousedown', () => {
+            if (cursor.style.opacity === "1") {
+                cursor.style.transform += ' scale(0.8)';
+            }
+        });
+
+        // -----------------------------------------------------------------
+        // MOBILE TEXT SWAPPING
         // -----------------------------------------------------------------
         const swapText = () => {
             const isMobile = window.innerWidth <= 768;
             document.querySelectorAll('[data-mobile-text]').forEach(el => {
-                // Store original text if not already stored
                 if (!el.dataset.desktopText) el.dataset.desktopText = el.innerText;
-                
-                // Swap
                 el.innerText = isMobile ? el.dataset.mobileText : el.dataset.desktopText;
             });
         };
-        
-        // Run on load and resize
         swapText();
         window.addEventListener('resize', swapText);
 
         // -----------------------------------------------------------------
-        // COLLAPSIBLE LOGIC (Updated to support bottom button)
+        // COLLAPSIBLE LOGIC
         // -----------------------------------------------------------------
         const expandBtn = document.getElementById('expandBtn');
         const expandContent = document.getElementById('expandContent');
@@ -984,57 +1041,43 @@
             expandBtn.querySelector('.icon').textContent = expandContent.classList.contains('open') ? '×' : '+';
         }
 
-        if (expandBtn) {
-            expandBtn.addEventListener('click', toggleExpansion);
-        }
-
+        if (expandBtn) expandBtn.addEventListener('click', toggleExpansion);
         if (collapseBtnBottom) {
             collapseBtnBottom.addEventListener('click', () => {
-                // Close the section
                 if (expandContent.classList.contains('open')) {
                     toggleExpansion();
-                    
-                    // Smoothly scroll back to the top of the accordion anchor
-                    // Subtract a bit of offset so the header isn't hidden
                     const offset = 100; 
                     const bodyRect = document.body.getBoundingClientRect().top;
                     const elementRect = expandBtn.getBoundingClientRect().top;
-                    const elementPosition = elementRect - bodyRect;
-                    const offsetPosition = elementPosition - offset;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
+                    const offsetPosition = (elementRect - bodyRect) - offset;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                 }
             });
         }
 
         // -----------------------------------------------------------------
-        // DESKTOP PARALLAX & FADE LOGIC + ORB IDLE ANIMATION
+        // DESKTOP PARALLAX & ORB IDLE ANIMATION
         // -----------------------------------------------------------------
         const grid = document.getElementById('parallaxGrid');
         const orb = document.getElementById('mouseGlow');
         const title = document.getElementById('parallaxTitle');
-        const stats = document.getElementById('stats'); 
 
-        let targetX = window.innerWidth / 2;
-        let targetY = window.innerHeight / 2;
-        let currentX = targetX;
-        let currentY = targetY;
+        let targetOrbX = window.innerWidth / 2;
+        let targetOrbY = window.innerHeight / 2;
+        let currentOrbX = targetOrbX;
+        let currentOrbY = targetOrbY;
         
         let targetScroll = 0;
         let currentScroll = 0;
         const lerpAmount = 0.07; 
 
-        // Orb Logic
         let lastMouseMoveTime = 0;
-        const idleDelay = 1000; // 1 second to start wandering
+        const idleDelay = 1000;
         const isTouch = window.matchMedia('(hover: none)').matches;
 
         window.addEventListener('mousemove', (e) => {
-            targetX = e.clientX;
-            targetY = e.clientY;
+            targetOrbX = e.clientX;
+            targetOrbY = e.clientY;
             lastMouseMoveTime = Date.now();
         });
 
@@ -1044,98 +1087,64 @@
 
         function animate() {
             const now = Date.now();
-            const time = now * 0.001; // Current time in seconds
-            const isIdle = (now - lastMouseMoveTime > idleDelay) || isTouch; // Idle or on Mobile
+            const time = now * 0.001;
+            const isIdle = (now - lastMouseMoveTime > idleDelay) || isTouch;
 
             if (isIdle) {
-                // Wandering logic: Sine waves for smooth random-looking movement
-                // We use different frequencies for X and Y to avoid simple circles
                 const centerX = window.innerWidth / 2;
                 const centerY = window.innerHeight / 2;
-                const rangeX = window.innerWidth * 0.3; // Wander 30% of screen width
-                const rangeY = window.innerHeight * 0.2; // Wander 20% of screen height
-                
-                targetX = centerX + Math.sin(time * 0.5) * rangeX;
-                targetY = centerY + Math.cos(time * 0.35) * rangeY;
+                const rangeX = window.innerWidth * 0.3;
+                const rangeY = window.innerHeight * 0.2;
+                targetOrbX = centerX + Math.sin(time * 0.5) * rangeX;
+                targetOrbY = centerY + Math.cos(time * 0.35) * rangeY;
             }
 
-            // Standard LERP for smooth movement
-            currentX += (targetX - currentX) * lerpAmount;
-            currentY += (targetY - currentY) * lerpAmount;
+            currentOrbX += (targetOrbX - currentOrbX) * lerpAmount;
+            currentOrbY += (targetOrbY - currentOrbY) * lerpAmount;
             currentScroll += (targetScroll - currentScroll) * lerpAmount;
             
-            // Orb movement (Now always active, wandering or following)
-            if (orb) orb.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
-            
-            // Grid parallax (Only relevant on desktop mostly, but harmless on mobile)
+            if (orb) orb.style.transform = `translate3d(calc(${currentOrbX}px - 50%), calc(${currentOrbY}px - 50%), 0)`;
             if (grid && !isTouch) grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
-            
-            // Title parallax
             if (title && !isTouch) title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
 
-            // Fade Logic for Header
             if (window.innerWidth > 1024) {
                  const fadeDistance = 600; 
                  const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
                  if (title) title.style.opacity = opacity;
-                 if (orb) orb.style.opacity = opacity; // Fade orb on scroll on desktop
+                 if (orb) orb.style.opacity = opacity;
             } else {
-                 // On mobile, keep orb visible but maybe fade slightly if deep in page?
-                 // For now, let's keep it visible to provide the "something happening" effect requested
-                 if (orb) orb.style.opacity = 0.6; // Slightly dimmer on mobile
-                 
-                 // FIX: Ensure title is visible on mobile if we switch or scroll up
+                 if (orb) orb.style.opacity = 0.6;
                  if (title) title.style.opacity = 1; 
             }
 
             requestAnimationFrame(animate);
         }
-        
-        // Start animation loop
         animate();
 
-        // ----------------------------------------------------
-        // MOUSE TRACKING FOR CARDS (Desktop Only)
-        // ----------------------------------------------------
+        // Lighting Engine (Cards)
         if (!isTouch) {
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
                 const visual = card.querySelector('.card-visual');
                 if (!visual) return;
-
                 card.addEventListener('mousemove', (e) => {
                     const rect = visual.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    visual.style.setProperty('--mouse-x', `${x}px`);
-                    visual.style.setProperty('--mouse-y', `${y}px`);
+                    visual.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                    visual.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
                 });
             });
         }
 
-        // -----------------------------------------------------------------
-        // SCROLL TRIGGER FOR HOVER STATES (Mobile/Touch)
-        // -----------------------------------------------------------------
-        // This makes cards "light up" (simulate hover) when they are in the center of the viewport
+        // Scroll Intersection (Touch Hover Fallback)
         if (isTouch || window.innerWidth <= 1024) {
-            const observerOptions = {
-                root: null,
-                rootMargin: '-15% 0px -15% 0px', // Relaxed margin to trigger earlier
-                threshold: 0.1
-            };
-
             const scrollObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-hovered');
-                    } else {
-                        entry.target.classList.remove('is-hovered');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add('is-hovered');
+                    else entry.target.classList.remove('is-hovered');
                 });
-            }, observerOptions);
+            }, { rootMargin: '-15% 0px -15% 0px', threshold: 0.1 });
 
-            const allCards = document.querySelectorAll('.card, .industry-card');
-            allCards.forEach(card => scrollObserver.observe(card));
+            document.querySelectorAll('.card, .industry-card').forEach(card => scrollObserver.observe(card));
         }
     </script>
 </body>
