@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="StormPMC - Military-grade asset tracking solutions built for extreme environments. Ruggedized GPS trackers, gateways, and accessories.">
     <title>StormPMC | Total Asset Awareness</title>
     
@@ -49,6 +49,8 @@
         html { 
             scroll-behavior: smooth; 
             height: 100%;
+            overflow-x: hidden; /* Critical to stop the "pulling apart" */
+            overscroll-behavior-x: none; /* Prevents swipe navigation/bounce on some mobile browsers */
         }
         
         body {
@@ -59,6 +61,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            position: relative;
         }
 
         a { text-decoration: none; color: inherit; transition: var(--transition-normal); }
@@ -69,7 +72,8 @@
            HERO & PARALLAX STYLES
            ============================================ */
         
-        .hero-gradient-anchor {
+        /* The gradient background that gives depth (Global Background) */
+        .hero-bg-gradient {
             position: absolute;
             top: 0;
             left: 0;
@@ -80,18 +84,19 @@
             pointer-events: none;
         }
 
+        /* The container for the fixed elements (Title, Glow) */
         .fixed-header-bg {
             position: fixed;
             inset: 0;
             width: 100%;
-            height: 100dvh;
+            height: 100vh;
             z-index: 1; 
-            pointer-events: none; 
+            pointer-events: none; /* Allows clicks to pass through to scrolling content if needed */
             display: flex;
             flex-direction: column;
             align-items: center;
             padding-top: 18vh; 
-            will-change: transform;
+            will-change: transform, opacity;
         }
 
         .hero-title-container {
@@ -116,71 +121,27 @@
                 0 0 60px rgba(255, 255, 255, 0.05);
         }
 
-        .hero-ctas {
-            margin-top: 40px;
-            display: flex;
-            gap: 16px;
-            pointer-events: auto; 
-            position: relative;
-            z-index: 5;
-        }
-
-        .hero-btn {
-            font-family: var(--font-body);
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 18px 36px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), background 0.3s ease;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .hero-btn-primary {
-            background: var(--hero-text);
-            color: var(--hero-bg); 
-        }
-
-        .hero-btn-primary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .hero-btn-secondary {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--hero-text);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-btn-secondary:hover {
-            border-color: var(--hero-text);
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-
         .glow-orb {
             position: fixed;
             width: 50vmax; 
             height: 50vmax;
             background: radial-gradient(circle, var(--hero-accent-glow) 0%, transparent 70%);
-            z-index: 2; 
+            z-index: 0; 
             filter: blur(120px);
             pointer-events: none;
             top: 0;
             left: 0;
-            will-change: transform;
+            will-change: transform, opacity;
             opacity: 1;
+            /* Default to showing, logic handled in JS/CSS */
         }
 
+        /* The container that actually scrolls */
         .scrolling-layer {
             position: relative;
             z-index: 10; 
             width: 100%;
-            pointer-events: none; 
+            /* This layer sits ON TOP of the fixed header conceptually */
         }
 
         .hero-section {
@@ -190,21 +151,22 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end; 
-            background: transparent;
             overflow: hidden;
-            contain: paint;
+            background: transparent; /* Transparent so we see the fixed elements behind/around */
         }
 
-        .hero-gradient-anchor {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent 0%, transparent 60%, #3D3D3D 100%);
-            z-index: -1; 
-            pointer-events: none;
+        /* Internal Hero Gradient Blend */
+        .hero-internal-blend {
+             position: absolute;
+             inset: 0; /* Full cover */
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(to bottom, transparent 0%, transparent 60%, #3D3D3D 100%);
+             z-index: -1;
+             pointer-events: none;
         }
 
+        /* Grid sits nicely on top of background */
         .hero-grid-overlay {
             position: absolute;
             top: -50%; 
@@ -216,7 +178,7 @@
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 60px 60px;
             mask-image: radial-gradient(circle at center, black, transparent 90%);
-            z-index: -2; 
+            z-index: 1; 
             pointer-events: none;
             will-change: transform;
         }
@@ -230,9 +192,9 @@
             padding: 0 5vw;
             will-change: transform;
             line-height: 0;
-            margin-bottom: 0;
-            padding-bottom: 0;
             pointer-events: none; 
+            /* Default desktop behavior */
+            transform-origin: bottom center;
         }
 
         .product-image-container img {
@@ -240,7 +202,6 @@
             height: auto;
             display: block;
             margin: 0 auto;
-            padding: 0;
         }
 
         /* ============================================
@@ -256,16 +217,24 @@
         .logo { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
         .logo-icon { width: 32px; height: 32px; border: 2px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); }
+        /* Nav Buttons */
+        .nav-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); text-align: center; }
         .btn-primary { background: var(--color-text-primary); color: var(--color-bg-primary); }
         .btn-secondary { background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        .section { position: relative; z-index: 11; padding: 80px 0; pointer-events: auto; background: var(--color-bg-primary); }
-        .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px; }
+        /* SECTION PADDING REDUCED */
+        .section { position: relative; z-index: 11; padding: 50px 0; pointer-events: auto; background: var(--color-bg-primary); }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; } /* Reduced margin */
         .section-label { display: inline-block; padding: 8px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 30px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-accent); margin-bottom: 30px; }
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
 
+        /* ============================================
+           STATS BAR (Responsive Logic)
+           ============================================ */
         .stats-bar { 
             background: var(--color-bg-tertiary); 
             border-top: 1px solid var(--color-border); 
@@ -280,7 +249,7 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            padding: 40px 0; 
+            padding: 30px 0; /* Reduced padding here too */
         }
 
         .stat-item { text-align: center; flex-shrink: 0; }
@@ -292,6 +261,9 @@
             margin-bottom: 4px;
             white-space: nowrap; 
         }
+        
+        .stat-value .mobile-text { display: none; }
+
         .stat-label { 
             display: block;
             font-size: 10px; 
@@ -301,8 +273,16 @@
             white-space: nowrap;
         }
 
-        .ticker-only { display: none; }
+        /* Hide the duplicate items on desktop (Preventing double stats) */
+        @media (min-width: 1025px) {
+            .ticker-duplicate {
+                display: none;
+            }
+        }
 
+        /* ============================================
+           FEATURES, INDUSTRIES & CARDS
+           ============================================ */
         .flagship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .flagship-image { 
             height: 500px; 
@@ -319,9 +299,7 @@
         
         .industries-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
-        /* ============================================
-           NEW FEATURES SECTION STYLES (Lighting Engine)
-           ============================================ */
+        /* LIGHTING ENGINE GRID */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -343,123 +321,50 @@
             position: relative;
         }
 
-        .card:hover {
-            background: #0f0f0f;
-        }
+        .card:hover, .card.is-hovered { background: #0f0f0f; }
 
-        .card-content {
-            padding: 40px 32px 24px 32px;
-            flex-grow: 1; 
-        }
+        .card-content { padding: 40px 32px 24px 32px; flex-grow: 1; }
+        .card-header { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; margin-bottom: 12px; }
+        .card-title { font-family: var(--font-display); font-size: 18px; font-weight: 500; margin: 0; color: var(--color-text-primary); line-height: 1.3; }
+        .card-text { font-size: 14px; color: var(--color-text-tertiary); line-height: 1.7; width: 100%; }
 
-        .card-header {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
-            margin-bottom: 12px;
-        }
-
-        .card-title {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 500;
-            margin: 0;
-            color: var(--color-text-primary);
-            line-height: 1.3;
-        }
-
-        .card-text {
-            font-size: 14px;
-            color: var(--color-text-tertiary);
-            line-height: 1.7;
-            width: 100%; 
-        }
-
-        /* CARD VISUAL & RELIGHTING ENGINE */
         .card-visual {
-            width: 100%;
-            height: 180px;
+            width: 100%; 
+            /* height: 180px; REMOVED FIXED HEIGHT */
+            aspect-ratio: 16/9; /* ADDED ASPECT RATIO */
             border-top: 1px solid var(--color-border);
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             overflow: hidden;
             background: #050505;
         }
 
-        /* LAYER 1: Mouse-Tracking Spotlight (Pseudo-element) */
+        /* Lighting Effect (Desktop) */
         .card-visual::before {
             content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            /* Dynamic gradient based on CSS variables */
+            position: absolute; inset: 0; z-index: 2; pointer-events: none;
             background: radial-gradient(
                 500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
                 rgba(74, 222, 128, 0.5), 
                 transparent 40%
             );
             opacity: 0;
-            mix-blend-mode: color-dodge; /* Boosts highlights */
+            mix-blend-mode: color-dodge;
             transition: opacity 0.5s ease;
         }
 
-        /* Reveal spotlight on hover */
-        .card:hover .card-visual::before {
-            opacity: 1;
-        }
+        .card:hover .card-visual::before, .card.is-hovered .card-visual::before { opacity: 1; }
 
-        /* LAYER 2: Interface Dots Pattern (Top Layer) */
-        .card-visual::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 3;
-            pointer-events: none;
-            background: 
-                linear-gradient(180deg, rgba(5,5,5,0) 0%, rgba(5,5,5,0.6) 100%),
-                radial-gradient(circle at center, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 100% 100%, 20px 20px;
-        }
-
-        /* LAYER 0: The Image */
         .card-visual img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            position: absolute;
-            z-index: 1;
-            /* Constant Grayscale/Dark Mode */
+            width: 100%; height: 100%; object-fit: cover;
+            display: block; position: absolute; z-index: 1;
             filter: grayscale(100%) brightness(0.5) contrast(1.2);
             mix-blend-mode: luminosity;
             transform: scale(1);
             transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* Interactions */
-        .card:hover .card-visual img {
-            transform: scale(1.05);
-        }
-
-        /* Abstract Shape (Fallback) */
-        .card-visual-shape {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            z-index: 1;
-            background: radial-gradient(circle at 50% 120%, rgba(74, 222, 128, 0.1), transparent 70%);
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
-        }
-        
-        .card:hover .card-visual-shape {
-            opacity: 0.7;
-        }
+        .card:hover .card-visual img, .card.is-hovered .card-visual img { transform: scale(1.05); }
 
         /* Full Bleed Industry Card */
         .industry-card {
@@ -468,19 +373,17 @@
             border-radius: 12px;
             padding: 0; 
             overflow: hidden; 
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             transition: var(--transition-normal);
         }
-        .industry-card:hover { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
+        .industry-card:hover, .industry-card.is-hovered { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
 
         .industry-card .card-image {
-            width: 100%;
-            aspect-ratio: 16 / 9;
+            width: 100%; aspect-ratio: 16 / 9;
             background: var(--color-bg-tertiary);
             border-bottom: 1px solid var(--color-border);
-            margin: 0;
-            border-radius: 0; 
+            margin: 0; border-radius: 0; 
+            overflow: hidden;
         }
         
         .industry-card .card-image img { 
@@ -489,19 +392,21 @@
             object-fit: cover; 
             object-position: top center; 
             display: block; 
+            filter: grayscale(100%); /* Default Greyscale */
+            transition: filter 0.5s ease;
         }
 
-        .industry-card .card-content {
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
+        /* Restore color on hover or scroll-active state */
+        .industry-card:hover .card-image img, 
+        .industry-card.is-hovered .card-image img {
+            filter: grayscale(0%);
         }
 
+        .industry-card .card-content { padding: 32px; display: flex; flex-direction: column; flex: 1; }
         .card-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-secondary); }
 
+        /* Ecosystem Expansion */
         .ecosystem-container { margin-top: 30px; border-top: 1px solid var(--color-border); }
-        
         .collapsible-trigger {
             width: 100%; padding: 20px 0; background: none; border: none;
             color: var(--color-text-primary); font-family: var(--font-display);
@@ -513,23 +418,29 @@
         .collapsible-trigger .icon { font-size: 24px; transition: transform 0.3s ease; }
         .collapsible-trigger.active .icon { transform: rotate(45deg); }
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .collapsible-content.open { max-height: 5000px; padding-bottom: 80px; }
+        /* Reduced padding for open state */
+        .collapsible-content.open { max-height: 5000px; padding-bottom: 40px; }
 
-        .expansion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-        .expansion-category { margin-bottom: 40px; }
-        .expansion-header { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent); margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; display: block; }
+        /* Tightened Grid Gaps */
+        .expansion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        /* Removed bottom margin on category to let grid handle it */
+        .expansion-category { margin-bottom: 0; }
         
+        .expansion-header { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent); margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; }
         .expansion-header.green { color: #00FF44; border-bottom-color: rgba(0, 255, 68, 0.2); }
         .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
         .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
-
-        .expansion-item { margin-bottom: 24px; }
-        .expansion-name { font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-muted); font-weight: 400; text-transform: uppercase; }
+        
+        /* Tightened item spacing */
+        .expansion-item { margin-bottom: 16px; }
+        .expansion-name { font-family: var(--font-display); font-size: 16px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-muted); font-weight: 400; text-transform: uppercase; white-space: nowrap; }
         .expansion-name span.badge-green { color: #00FF44; border-color: rgba(0, 255, 68, 0.3); }
         .expansion-name span.badge-cyan { color: #12FBFD; border-color: rgba(18, 251, 253, 0.3); }
         .expansion-name span.badge-magenta { color: #FF00FF; border-color: rgba(255, 0, 255, 0.3); }
-        .expansion-desc { font-size: 14px; color: var(--color-text-tertiary); line-height: 1.6; }
+        .expansion-name span.badge-white { color: #ffffff; border-color: rgba(255, 255, 255, 0.3); }
+        
+        .expansion-desc { font-size: 13px; color: var(--color-text-tertiary); line-height: 1.5; }
 
         .cta-section { background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)); text-align: center; }
         .cta-content { max-width: 600px; margin: 0 auto; }
@@ -539,7 +450,10 @@
         .footer { background: var(--color-bg-secondary); border-top: 1px solid var(--color-border); padding: 80px 0 40px; position: relative; z-index: 11; pointer-events: auto; }
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
-        /* RESPONSIVE */
+        /* ============================================
+           MOBILE & RESPONSIVE REFACTOR (FIXED)
+           ============================================ */
+        
         @media (max-width: 1024px) {
             .container { padding: 0 40px; }
             .flagship-grid, .expansion-grid, .industries-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -548,15 +462,84 @@
             .section-header, .cta-section, .stat-item, .flagship-content { text-align: left; }
             .cta-content { margin-left: 0; max-width: 100%; }
             .cta-content div { justify-content: flex-start !important; }
-            .hero-title-line { font-size: clamp(38px, 15vw, 75px); width: 100%; text-align: center; }
 
+            /* 1. RESTORE FIXED HEADER ON MOBILE (The "Cool" factor) */
+            .fixed-header-bg {
+                /* We keep it fixed, but ensure it doesn't break overflow */
+                position: fixed;
+                width: 100%;
+                left: 0; top: 0;
+                height: 100vh;
+                padding-top: 15vh; /* REDUCED to bring title closer to top */
+                pointer-events: none; /* KEY: Let clicks pass through to scroll */
+                z-index: 1;
+            }
+
+            /* Adjust title size so it's not overwhelming on mobile */
+            .hero-title-container { padding: 0 20px; align-items: center; }
+            .hero-title-line { 
+                font-size: clamp(32px, 12vw, 50px); /* Slightly smaller than desktop max */
+                text-align: center; 
+                width: 100%; 
+                white-space: normal; /* Allow wrapping if needed, but flex keeps it tight */
+                line-height: 0.95;
+            }
+
+            .hero-section {
+                /* Make hero section transparent so we see fixed bg */
+                background: transparent;
+                /* Height needs to be sufficient to scroll "over" the fixed title */
+                /* REDUCED FROM 80VH to 45VH to fix "too tall" feel */
+                min-height: 45vh; 
+            }
+            
+            /* 2. FIX THE "PULLING APART" / HORIZONTAL SCROLL */
+            .product-image-container {
+                /* We remove the transform: scale(1.5) to stop overflow */
+                /* But we keep the image large enough to look good */
+                width: 100%; /* Changed back to 100% per your request to fix scaling */
+                margin-left: 0; 
+                margin-top: 0;
+                transform: none !important; 
+            }
+            
+            /* Hide heavy effects to save performance, but keep the vibe */
+            .hero-grid-overlay { opacity: 0.5; } 
+            
+            /* MOBILE STATS TICKER (Kept this because it works well) */
             .stats-bar .container { padding: 0; max-width: none; }
-            .stats-grid { display: flex; width: max-content; gap: 0; animation: ticker-scroll 25s linear infinite; pointer-events: none; padding: 30px 0; }
-            .stat-item { padding: 0 60px; min-width: 280px; }
-            .ticker-only { display: block; }
-            .hero-ctas { flex-direction: row; justify-content: center; width: 100%; padding: 0 40px; margin-top: 20px; }
-            .product-image-container { transform: scale(1.5); width: 100%; }
-            .glow-orb { display: none; }
+            
+            .stats-grid { 
+                display: flex; 
+                width: max-content; 
+                gap: 60px; 
+                padding: 12px 0; /* REDUCED PADDING SIGNIFICANTLY */
+                animation: ticker-scroll 40s linear infinite;
+                grid-template-columns: none;
+            }
+            
+            .stat-value {
+                font-size: 14px; /* SMALLER TEXT ON MOBILE */
+            }
+
+            /* Legitimacy Fades */
+            .stats-bar::before, .stats-bar::after {
+                content: '';
+                position: absolute; top: 0; width: 40px; height: 100%;
+                z-index: 2; pointer-events: none;
+            }
+            .stats-bar::before { left: 0; background: linear-gradient(to right, var(--color-bg-tertiary), transparent); }
+            .stats-bar::after { right: 0; background: linear-gradient(to left, var(--color-bg-tertiary), transparent); }
+
+            /* REDUCE PADDING IN EXPANSION AREA ON MOBILE - EVEN MORE */
+            .expansion-grid { gap: 16px; }
+            .expansion-category { margin-bottom: 0; }
+            .collapsible-content.open { padding-bottom: 24px; }
+
+            /* MOBILE TEXT SWAPS FOR TICKER */
+            .stat-label { display: none; }
+            .stat-value .desktop-text { display: none; }
+            .stat-value .mobile-text { display: inline; }
         }
 
         @keyframes ticker-scroll {
@@ -567,22 +550,25 @@
         @media (max-width: 768px) {
             .container { padding: 0 24px; }
             .nav { padding: 15px 24px; }
-            .section { padding: 50px 0; }
+            .section { padding: 30px 0; } /* TIGHTER MOBILE PADDING */
             .flagship-image { height: 300px; }
             .footer-bottom { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .hero-btn { flex: 1; padding: 12px 14px; font-size: 10px; }
+            
+            /* Button Optimization (Still used for other buttons) */
+            .hero-btn { flex: 1; padding: 14px 20px; font-size: 11px; text-align: center; }
             
             .features-grid { grid-template-columns: 1fr; }
+            
+            /* STATIC LIGHTING FALLBACK for Touch (Overridden by Scroll Logic now) */
+            /* We want scroll to trigger hover state, so we reduce the default override */
+            /* The JS will add .is-hovered which uses same styles as desktop hover */
         }
     </style>
 </head>
 <body>
 
-    <!-- Anchor Gradient Layer (Scrolls with Image) -->
-    <div class="hero-gradient-anchor"></div>
-
-    <!-- Mouse Glow -->
-    <div class="glow-orb" id="mouseGlow"></div>
+    <!-- RESTORED: Background Gradient -->
+    <div class="hero-bg-gradient"></div>
 
     <!-- Navigation -->
     <nav class="nav">
@@ -591,42 +577,47 @@
             STORMPMC
         </a>
         <div class="nav-right">
-            <a href="contact.html" class="btn btn-secondary" style="padding: 10px 20px; border-radius: 4px;">Contact Sales</a>
+            <a href="contact.html" class="nav-btn" data-mobile-text="Sales">Contact Sales</a>
         </div>
     </nav>
 
-    <!-- Fixed Hero Title -->
+    <!-- Header Content (FIXED on Desktop AND Mobile now) -->
     <div class="fixed-header-bg" id="parallaxTitle">
+        <!-- Mouse Glow (Now wanders automatically when idle) -->
+        <div class="glow-orb" id="mouseGlow"></div>
+
         <h1 class="hero-title-container">
             <span class="hero-title-line">Total Asset</span>
             <span class="hero-title-line">Awareness</span>
         </h1>
-        
-        <div class="hero-ctas">
-            <a href="#stats" class="hero-btn hero-btn-secondary">Explore</a>
-            <a href="#" class="hero-btn hero-btn-primary">Contact</a>
-        </div>
     </div>
 
+    <!-- Scrolling Content Layer -->
     <main class="scrolling-layer">
         
         <!-- Hero Image Section -->
         <section class="hero-section" id="hero">
+            <!-- Anchor Gradient to blend fixed background into scrolling content -->
+            <div class="hero-internal-blend"></div>
+            
             <div class="hero-grid-overlay" id="parallaxGrid"></div>
-            <!-- ANCHORED GRADIENT: Now inside the section to scroll with image -->
-            <div class="hero-gradient-anchor"></div>
             
             <div class="product-image-container">
                 <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" alt="MTRAC Asset Tracking Device">
             </div>
         </section>
 
-        <!-- Technical Specs Bar (ID added for fade trigger) -->
+        <!-- Technical Specs Bar -->
         <section class="stats-bar" id="stats">
             <div class="container">
+                <!-- We duplicate content for the infinite ticker effect on mobile -->
                 <div class="stats-grid">
+                    <!-- Set 1 -->
                     <div class="stat-item">
-                        <span class="stat-value">10+ Years</span>
+                        <span class="stat-value">
+                            <span class="desktop-text">10+ Years</span>
+                            <span class="mobile-text">10+ Year Battery</span>
+                        </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
                     <div class="stat-item">
@@ -641,21 +632,24 @@
                         <span class="stat-value">MIL-STD-810H</span>
                         <span class="stat-label">Certified</span>
                     </div>
-                    
-                    <!-- Mobile Ticker Duplicates -->
-                    <div class="stat-item ticker-only">
-                        <span class="stat-value">10+ Years</span>
+
+                    <!-- Set 2 (Visible only during scroll on mobile - Hidden on Desktop via class) -->
+                    <div class="stat-item ticker-duplicate">
+                        <span class="stat-value">
+                            <span class="desktop-text">10+ Years</span>
+                            <span class="mobile-text">10+ Year Battery</span>
+                        </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
-                    <div class="stat-item ticker-only">
+                    <div class="stat-item ticker-duplicate">
                         <span class="stat-value">-40° to +85°C</span>
                         <span class="stat-label">Operating Range</span>
                     </div>
-                    <div class="stat-item ticker-only">
+                    <div class="stat-item ticker-duplicate">
                         <span class="stat-value">IP69K</span>
                         <span class="stat-label">Ingress Protection</span>
                     </div>
-                    <div class="stat-item ticker-only">
+                    <div class="stat-item ticker-duplicate">
                         <span class="stat-value">MIL-STD-810H</span>
                         <span class="stat-label">Certified</span>
                     </div>
@@ -663,7 +657,20 @@
             </div>
         </section>
 
-        <!-- Spotlight: MTRAC Asset Tracker -->
+        <!-- MISSION SECTION -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header" style="max-width: 800px;">
+                    <span class="section-label" style="color: var(--color-accent);">Our Mission</span>
+                    <h2 class="section-title">Visibility Without Compromise</h2>
+                    <p class="section-subtitle" style="font-size: 18px; color: var(--color-text-primary); opacity: 0.9;">
+                        StormPMC delivers reliable asset awareness in extreme and denied environments. Designed and built by veterans with firsthand operational experience, our products meet military standards because real-world missions demand nothing less.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flagship System -->
         <section class="section">
             <div class="container">
                 <div class="flagship-grid">
@@ -674,9 +681,9 @@
                         <span class="section-label" style="color: var(--color-accent);">Flagship System</span>
                         <h1 class="section-title">MTRAC Asset Tracker</h1>
                         <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker engineered for long-duration operations in austere and contested environments. MTRAC delivers decade-long battery life, resilient communications, and full MIL-STD-810H certification.</p>
-                        <div style="display: flex; gap: 16px;">
-                            <a href="contact.html" class="btn btn-primary">Request Details</a>
-                            <a href="#" class="btn btn-secondary">Documentation</a>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <a href="contact.html" class="btn btn-primary" data-mobile-text="Details">Request Details</a>
+                            <a href="#" class="btn btn-secondary" data-mobile-text="Docs">Documentation</a>
                         </div>
                     </div>
                 </div>
@@ -684,59 +691,105 @@
                 <!-- Expansion Accordion -->
                 <div class="ecosystem-container">
                     <button class="collapsible-trigger" id="expandBtn">
-                        View Ecosystem Expansion & Future Products →
+                        <span class="trigger-text" data-mobile-text="Ecosystem & Future">View Ecosystem Expansion & Future Products</span>
                         <span class="icon">+</span>
                     </button>
+                    <!-- Updated Content Block with reduced padding and full list -->
                     <div class="collapsible-content" id="expandContent">
+                        <div style="margin-bottom: 24px; color: var(--color-text-tertiary); font-size: 14px; border-bottom: 1px solid var(--color-border); padding-bottom: 16px;">
+                            A complete ecosystem of ruggedized tracking hardware designed to work together in the world's most demanding environments.
+                        </div>
                         <div class="expansion-grid">
                             
+                            <!-- ASSET TRACKERS -->
                             <div class="expansion-category">
                                 <span class="expansion-header green">Asset Trackers</span>
+                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3>
-                                    <p class="expansion-desc">Deployment-ready flagship system. Full-spectrum accountability.</p>
+                                    <p class="expansion-desc">Our flagship ruggedized tracker with 10-year battery, global satellite connectivity, and full MIL-STD-810H certification.</p>
                                 </div>
+                                
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">MTRAC Lite <span class="badge-cyan">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Compact tracker for smaller assets and equipment.</p>
+                                    <h3 class="expansion-name">MTRAC Lite <span class="badge-green">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Compact tracker for smaller assets and equipment. Same rugged DNA in a lighter form factor.</p>
+                                </div>
+
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">MTRAC Container <span class="badge-green">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Specialized tracker for shipping containers with door sensors and tamper detection.</p>
                                 </div>
                             </div>
 
+                            <!-- GATEWAYS -->
                             <div class="expansion-category">
                                 <span class="expansion-header magenta">Gateways</span>
+                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Storm Gateway <span class="badge-magenta">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Long-range mesh gateway for remote deployments.</p>
+                                    <p class="expansion-desc">Long-range mesh gateway for remote deployments. Creates robust network coverage in challenging terrain.</p>
                                 </div>
+                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Gateway Mobile <span class="badge-magenta">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Vehicle-mounted gateway for mobile command posts.</p>
+                                    <p class="expansion-desc">Vehicle-mounted gateway for mobile command posts and convoy operations.</p>
+                                </div>
+
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">Gateway Solar <span class="badge-magenta">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Self-powered gateway with integrated solar panel for off-grid installations.</p>
                                 </div>
                             </div>
                             
+                            <!-- ACCESSORIES -->
                             <div class="expansion-category">
                                 <span class="expansion-header white">Accessories</span>
+                                
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Power Pack <span>Coming Soon</span></h3>
-                                    <p class="expansion-desc">Extended battery module for multi-year deployments.</p>
+                                    <h3 class="expansion-name">Power Pack <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Extended battery module for multi-year deployments where replacement isn't an option.</p>
+                                </div>
+
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">Universal Mount <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Heavy-duty mounting solutions for any surface. Includes bolt-on and magnetic options.</p>
+                                </div>
+
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">Wiring Harness <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Vehicle integration harness for powered installations with CAN bus support.</p>
                                 </div>
                             </div>
                             
+                            <!-- PLATFORM -->
                             <div class="expansion-category">
                                 <span class="expansion-header white">StormCloud Platform</span>
+                                
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Real-Time Dashboard</h3>
-                                    <p class="expansion-desc">Unified view of all assets with live location updates.</p>
+                                    <p class="expansion-desc">Unified view of all assets with live location updates, status monitoring, and customizable alerts.</p>
+                                </div>
+
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">API Integration</h3>
+                                    <p class="expansion-desc">RESTful API for seamless integration with existing logistics, ERP, and asset management systems.</p>
                                 </div>
                             </div>
 
+                        </div>
+
+                        <!-- BOTTOM COLLAPSE BUTTON -->
+                        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--color-border);">
+                            <button id="collapseBtnBottom" style="background: none; border: none; color: var(--color-text-tertiary); font-family: var(--font-display); font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; padding: 10px; transition: color 0.3s ease;">
+                                ↑ Collapse Section
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SWAPPED FEATURES SECTION -->
+        <!-- FEATURES SECTION -->
         <section class="section" style="background: var(--color-bg-primary);">
             <div class="container">
                 <div class="section-header">
@@ -879,9 +932,9 @@
                 <div class="cta-content">
                     <h2 class="cta-title">Ready to Get Started?</h2>
                     <p class="cta-text">Connect with our team to discuss your tracking requirements.</p>
-                    <div style="display: flex; gap: 16px; justify-content: center;">
-                        <a href="contact.html" class="btn btn-primary">Contact Sales</a>
-                        <a href="#" class="btn btn-secondary">Explore MTRAC</a>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <a href="contact.html" class="btn btn-primary" data-mobile-text="Sales">Contact Sales</a>
+                        <a href="#" class="btn btn-secondary" data-mobile-text="Explore">Explore MTRAC</a>
                     </div>
                 </div>
             </div>
@@ -900,21 +953,69 @@
     </footer>
 
     <script>
-        // Collapsible Logic
+        // -----------------------------------------------------------------
+        // MOBILE TEXT SWAPPING (Small & Efficient)
+        // -----------------------------------------------------------------
+        const swapText = () => {
+            const isMobile = window.innerWidth <= 768;
+            document.querySelectorAll('[data-mobile-text]').forEach(el => {
+                // Store original text if not already stored
+                if (!el.dataset.desktopText) el.dataset.desktopText = el.innerText;
+                
+                // Swap
+                el.innerText = isMobile ? el.dataset.mobileText : el.dataset.desktopText;
+            });
+        };
+        
+        // Run on load and resize
+        swapText();
+        window.addEventListener('resize', swapText);
+
+        // -----------------------------------------------------------------
+        // COLLAPSIBLE LOGIC (Updated to support bottom button)
+        // -----------------------------------------------------------------
         const expandBtn = document.getElementById('expandBtn');
         const expandContent = document.getElementById('expandContent');
+        const collapseBtnBottom = document.getElementById('collapseBtnBottom');
 
-        expandBtn.addEventListener('click', () => {
+        function toggleExpansion() {
             expandBtn.classList.toggle('active');
             expandContent.classList.toggle('open');
             expandBtn.querySelector('.icon').textContent = expandContent.classList.contains('open') ? '×' : '+';
-        });
+        }
 
-        // Parallax & Fade Logic
+        if (expandBtn) {
+            expandBtn.addEventListener('click', toggleExpansion);
+        }
+
+        if (collapseBtnBottom) {
+            collapseBtnBottom.addEventListener('click', () => {
+                // Close the section
+                if (expandContent.classList.contains('open')) {
+                    toggleExpansion();
+                    
+                    // Smoothly scroll back to the top of the accordion anchor
+                    // Subtract a bit of offset so the header isn't hidden
+                    const offset = 100; 
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = expandBtn.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        }
+
+        // -----------------------------------------------------------------
+        // DESKTOP PARALLAX & FADE LOGIC + ORB IDLE ANIMATION
+        // -----------------------------------------------------------------
         const grid = document.getElementById('parallaxGrid');
         const orb = document.getElementById('mouseGlow');
         const title = document.getElementById('parallaxTitle');
-        // We now track the stats bar instead of the details section
         const stats = document.getElementById('stats'); 
 
         let targetX = window.innerWidth / 2;
@@ -924,12 +1025,17 @@
         
         let targetScroll = 0;
         let currentScroll = 0;
-
         const lerpAmount = 0.07; 
+
+        // Orb Logic
+        let lastMouseMoveTime = 0;
+        const idleDelay = 1000; // 1 second to start wandering
+        const isTouch = window.matchMedia('(hover: none)').matches;
 
         window.addEventListener('mousemove', (e) => {
             targetX = e.clientX;
             targetY = e.clientY;
+            lastMouseMoveTime = Date.now();
         });
 
         window.addEventListener('scroll', () => {
@@ -937,63 +1043,100 @@
         }, { passive: true });
 
         function animate() {
+            const now = Date.now();
+            const time = now * 0.001; // Current time in seconds
+            const isIdle = (now - lastMouseMoveTime > idleDelay) || isTouch; // Idle or on Mobile
+
+            if (isIdle) {
+                // Wandering logic: Sine waves for smooth random-looking movement
+                // We use different frequencies for X and Y to avoid simple circles
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const rangeX = window.innerWidth * 0.3; // Wander 30% of screen width
+                const rangeY = window.innerHeight * 0.2; // Wander 20% of screen height
+                
+                targetX = centerX + Math.sin(time * 0.5) * rangeX;
+                targetY = centerY + Math.cos(time * 0.35) * rangeY;
+            }
+
+            // Standard LERP for smooth movement
             currentX += (targetX - currentX) * lerpAmount;
             currentY += (targetY - currentY) * lerpAmount;
             currentScroll += (targetScroll - currentScroll) * lerpAmount;
             
-            // Orb movement
-            orb.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
+            // Orb movement (Now always active, wandering or following)
+            if (orb) orb.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
             
-            // Grid parallax
-            grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
+            // Grid parallax (Only relevant on desktop mostly, but harmless on mobile)
+            if (grid && !isTouch) grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
             
             // Title parallax
-            title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
+            if (title && !isTouch) title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
 
-            // FADE LOGIC
-            // Fade out based on scroll distance. 
-            // Start fading immediately, fully transparent by 600px scroll.
-            const fadeDistance = 600; 
-            const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
-            
-            title.style.opacity = opacity;
-            orb.style.opacity = opacity;
+            // Fade Logic for Header
+            if (window.innerWidth > 1024) {
+                 const fadeDistance = 600; 
+                 const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
+                 if (title) title.style.opacity = opacity;
+                 if (orb) orb.style.opacity = opacity; // Fade orb on scroll on desktop
+            } else {
+                 // On mobile, keep orb visible but maybe fade slightly if deep in page?
+                 // For now, let's keep it visible to provide the "something happening" effect requested
+                 if (orb) orb.style.opacity = 0.6; // Slightly dimmer on mobile
+                 
+                 // FIX: Ensure title is visible on mobile if we switch or scroll up
+                 if (title) title.style.opacity = 1; 
+            }
 
             requestAnimationFrame(animate);
         }
-
-        window.addEventListener('resize', () => {
-            targetX = window.innerWidth / 2;
-            targetY = window.innerHeight / 2;
-        });
-
+        
+        // Start animation loop
         animate();
 
         // ----------------------------------------------------
-        // MOUSE TRACKING FOR NEW FEATURES CARDS
+        // MOUSE TRACKING FOR CARDS (Desktop Only)
         // ----------------------------------------------------
-        document.addEventListener('DOMContentLoaded', () => {
+        if (!isTouch) {
             const cards = document.querySelectorAll('.card');
-            
             cards.forEach(card => {
                 const visual = card.querySelector('.card-visual');
                 if (!visual) return;
 
                 card.addEventListener('mousemove', (e) => {
-                    // Get coordinates of the visual container
                     const rect = visual.getBoundingClientRect();
-                    
-                    // Calculate mouse position relative to the visual container
-                    // allowing it to go "out of bounds" if mouse is above it,
-                    // which creates a nice casting effect from above
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    
                     visual.style.setProperty('--mouse-x', `${x}px`);
                     visual.style.setProperty('--mouse-y', `${y}px`);
                 });
             });
-        });
+        }
+
+        // -----------------------------------------------------------------
+        // SCROLL TRIGGER FOR HOVER STATES (Mobile/Touch)
+        // -----------------------------------------------------------------
+        // This makes cards "light up" (simulate hover) when they are in the center of the viewport
+        if (isTouch || window.innerWidth <= 1024) {
+            const observerOptions = {
+                root: null,
+                rootMargin: '-15% 0px -15% 0px', // Relaxed margin to trigger earlier
+                threshold: 0.1
+            };
+
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-hovered');
+                    } else {
+                        entry.target.classList.remove('is-hovered');
+                    }
+                });
+            }, observerOptions);
+
+            const allCards = document.querySelectorAll('.card, .industry-card');
+            allCards.forEach(card => scrollObserver.observe(card));
+        }
     </script>
 </body>
 </html>
