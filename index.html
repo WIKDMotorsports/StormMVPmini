@@ -569,8 +569,10 @@
         .collapsible-trigger:hover { color: var(--color-text-secondary); }
         .collapsible-trigger .icon { font-size: 24px; transition: transform 0.3s ease; }
         .collapsible-trigger.active .icon { transform: rotate(45deg); }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .collapsible-content.open { max-height: 5000px; padding-bottom: 40px; }
+        .collapsible-content { height: 0; overflow: hidden; }
+        .collapsible-content.open { padding-bottom: 40px; }
+
+        .collapse-footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--color-border); }
 
         .expansion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .expansion-category { margin-bottom: 0; }
@@ -900,7 +902,7 @@
                             </div>
                         </div>
 
-                        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--color-border);">
+                        <div class="collapse-footer">
                             <button id="collapseBtnBottom" style="background: none; border: none; color: var(--color-text-tertiary); font-family: var(--font-display); font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; padding: 10px; transition: color 0.3s ease;">
                                 ↑ Collapse Section
                             </button>
@@ -1160,8 +1162,16 @@
             expandBtn.querySelector('.icon').textContent = isOpen ? '×' : '+';
             
             if (isOpen) {
-                // GSAP Sequence for "smooth as fuck" entry
-                const elementsToAnimate = expandContent.querySelectorAll('.expansion-header, .expansion-item, #collapseBtnBottom');
+                // GSAP Open Animation
+                gsap.to(expandContent, { 
+                    height: "auto", 
+                    duration: 0.6, 
+                    ease: "power2.inOut" 
+                });
+
+                // Content Reveal Sequence
+                // Updated selector to target .collapse-footer (the div with the border)
+                const elementsToAnimate = expandContent.querySelectorAll('.expansion-header, .expansion-item, .collapse-footer');
                 
                 gsap.fromTo(elementsToAnimate, 
                     { 
@@ -1176,9 +1186,16 @@
                         duration: 0.5, 
                         stagger: 0.03, 
                         ease: "power2.out",
-                        delay: 0.1 // Slight delay to let height transition begin
+                        delay: 0.1 
                     }
                 );
+            } else {
+                // GSAP Close Animation
+                gsap.to(expandContent, { 
+                    height: 0, 
+                    duration: 0.5, 
+                    ease: "power2.inOut" 
+                });
             }
         }
 
