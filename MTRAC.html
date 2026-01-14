@@ -50,21 +50,101 @@
         }
 
         /* ------------------------------------------------------------- 
-           ANIMATION SMOOTHNESS FIX (CRITICAL)
+           ANIMATION SMOOTHNESS FIX
            ------------------------------------------------------------- */
-        
-        /* This overrides generic 'transition: all' which causes the "two-stage" glitch.
-           We ONLY allow transitions on properties that GSAP isn't touching.
-        */
+        /* Only allow transitions on properties GSAP doesn't touch */
         .industry-card, .specs-group, .card, .btn {
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease !important;
         }
 
-        /* Ensure GSAP targets are hidden initially to prevent FOUC (Flash of Unstyled Content) */
+        /* Initial hidden state for GSAP targets */
         .anim-reveal, .anim-hero-text, .anim-highlight, .product-image, .grid-overlay, .glow-orb {
-            visibility: hidden; /* GSAP autoAlpha will toggle this */
+            visibility: hidden;
             opacity: 0;
             will-change: transform, opacity;
+        }
+
+        /* ------------------------------------------------------------- 
+           ICON DUPLICATION FIX (CRITICAL)
+           ------------------------------------------------------------- */
+        /* If the script runs twice, it appends a second SVG. We hide it. */
+        animated-icons svg + svg {
+            display: none !important;
+        }
+        
+        /* Hard constrain the container to only allow 1 icon */
+        .card-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            
+            width: 50px !important;
+            height: 50px !important;
+            min-height: 50px !important;
+            
+            overflow: hidden !important; /* Cuts off any duplicates that persist */
+            margin: 0 auto 1.25rem auto !important;
+        }
+
+        .card-icon animated-icons { 
+            display: block; 
+            margin: 0 auto;
+            flex-shrink: 0; /* Prevents squashing if multiples try to fit */
+        }
+
+        /* ------------------------------------------------------------- 
+           FEATURES GRID & CARD LAYOUT NORMALIZATION
+           ------------------------------------------------------------- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        #features .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem 2rem !important; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            position: relative;
+        }
+
+        #features .card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        #features .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        #features .card-text {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .features-grid { grid-template-columns: 1fr; }
+            #features .card { padding: 2rem !important; }
         }
 
         /* ------------------------------------------------------------- 
@@ -188,8 +268,6 @@
         .industry-card:hover {
             border-color: var(--color-border-hover);
             background: rgba(255, 255, 255, 0.03);
-            /* Removed translateY on hover to ensure smooth GSAP entrance. 
-               Can be re-enabled via JS if absolutely needed, but causes conflict. */
         }
 
         .industry-info { flex: 1; }
@@ -367,27 +445,6 @@
         .expansion-name span.badge-cyan { color: var(--color-cyan); border-color: rgba(0, 255, 255, 0.3); }
         
         .expansion-desc { font-size: 14px; color: rgba(255, 255, 255, 0.5); line-height: 1.6; }
-
-        .card-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.25rem;
-            min-height: 50px;
-            width: 50px; 
-            margin-left: auto;
-            margin-right: auto;
-            overflow: visible;
-        }
-
-        .card-icon animated-icons { display: block; margin: 0 auto; }
-
-        @media (max-width: 768px) {
-            .section { padding: 2.5rem 0 !important; }
-            .expansion-grid-spec { grid-template-columns: 1fr; gap: 24px; }
-            .specs-content { padding: 1rem 1.5rem; }
-            .industry-card { padding: 24px; }
-        }
 
         .grid-overlay {
             position: fixed;
