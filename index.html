@@ -203,6 +203,12 @@
             text-shadow: 
                 0 0 30px var(--hero-title-glow),
                 0 0 60px rgba(255, 255, 255, 0.05);
+            
+            /* Initial Animation State */
+            opacity: 0;
+            transform: translateY(30px);
+            filter: blur(15px);
+            will-change: transform, opacity, filter;
         }
 
         .glow-orb {
@@ -273,6 +279,11 @@
             line-height: 0;
             pointer-events: none; 
             transform-origin: bottom center;
+            /* Prevent Layout Shift */
+            min-height: 400px; /* Adjust based on your render's aspect ratio */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .product-image-container img {
@@ -280,6 +291,22 @@
             height: auto;
             display: block;
             margin: 0 auto;
+        }
+
+        /* Initial Hidden State (CSS only for speed) */
+        #heroImage {
+            opacity: 0;
+            transform: scale(0.9) translateY(30px);
+            filter: blur(20px) brightness(0.5);
+            will-change: transform, opacity, filter;
+            transition: none; /* Let GSAP handle the transition */
+        }
+
+        /* Fallback: If JS fails, show the image */
+        .no-js #heroImage, .no-js .hero-title-line {
+            opacity: 1;
+            transform: none;
+            filter: none;
         }
 
         /* ============================================
@@ -654,8 +681,14 @@
             
             <div class="hero-grid-overlay" id="parallaxGrid"></div>
             
-            <div class="product-image-container">
-                <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" alt="MTRAC Asset Tracking Device">
+            <div class="product-image-container loading-state" id="heroImageContainer">
+                <img 
+                    src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/HEROMVP.png?raw=true" 
+                    alt="MTRAC Asset Tracking Device"
+                    fetchpriority="high"
+                    loading="eager"
+                    id="heroImage"
+                >
             </div>
         </section>
 
@@ -1101,20 +1134,39 @@
         // -----------------------------------------------------------------
         gsap.registerPlugin(ScrollTrigger);
 
-        // 1. HERO PARALLAX & BLUR (DESKTOP)
-        if (window.innerWidth > 1024) {
-            gsap.to(".hero-title-line", {
-                scrollTrigger: {
-                    trigger: ".hero-section",
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: true
-                },
-                y: 150,
-                opacity: 0,
-                filter: "blur(20px)",
-                stagger: 0.1
+        // 1. HERO TEXT ENTRANCE (INSTANT ON DOM READY)
+        document.addEventListener("DOMContentLoaded", () => {
+            const textTl = gsap.timeline({
+                // CRITICAL: Only initialize the scroll-away effect AFTER the text is fully visible.
+                onComplete: initScrollTrigger 
             });
+
+            textTl.to(".hero-title-line", {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.8,
+                stagger: 0.1, 
+                ease: "power4.out" // Very snappy
+            });
+        });
+
+        // Function to initialize scroll effects only after entrance is done
+        function initScrollTrigger() {
+            if (window.innerWidth > 1024) {
+                gsap.to(".hero-title-line", {
+                    scrollTrigger: {
+                        trigger: ".hero-section",
+                        start: "top top",
+                        end: "bottom top",
+                        scrub: true
+                    },
+                    y: 150,
+                    opacity: 0,
+                    filter: "blur(20px)",
+                    stagger: 0.1
+                });
+            }
         }
 
         // 2. GLOBAL LENS FOCUS ENTRANCE
@@ -1132,11 +1184,11 @@
                     filter: "blur(0px)", 
                     y: 0,
                     scale: 1,
-                    duration: 0.8, // Faster, snappier duration
-                    ease: "power3.out", // Clearer easing
+                    duration: 0.8, 
+                    ease: "power3.out", 
                     scrollTrigger: {
                         trigger: el,
-                        start: "top 85%", // Starts when item is 85% down the screen
+                        start: "top 85%", 
                         toggleActions: "play none none none"
                     }
                 }
@@ -1147,7 +1199,7 @@
         gsap.from(".stat-item", {
             scrollTrigger: {
                 trigger: ".stats-bar",
-                start: "top 95%", // Triggers almost immediately if visible
+                start: "top 95%", 
                 toggleActions: "play none none none"
             },
             y: 20,
@@ -1157,6 +1209,32 @@
             stagger: 0.1,
             ease: "power3.out",
             delay: 0.2
+        });
+
+        // 4. HERO IMAGE OPTICAL REVEAL (WAIT FOR LOAD)
+        window.addEventListener('load', () => {
+            const heroImg = document.getElementById('heroImage');
+            const heroContainer = document.getElementById('heroImageContainer');
+
+            const triggerReveal = () => {
+                gsap.to(heroImg, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    filter: "blur(0px) brightness(1)",
+                    duration: 1.1, 
+                    ease: "power4.out",
+                    onStart: () => {
+                        heroContainer.classList.remove('loading-state');
+                    }
+                });
+            };
+
+            if (heroImg.complete) {
+                triggerReveal();
+            } else {
+                heroImg.onload = triggerReveal;
+            }
         });
 
         // -----------------------------------------------------------------
