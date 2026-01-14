@@ -1134,24 +1134,25 @@
         // -----------------------------------------------------------------
         gsap.registerPlugin(ScrollTrigger);
 
-        // 1. HERO TEXT ENTRANCE (INSTANT ON DOM READY)
-        document.addEventListener("DOMContentLoaded", () => {
-            const textTl = gsap.timeline({
-                // CRITICAL: Only initialize the scroll-away effect AFTER the text is fully visible.
-                onComplete: initScrollTrigger 
-            });
-
-            textTl.to(".hero-title-line", {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                duration: 0.8,
-                stagger: 0.1, 
-                ease: "power4.out" // Very snappy
-            });
+        // 1. HERO TEXT ENTRANCE (INSTANT EXECUTION)
+        // No event listeners. Fire immediately.
+        const textTl = gsap.timeline({
+            onComplete: initScrollTrigger // Hook scroll logic after entrance
         });
 
-        // Function to initialize scroll effects only after entrance is done
+        textTl.to(".hero-title-line", {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            stagger: 0.1, 
+            ease: "power4.out"
+        });
+
+        // Flag to track minimum delay for aesthetics
+        let minDelayPassed = false;
+        setTimeout(() => { minDelayPassed = true; tryRevealImage(); }, 500);
+
         function initScrollTrigger() {
             if (window.innerWidth > 1024) {
                 gsap.to(".hero-title-line", {
@@ -1164,7 +1165,8 @@
                     y: 150,
                     opacity: 0,
                     filter: "blur(20px)",
-                    stagger: 0.1
+                    stagger: 0.1,
+                    overwrite: 'auto' // Prevent conflicts
                 });
             }
         }
@@ -1211,12 +1213,15 @@
             delay: 0.2
         });
 
-        // 4. HERO IMAGE OPTICAL REVEAL (WAIT FOR LOAD)
-        window.addEventListener('load', () => {
-            const heroImg = document.getElementById('heroImage');
-            const heroContainer = document.getElementById('heroImageContainer');
+        // 4. HERO IMAGE SMART REVEAL
+        const heroImg = document.getElementById('heroImage');
+        const heroContainer = document.getElementById('heroImageContainer');
+        let imageRevealed = false;
 
-            const triggerReveal = () => {
+        const tryRevealImage = () => {
+            // Only reveal if BOTH: Image is loaded AND Minimum 0.5s text delay has passed
+            if (heroImg.complete && minDelayPassed && !imageRevealed) {
+                imageRevealed = true;
                 gsap.to(heroImg, {
                     opacity: 1,
                     scale: 1,
@@ -1228,14 +1233,15 @@
                         heroContainer.classList.remove('loading-state');
                     }
                 });
-            };
-
-            if (heroImg.complete) {
-                triggerReveal();
-            } else {
-                heroImg.onload = triggerReveal;
             }
-        });
+        };
+
+        // Check if cached instantly
+        if (heroImg.complete) {
+            tryRevealImage();
+        } 
+        // Or wait for load event
+        heroImg.onload = tryRevealImage;
 
         // -----------------------------------------------------------------
         // MOUSE ORB & GRID PARALLAX (IDLE ANIMATION)
