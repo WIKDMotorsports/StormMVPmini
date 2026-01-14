@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- GSAP & SCROLLTRIGGER -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
         /* ============================================
             GLOBAL VARIABLES
@@ -300,7 +304,7 @@
 
         .section { position: relative; z-index: 11; padding: 50px 0; pointer-events: auto; background: var(--color-bg-primary); }
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; } 
-        .section-label { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 4px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--color-accent); margin-bottom: 30px; }
+        .section-label { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-bottom: 1.5rem; }
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
 
@@ -660,22 +664,22 @@
             <div class="container">
                 <div class="stats-grid">
                     <!-- Set 1 -->
-                    <div class="stat-item">
+                    <div class="stat-item reveal">
                         <span class="stat-value">
                             <span class="desktop-text">10+ Years</span>
                             <span class="mobile-text">10+ Year Battery</span>
                         </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item reveal">
                         <span class="stat-value">-40° to +85°C</span>
                         <span class="stat-label">Operating Range</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item reveal">
                         <span class="stat-value">IP69K</span>
                         <span class="stat-label">Ingress Protection</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item reveal">
                         <span class="stat-value">MIL-STD-810H</span>
                         <span class="stat-label">Certified</span>
                     </div>
@@ -707,7 +711,7 @@
         <!-- MISSION SECTION -->
         <section class="section">
             <div class="container">
-                <div class="section-header" style="max-width: 800px;">
+                <div class="section-header reveal" style="max-width: 800px;">
                     <span class="section-label">Our Mission</span>
                     <h2 class="section-title">Visibility Without Compromise</h2>
                     <p class="section-subtitle" style="font-size: 18px; color: var(--color-text-primary); opacity: 0.9;">
@@ -721,10 +725,10 @@
         <section class="section">
             <div class="container">
                 <div class="flagship-grid">
-                    <div class="flagship-image">
+                    <div class="flagship-image reveal">
                         <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/MTRAC/In%20Case-Camera%203.png?raw=true" alt="MTRAC Asset Tracker Primary Visual">
                     </div>
-                    <div class="flagship-content">
+                    <div class="flagship-content reveal">
                         <span class="section-label">Flagship System</span>
                         <h1 class="section-title">MTRAC Asset Tracker</h1>
                         <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker engineered for long-duration operations in austere and contested environments. MTRAC delivers decade-long battery life, resilient communications, and full MIL-STD-810H certification.</p>
@@ -736,7 +740,7 @@
                 </div>
 
                 <!-- Expansion Accordion -->
-                <div class="ecosystem-container">
+                <div class="ecosystem-container reveal">
                     <button class="collapsible-trigger" id="expandBtn">
                         <span class="trigger-text" data-mobile-text="Ecosystem & Future">View Ecosystem Expansion & Future Products</span>
                         <span class="icon">+</span>
@@ -816,14 +820,14 @@
         <!-- FEATURES SECTION -->
         <section class="section">
             <div class="container">
-                <div class="section-header">
+                <div class="section-header reveal">
                     <span class="section-label">System Capabilities</span>
                     <h2 class="section-title">Engineered for<br>Mission Criticality</h2>
                     <p class="section-subtitle">When standard tracking fails, StormPMC delivers. Built from the ground up for operations where failure is not an option.</p>
                 </div>
                 
                 <div class="features-grid">
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Extreme Durability</h3>
@@ -835,7 +839,7 @@
                         </div>
                     </div>
                     
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Decade-Long Battery</h3>
@@ -847,7 +851,7 @@
                         </div>
                     </div>
                     
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Global Coverage</h3>
@@ -859,7 +863,7 @@
                         </div>
                     </div>
                     
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">IP69K Sealed</h3>
@@ -871,7 +875,7 @@
                         </div>
                     </div>
                     
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Mesh Networking</h3>
@@ -883,7 +887,7 @@
                         </div>
                     </div>
                     
-                    <div class="card">
+                    <div class="card reveal">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Real-Time Platform</h3>
@@ -901,13 +905,13 @@
         <!-- Industries -->
         <section class="section">
             <div class="container">
-                <div class="section-header">
+                <div class="section-header reveal">
                     <span class="section-label">Industries</span>
                     <h2 class="section-title">Trusted Across Sectors</h2>
                 </div>
                 
                 <div class="industries-grid">
-                    <div class="industry-card">
+                    <div class="industry-card reveal">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector">
                         </div>
@@ -917,7 +921,7 @@
                             <a href="MTRAC.html#industries" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <div class="industry-card">
+                    <div class="industry-card reveal">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector">
                         </div>
@@ -927,7 +931,7 @@
                             <a href="MTRAC.html#industries" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <div class="industry-card">
+                    <div class="industry-card reveal">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector">
                         </div>
@@ -944,7 +948,7 @@
         <!-- CTA Section -->
         <section class="section cta-section">
             <div class="container">
-                <div class="cta-content">
+                <div class="cta-content reveal">
                     <h2 class="cta-title">Ready to Get Started?</h2>
                     <p class="cta-text">Connect with our team to discuss your tracking requirements.</p>
                     <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
@@ -1071,7 +1075,54 @@
         }
 
         // -----------------------------------------------------------------
-        // DESKTOP PARALLAX & ORB IDLE ANIMATION
+        // GSAP & PARALLAX ANIMATION
+        // -----------------------------------------------------------------
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. HERO PARALLAX & BLUR (DESKTOP)
+        if (window.innerWidth > 1024) {
+            gsap.to(".hero-title-line", {
+                scrollTrigger: {
+                    trigger: ".hero-section",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                },
+                y: 150,
+                opacity: 0,
+                filter: "blur(20px)",
+                stagger: 0.1
+            });
+        }
+
+        // 2. GLOBAL LENS FOCUS ENTRANCE
+        const revealElements = document.querySelectorAll(".reveal");
+        revealElements.forEach((el) => {
+            gsap.fromTo(el, 
+                { 
+                    opacity: 0, 
+                    filter: "blur(15px)", 
+                    y: 40,
+                    scale: 0.95 
+                }, 
+                {
+                    opacity: 1, 
+                    filter: "blur(0px)", 
+                    y: 0,
+                    scale: 1,
+                    duration: 1.5,
+                    ease: "expo.out",
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%", // Starts when item is 85% down the screen
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+        // -----------------------------------------------------------------
+        // MOUSE ORB & GRID PARALLAX (IDLE ANIMATION)
         // -----------------------------------------------------------------
         const grid = document.getElementById('parallaxGrid');
         const orb = document.getElementById('mouseGlow');
@@ -1122,13 +1173,12 @@
             
             // Logic Split: Desktop Parallax vs Mobile Pinning
             if (window.innerWidth > 1024) {
-                 // DESKTOP: Apply parallax and opacity fade
+                 // DESKTOP: Apply parallax only to GRID (Title handled by GSAP now)
                  if (grid && !isTouch) grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
-                 if (title && !isTouch) title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
                  
+                 // Fade Orb only
                  const fadeDistance = 600; 
                  const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
-                 if (title) title.style.opacity = opacity;
                  if (orb) orb.style.opacity = opacity;
             } else {
                  // MOBILE: Disable title parallax, keep opacity full so it stays pinned visibly
