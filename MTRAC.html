@@ -833,6 +833,23 @@
 
     <script>
         // -----------------------------------------------------------------
+        // FAIL-SAFE: REMOVE INLINE BODY STYLES
+        // This runs after page load to strip any styles added by external scripts
+        // -----------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+             const body = document.body;
+             const html = document.documentElement;
+             
+             // Strip inline styles that might lock scroll
+             if(body.style.overflow) body.style.overflow = '';
+             if(body.style.height) body.style.height = '';
+             if(html.style.overflow) html.style.overflow = '';
+             if(html.style.height) html.style.height = '';
+             
+             console.log("Scroll locks cleared.");
+        });
+
+        // -----------------------------------------------------------------
         // NAVIGATION & MOBILE MENU LOGIC
         // -----------------------------------------------------------------
         const navbar = document.getElementById('navbar');
@@ -967,32 +984,56 @@
             gsap.set(".anim-reveal", { autoAlpha: 0, y: 40, scale: 0.98, filter: "blur(10px)" });
 
             // 2. HERO ENTRANCE TIMELINE
-            const tl = gsap.timeline({ delay: 0.2 });
+            const tl = gsap.timeline({ delay: 0.1 }); // Reduced delay
 
             // Background & Ambient
-            tl.to(".grid-overlay", { autoAlpha: 1, y: 0, duration: 1.2, ease: "power3.out" }, 0);
-            tl.to(".glow-orb", { autoAlpha: 1, scale: 1, duration: 1.5, ease: "power2.out" }, 0);
+            tl.to(".grid-overlay", { autoAlpha: 1, y: 0, duration: 1.0, ease: "power3.out" }, 0); // Faster
+            tl.to(".glow-orb", { autoAlpha: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
 
             // Hero Image Reveal
             tl.to(".product-image", {
                 autoAlpha: 1, scale: 1, y: 0,
-                duration: 1.0, ease: "power3.out"
+                duration: 0.8, ease: "power3.out" // Faster
             }, 0.1);
 
             // Hero Text Elements (Staggered)
             tl.to(".anim-hero-text", {
                 autoAlpha: 1, y: 0, filter: "blur(0px)",
-                duration: 0.8, stagger: 0.08, ease: "power3.out"
-            }, 0.3);
+                duration: 0.6, stagger: 0.04, ease: "power3.out" // Faster, tighter stagger
+            }, 0.2);
 
             // Highlights (Stats)
             tl.to(".anim-highlight", {
                 autoAlpha: 1, y: 0, filter: "blur(0px)",
-                duration: 0.6, stagger: 0.05, ease: "power3.out"
-            }, 0.6);
+                duration: 0.5, stagger: 0.03, ease: "power3.out" // Faster
+            }, 0.4);
+
+            // --- CONDITIONAL FEATURE SEQUENCING ---
+            const featuresSection = document.querySelector('#features');
+            const featuresRect = featuresSection.getBoundingClientRect();
+            // Check if feature section top is within viewport or if it's visible
+            const isFeaturesVisible = featuresRect.top < window.innerHeight;
+
+            if (isFeaturesVisible) {
+                const featureElements = featuresSection.querySelectorAll('.anim-reveal');
+                // Mark them to be ignored by generic loop
+                featureElements.forEach(el => el.classList.add('hero-handled'));
+                
+                // Add to main timeline
+                tl.to(featureElements, {
+                    autoAlpha: 1, 
+                    y: 0, 
+                    scale: 1, 
+                    filter: "blur(0px)", 
+                    duration: 0.6,
+                    stagger: 0.05, // Tight stagger
+                    ease: "power3.out"
+                }, "-=0.5"); // Big overlap
+            }
 
             // 3. SCROLL REVEAL LOGIC
-            gsap.utils.toArray(".anim-reveal").forEach(el => {
+            // Exclude hero-handled elements
+            gsap.utils.toArray(".anim-reveal:not(.hero-handled)").forEach(el => {
                 gsap.to(el, {
                     scrollTrigger: {
                         trigger: el,
@@ -1003,8 +1044,8 @@
                     y: 0,
                     scale: 1,
                     filter: "blur(0px)",
-                    duration: 0.5,
-                    ease: "power2.out"
+                    duration: 0.6,
+                    ease: "power3.out"
                 });
             });
 
@@ -1050,7 +1091,7 @@
                     
                     const isOpen = detail.hasAttribute('open');
                     const tl = gsap.timeline({
-                        defaults: { duration: 0.5, ease: "circ.out" }, // Mechanical/Tech ease
+                        defaults: { duration: 0.35, ease: "power3.inOut" }, // Faster, smoother
                         onComplete: () => ScrollTrigger.refresh()
                     });
 
