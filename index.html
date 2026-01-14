@@ -1035,10 +1035,9 @@
 
         // Smooth movement loop
         function updateCursorPosition() {
-            const ease = 0.15; 
-            
-            posX += (mouseX - posX) * ease;
-            posY += (mouseY - posY) * ease;
+            // Immediate follow, no lag
+            posX = mouseX;
+            posY = mouseY;
             
             const activeScale = cursor.classList.contains('active') ? 1.4 : 1;
             cursor.style.transform = `translate3d(${posX - 12}px, ${posY - 12}px, 0) scale(${activeScale})`;
@@ -1151,7 +1150,7 @@
 
         // Flag to track minimum delay for aesthetics
         let minDelayPassed = false;
-        setTimeout(() => { minDelayPassed = true; tryRevealImage(); }, 500);
+        setTimeout(() => { minDelayPassed = true; tryRevealImage(); }, 100);
 
         function initScrollTrigger() {
             if (window.innerWidth > 1024) {
@@ -1197,42 +1196,50 @@
             );
         });
 
-        // 3. STATS BAR RIPPLE (ON LOAD)
-        gsap.from(".stat-item", {
-            scrollTrigger: {
-                trigger: ".stats-bar",
-                start: "top 95%", 
-                toggleActions: "play none none none"
-            },
-            y: 20,
-            opacity: 0,
-            filter: "blur(8px)",
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power3.out",
-            delay: 0.2
-        });
+        // 3. STATS BAR RIPPLE (REMOVED STANDALONE TRIGGER - MERGED WITH IMAGE)
 
-        // 4. HERO IMAGE SMART REVEAL
+        // 4. HERO IMAGE & STATS BAR SMART REVEAL
         const heroImg = document.getElementById('heroImage');
         const heroContainer = document.getElementById('heroImageContainer');
         let imageRevealed = false;
 
         const tryRevealImage = () => {
-            // Only reveal if BOTH: Image is loaded AND Minimum 0.5s text delay has passed
+            // Only reveal if BOTH: Image is loaded AND Minimum 0.1s text delay has passed
             if (heroImg.complete && minDelayPassed && !imageRevealed) {
                 imageRevealed = true;
-                gsap.to(heroImg, {
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    filter: "blur(0px) brightness(1)",
-                    duration: 1.1, 
-                    ease: "power4.out",
+                
+                // Master Reveal Timeline
+                const masterTl = gsap.timeline({
                     onStart: () => {
                         heroContainer.classList.remove('loading-state');
                     }
                 });
+
+                // Image Reveal
+                masterTl.to(heroImg, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    filter: "blur(0px) brightness(1)",
+                    duration: 1.0, 
+                    ease: "power4.out"
+                }, 0); // Start at time 0
+
+                // Stats Bar Reveal (Sync with Image)
+                masterTl.fromTo(".stat-item", 
+                    { 
+                        y: 20, 
+                        opacity: 0, 
+                        filter: "blur(8px)" 
+                    },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        filter: "blur(0px)",
+                        duration: 0.6,
+                        stagger: 0.05, // Faster stagger
+                        ease: "power3.out"
+                    }, 0.1); // Start slightly after image starts (0.1s offset)
             }
         };
 
