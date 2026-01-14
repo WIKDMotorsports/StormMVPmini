@@ -164,9 +164,13 @@
             left: 0;
             width: 100%;
             height: 100vh;
+            /* Top: #050505 to match nav. Bottom: #3D3D3D to match image blend. */
             background: linear-gradient(180deg, #050505 0%, #3D3D3D 100%);
             z-index: 0;
             pointer-events: none;
+            
+            /* Initial Animation State */
+            opacity: 0;
         }
 
         .fixed-header-bg {
@@ -222,7 +226,9 @@
             top: 0;
             left: 0;
             will-change: transform, opacity;
-            opacity: 1;
+            
+            /* Initial Animation State */
+            opacity: 0;
         }
 
         .scrolling-layer {
@@ -247,6 +253,7 @@
              inset: 0;
              width: 100%;
              height: 100%;
+             /* Matching bottom to #3D3D3D */
              background: linear-gradient(to bottom, transparent 0%, transparent 60%, #3D3D3D 100%);
              z-index: -1;
              pointer-events: none;
@@ -308,7 +315,7 @@
         }
 
         /* Fallback: If JS fails, show the image */
-        .no-js #heroImage, .no-js .hero-title-line, .no-js .hero-grid-overlay, .no-js .stat-item {
+        .no-js #heroImage, .no-js .hero-title-line, .no-js .hero-grid-overlay, .no-js .stat-item, .no-js .hero-bg-gradient, .no-js .glow-orb {
             opacity: 1;
             transform: none;
             filter: none;
@@ -1150,12 +1157,22 @@
         // -----------------------------------------------------------------
         gsap.registerPlugin(ScrollTrigger);
 
+        // Intro Complete Flag to coordinate animations
+        let introComplete = false;
+
         // 1. HERO TEXT ENTRANCE (INSTANT EXECUTION)
         // No event listeners. Fire immediately.
         const textTl = gsap.timeline({
             delay: 0.1, // Single frame delay to prevent layout thrashing
-            onComplete: initScrollTrigger // Hook scroll logic after entrance
+            onComplete: () => {
+                introComplete = true; // Signal completion for mouse loop
+                initScrollTrigger(); // Hook scroll logic after entrance
+            }
         });
+        
+        // 0. Background & Glow (Start immediately)
+        textTl.to(".hero-bg-gradient", { opacity: 1, duration: 2.0, ease: "power2.out" }, 0);
+        textTl.to(".glow-orb", { opacity: 1, scale: 1, duration: 2.0, ease: "power2.out" }, 0);
 
         // Grid Animation - Start slightly before or with text
         const isMobile = window.innerWidth <= 1024;
@@ -1353,10 +1370,11 @@
                  // Fade Orb only
                  const fadeDistance = 600; 
                  const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
-                 if (orb) orb.style.opacity = opacity;
+                 // Only control opacity after intro is complete
+                 if (introComplete && orb) orb.style.opacity = opacity;
             } else {
                  // MOBILE: Disable title parallax, keep opacity full so it stays pinned visibly
-                 if (orb) orb.style.opacity = 0.6;
+                 if (introComplete && orb) orb.style.opacity = 0.6;
                  if (title) {
                     title.style.opacity = 1; 
                     title.style.transform = 'translate3d(0,0,0)'; // Reset transform
