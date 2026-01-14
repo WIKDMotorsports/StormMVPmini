@@ -294,7 +294,7 @@
             /* Prevent Layout Shift */
             min-height: 400px; /* Adjust based on your render's aspect ratio */
             display: flex;
-            align-items: center;
+            align-items: flex-end; /* Changed from center to anchor image to bottom */
             justify-content: center;
         }
 
@@ -315,7 +315,7 @@
         }
 
         /* Fallback: If JS fails, show the image */
-        .no-js #heroImage, .no-js .hero-title-line, .no-js .hero-grid-overlay, .no-js .stat-item, .no-js .hero-bg-gradient, .no-js .glow-orb {
+        .no-js #heroImage, .no-js .hero-title-line, .no-js .hero-grid-overlay, .no-js .stat-item, .no-js .hero-bg-gradient, .no-js .glow-orb, .no-js .logo, .no-js .nav-btn {
             opacity: 1;
             transform: none;
             filter: none;
@@ -331,10 +331,46 @@
             z-index: 1000; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--color-border);
         }
-        .logo { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 4px; display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 32px; height: 32px; border: 2px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        
+        .logo { 
+            font-family: var(--font-display); 
+            font-size: 18px; 
+            font-weight: 700; 
+            letter-spacing: 4px;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            
+            /* Initial State for Animation */
+            opacity: 0;
+            transform: translateY(-15px);
+            filter: blur(5px);
+            will-change: transform, opacity, filter;
+            /* Ensure GSAP works without interference */
+            transition: none;
+        }
 
-        .nav-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .logo-icon { 
+            width: 32px; height: 32px; 
+            border: 2px solid rgba(255, 255, 255, 0.3); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 12px; font-weight: 700; 
+        }
+
+        /* Nav Btn Initial State */
+        .nav-btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; 
+            background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); 
+            
+            /* Initial State */
+            opacity: 0;
+            transform: translateY(-15px);
+            filter: blur(5px);
+            will-change: transform, opacity, filter;
+            
+            /* Prevent transition conflict with GSAP entrance */
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
         .nav-btn:hover { background: rgba(255,255,255,0.05); }
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); text-align: center; }
@@ -980,7 +1016,11 @@
                     </div>
                     <div class="industry-card">
                         <div class="card-image">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector">
+                            <img 
+                                src="Optimized Images/Industries/Energy-Camera.webp" 
+                                onerror="this.onerror=null; this.src='https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Industries/Energy-Camera.webp?raw=true'"
+                                alt="Energy Sector"
+                            >
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">Energy & Utilities</h3>
@@ -990,7 +1030,11 @@
                     </div>
                     <div class="industry-card">
                         <div class="card-image">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector">
+                            <img 
+                                src="Optimized Images/Industries/Construction_1-Camera 2.webp" 
+                                onerror="this.onerror=null; this.src='https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Industries/Construction_1-Camera%202.webp?raw=true'"
+                                alt="Heavy Equipment Sector"
+                            >
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">Heavy Equipment</h3>
@@ -1171,8 +1215,8 @@
         });
         
         // 0. Background & Glow (Start immediately)
-        textTl.to(".hero-bg-gradient", { opacity: 1, duration: 2.0, ease: "power2.out" }, 0);
-        textTl.to(".glow-orb", { opacity: 1, scale: 1, duration: 2.0, ease: "power2.out" }, 0);
+        textTl.to(".hero-bg-gradient", { opacity: 1, duration: 0.8, ease: "power2.out" }, 0);
+        textTl.to(".glow-orb", { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, 0);
 
         // Grid Animation - Start slightly before or with text
         const isMobile = window.innerWidth <= 1024;
@@ -1186,9 +1230,21 @@
                 opacity: isMobile ? 0.5 : 1, 
                 y: 0,
                 filter: "blur(0px)",
-                duration: 1.2,
+                duration: 0.6,
                 ease: "power3.out"
             }, 0); 
+        
+        // Nav Icon & Logo Text (Whole Unit)
+        textTl.to(".logo", 
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, ease: "power4.out" },
+            0
+        );
+
+        // Nav Button
+        textTl.to(".nav-btn", 
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, ease: "power4.out" },
+            0
+        );
 
         textTl.fromTo(".hero-title-line", 
             {
@@ -1200,8 +1256,8 @@
                 opacity: 1,
                 y: 0,
                 filter: "blur(0px)",
-                duration: 0.8,
-                stagger: 0.1, 
+                duration: 0.5,
+                stagger: 0.05, 
                 ease: "power4.out"
             }, 0.1); 
 
@@ -1242,7 +1298,7 @@
                     filter: "blur(0px)", 
                     y: 0,
                     scale: 1,
-                    duration: 0.8, 
+                    duration: 0.5, 
                     ease: "power3.out", 
                     scrollTrigger: {
                         trigger: el,
@@ -1283,7 +1339,7 @@
                         scale: 1,
                         y: 0,
                         filter: "blur(0px) brightness(1)",
-                        duration: 1.0, 
+                        duration: 0.7, 
                         ease: "power4.out"
                     }, 0); 
 
@@ -1298,8 +1354,8 @@
                         y: 0,
                         opacity: 1,
                         filter: "blur(0px)",
-                        duration: 0.6,
-                        stagger: 0.05, // Faster stagger
+                        duration: 0.4,
+                        stagger: 0.03, // Faster stagger
                         ease: "power3.out"
                     }, 0.1); 
             }
