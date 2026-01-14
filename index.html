@@ -204,7 +204,7 @@
                 0 0 30px var(--hero-title-glow),
                 0 0 60px rgba(255, 255, 255, 0.05);
             
-            /* Initial Animation State */
+            /* Initial Animation State - Explicitly Hidden */
             opacity: 0;
             transform: translateY(30px);
             filter: blur(15px);
@@ -265,7 +265,12 @@
             mask-image: radial-gradient(circle at center, black, transparent 90%);
             z-index: 1; 
             pointer-events: none;
-            will-change: transform;
+            
+            /* Initial Animation State - Explicitly Hidden */
+            opacity: 0;
+            transform: translateY(50px);
+            filter: blur(10px);
+            will-change: transform, opacity, filter;
         }
 
         .product-image-container {
@@ -303,7 +308,7 @@
         }
 
         /* Fallback: If JS fails, show the image */
-        .no-js #heroImage, .no-js .hero-title-line {
+        .no-js #heroImage, .no-js .hero-title-line, .no-js .hero-grid-overlay, .no-js .stat-item {
             opacity: 1;
             transform: none;
             filter: none;
@@ -355,7 +360,16 @@
             padding: 30px 0;
         }
 
-        .stat-item { text-align: center; flex-shrink: 0; }
+        .stat-item { 
+            text-align: center; 
+            flex-shrink: 0;
+            /* Initial Animation State - Explicitly Hidden */
+            opacity: 0;
+            transform: translateY(20px);
+            filter: blur(8px);
+            will-change: transform, opacity, filter;
+        }
+
         .stat-value { 
             display: block;
             font-family: var(--font-display); 
@@ -591,7 +605,10 @@
                 transform: none !important; /* Disable transforms */
             }
             
-            .hero-grid-overlay { opacity: 0.5; } 
+            .hero-grid-overlay { 
+                /* Removed static opacity override so JS can control it */
+                /* opacity: 0.5; */ 
+            } 
             
             .stats-bar .container { padding: 0; max-width: none; }
             
@@ -1136,17 +1153,40 @@
         // 1. HERO TEXT ENTRANCE (INSTANT EXECUTION)
         // No event listeners. Fire immediately.
         const textTl = gsap.timeline({
+            delay: 0.1, // Single frame delay to prevent layout thrashing
             onComplete: initScrollTrigger // Hook scroll logic after entrance
         });
 
-        textTl.to(".hero-title-line", {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.8,
-            stagger: 0.1, 
-            ease: "power4.out"
-        });
+        // Grid Animation - Start slightly before or with text
+        const isMobile = window.innerWidth <= 1024;
+        textTl.fromTo(".hero-grid-overlay", 
+            {
+                opacity: 0,
+                y: 50,
+                filter: "blur(10px)"
+            },
+            {
+                opacity: isMobile ? 0.5 : 1, 
+                y: 0,
+                filter: "blur(0px)",
+                duration: 1.2,
+                ease: "power3.out"
+            }, 0); 
+
+        textTl.fromTo(".hero-title-line", 
+            {
+                opacity: 0,
+                y: 30,
+                filter: "blur(15px)"
+            },
+            {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.8,
+                stagger: 0.1, 
+                ease: "power4.out"
+            }, 0.1); 
 
         // Flag to track minimum delay for aesthetics
         let minDelayPassed = false;
@@ -1165,7 +1205,7 @@
                     opacity: 0,
                     filter: "blur(20px)",
                     stagger: 0.1,
-                    overwrite: 'auto' // Prevent conflicts
+                    overwrite: 'auto' 
                 });
             }
         }
@@ -1196,8 +1236,6 @@
             );
         });
 
-        // 3. STATS BAR RIPPLE (REMOVED STANDALONE TRIGGER - MERGED WITH IMAGE)
-
         // 4. HERO IMAGE & STATS BAR SMART REVEAL
         const heroImg = document.getElementById('heroImage');
         const heroContainer = document.getElementById('heroImageContainer');
@@ -1216,14 +1254,21 @@
                 });
 
                 // Image Reveal
-                masterTl.to(heroImg, {
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    filter: "blur(0px) brightness(1)",
-                    duration: 1.0, 
-                    ease: "power4.out"
-                }, 0); // Start at time 0
+                masterTl.fromTo(heroImg, 
+                    {
+                        opacity: 0,
+                        scale: 0.9,
+                        y: 30,
+                        filter: "blur(20px) brightness(0.5)"
+                    },
+                    {
+                        opacity: 1,
+                        scale: 1,
+                        y: 0,
+                        filter: "blur(0px) brightness(1)",
+                        duration: 1.0, 
+                        ease: "power4.out"
+                    }, 0); 
 
                 // Stats Bar Reveal (Sync with Image)
                 masterTl.fromTo(".stat-item", 
@@ -1239,7 +1284,7 @@
                         duration: 0.6,
                         stagger: 0.05, // Faster stagger
                         ease: "power3.out"
-                    }, 0.1); // Start slightly after image starts (0.1s offset)
+                    }, 0.1); 
             }
         };
 
