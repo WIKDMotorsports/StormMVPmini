@@ -16,9 +16,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
 
-    <!-- GSAP & SCROLLTRIGGER -->
+    <!-- GSAP & SCROLLTRIGGER & SCROLLTO -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 
     <style>
         /* ------------------------------------------------------------- 
@@ -418,6 +419,10 @@
         .specs-content {
             padding: 1rem 2rem 2rem 2rem;
             background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            /* CRITICAL: Prevent CSS transitions on the content to stop fighting GSAP */
+            transition: none !important;
+            will-change: height, opacity; /* Hint browser to optimize */
         }
 
         .expansion-grid-spec { 
@@ -1030,6 +1035,86 @@
                 }
                 roam();
             }
+
+            // -----------------------------------------------------------------
+            // ACCORDION LOGIC - REVERSE ANIMATION TECHNIQUE (NO SNAP)
+            // -----------------------------------------------------------------
+            const detailGroups = document.querySelectorAll('details.specs-group');
+            
+            detailGroups.forEach((detail, index) => {
+                const summary = detail.querySelector('summary');
+                const content = detail.querySelector('.specs-content');
+                
+                summary.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    
+                    const isOpen = detail.hasAttribute('open');
+                    const tl = gsap.timeline({
+                        defaults: { duration: 0.5, ease: "circ.out" }, // Mechanical/Tech ease
+                        onComplete: () => ScrollTrigger.refresh()
+                    });
+
+                    if (isOpen) {
+                        // --- CLOSING ---
+                        tl.to(content, {
+                            height: 0,
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                            opacity: 0,
+                            onComplete: () => {
+                                detail.removeAttribute('open');
+                                // Reset inline styles so next open works perfectly from DOM state
+                                gsap.set(content, { clearProps: "all" }); 
+                            }
+                        });
+                        
+                        // --- AUTO-OPEN NEXT ---
+                        const nextDetail = detailGroups[index + 1];
+                        
+                        if (nextDetail) {
+                            if (!nextDetail.hasAttribute('open')) {
+                                nextDetail.setAttribute('open', '');
+                                const nextContent = nextDetail.querySelector('.specs-content');
+                                
+                                // REVERSE ANIMATION TRICK:
+                                // 1. Browser renders full height immediately because of 'open' attribute
+                                // 2. We instantly force it to 0 height with GSAP
+                                // 3. We animate it back to its natural state
+                                
+                                tl.from(nextContent, { 
+                                    height: 0, 
+                                    paddingTop: 0, 
+                                    paddingBottom: 0, 
+                                    opacity: 0,
+                                    clearProps: "all" // Ensure no lingering styles at end
+                                }, "<"); // Sync start with close
+                            }
+                        } else {
+                            // --- LAST ITEM: SCROLL PAGE ---
+                            const nextSection = document.getElementById('ecosystem');
+                            if(nextSection) {
+                                tl.to(window, { 
+                                    scrollTo: { y: nextSection, offsetY: 80 }, 
+                                    duration: 0.8, 
+                                    ease: "power2.out" 
+                                }, "-=0.3");
+                            }
+                        }
+                    } else {
+                        // --- MANUAL OPENING ---
+                        detail.setAttribute('open', '');
+                        
+                        // Same Reverse Animation Trick
+                        tl.from(content, { 
+                            height: 0, 
+                            paddingTop: 0, 
+                            paddingBottom: 0, 
+                            opacity: 0,
+                            clearProps: "all"
+                        });
+                    }
+                });
+            });
         });
     </script>
 </body>
