@@ -664,22 +664,22 @@
             <div class="container">
                 <div class="stats-grid">
                     <!-- Set 1 -->
-                    <div class="stat-item reveal">
+                    <div class="stat-item">
                         <span class="stat-value">
                             <span class="desktop-text">10+ Years</span>
                             <span class="mobile-text">10+ Year Battery</span>
                         </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
-                    <div class="stat-item reveal">
+                    <div class="stat-item">
                         <span class="stat-value">-40° to +85°C</span>
                         <span class="stat-label">Operating Range</span>
                     </div>
-                    <div class="stat-item reveal">
+                    <div class="stat-item">
                         <span class="stat-value">IP69K</span>
                         <span class="stat-label">Ingress Protection</span>
                     </div>
-                    <div class="stat-item reveal">
+                    <div class="stat-item">
                         <span class="stat-value">MIL-STD-810H</span>
                         <span class="stat-label">Certified</span>
                     </div>
@@ -826,8 +826,8 @@
                     <p class="section-subtitle">When standard tracking fails, StormPMC delivers. Built from the ground up for operations where failure is not an option.</p>
                 </div>
                 
-                <div class="features-grid">
-                    <div class="card reveal">
+                <div class="features-grid reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Extreme Durability</h3>
@@ -839,7 +839,7 @@
                         </div>
                     </div>
                     
-                    <div class="card reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Decade-Long Battery</h3>
@@ -851,7 +851,7 @@
                         </div>
                     </div>
                     
-                    <div class="card reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Global Coverage</h3>
@@ -863,7 +863,7 @@
                         </div>
                     </div>
                     
-                    <div class="card reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">IP69K Sealed</h3>
@@ -875,7 +875,7 @@
                         </div>
                     </div>
                     
-                    <div class="card reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Mesh Networking</h3>
@@ -887,7 +887,7 @@
                         </div>
                     </div>
                     
-                    <div class="card reveal">
+                    <div class="card">
                         <div class="card-content">
                             <div class="card-header">
                                 <h3 class="card-title">Real-Time Platform</h3>
@@ -910,8 +910,8 @@
                     <h2 class="section-title">Trusted Across Sectors</h2>
                 </div>
                 
-                <div class="industries-grid">
-                    <div class="industry-card reveal">
+                <div class="industries-grid reveal">
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Military_With_Gateway_Rim_light-Camera%202.png?raw=true" alt="Military Sector">
                         </div>
@@ -921,7 +921,7 @@
                             <a href="MTRAC.html#industries" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <div class="industry-card reveal">
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Energy-Camera.png?raw=true" alt="Energy Sector">
                         </div>
@@ -931,7 +931,7 @@
                             <a href="MTRAC.html#industries" class="card-link">Learn More &rarr;</a>
                         </div>
                     </div>
-                    <div class="industry-card reveal">
+                    <div class="industry-card">
                         <div class="card-image">
                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/Productrenders/Industries/Construction_1-Camera%202.png?raw=true" alt="Heavy Equipment Sector">
                         </div>
@@ -1056,8 +1056,30 @@
 
         function toggleExpansion() {
             expandBtn.classList.toggle('active');
-            expandContent.classList.toggle('open');
-            expandBtn.querySelector('.icon').textContent = expandContent.classList.contains('open') ? '×' : '+';
+            const isOpen = expandContent.classList.toggle('open'); // Capture state
+            expandBtn.querySelector('.icon').textContent = isOpen ? '×' : '+';
+            
+            if (isOpen) {
+                // GSAP Sequence for "smooth as fuck" entry
+                const elementsToAnimate = expandContent.querySelectorAll('.expansion-header, .expansion-item, #collapseBtnBottom');
+                
+                gsap.fromTo(elementsToAnimate, 
+                    { 
+                        opacity: 0, 
+                        y: 20, 
+                        filter: "blur(10px)" 
+                    }, 
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        filter: "blur(0px)", 
+                        duration: 0.5, 
+                        stagger: 0.03, 
+                        ease: "power2.out",
+                        delay: 0.1 // Slight delay to let height transition begin
+                    }
+                );
+            }
         }
 
         if (expandBtn) expandBtn.addEventListener('click', toggleExpansion);
@@ -1110,8 +1132,8 @@
                     filter: "blur(0px)", 
                     y: 0,
                     scale: 1,
-                    duration: 1.5,
-                    ease: "expo.out",
+                    duration: 0.8, // Faster, snappier duration
+                    ease: "power3.out", // Clearer easing
                     scrollTrigger: {
                         trigger: el,
                         start: "top 85%", // Starts when item is 85% down the screen
@@ -1119,6 +1141,22 @@
                     }
                 }
             );
+        });
+
+        // 3. STATS BAR RIPPLE (ON LOAD)
+        gsap.from(".stat-item", {
+            scrollTrigger: {
+                trigger: ".stats-bar",
+                start: "top 95%", // Triggers almost immediately if visible
+                toggleActions: "play none none none"
+            },
+            y: 20,
+            opacity: 0,
+            filter: "blur(8px)",
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power3.out",
+            delay: 0.2
         });
 
         // -----------------------------------------------------------------
