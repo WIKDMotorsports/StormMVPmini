@@ -511,11 +511,11 @@
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
         /* ============================================
-            MOBILE & RESPONSIVE
+            MOBILE & RESPONSIVE CONFIGURATION
            ============================================ */
         
         @media (max-width: 1024px) {
-            .container { padding: 0 40px; }
+            .container { padding: 0 24px; }
             .flagship-grid, .expansion-grid, .industries-grid { grid-template-columns: 1fr; gap: 40px; }
             .features-grid { grid-template-columns: repeat(2, 1fr); }
             
@@ -523,41 +523,48 @@
             .cta-content { margin-left: 0; max-width: 100%; }
             .cta-content div { justify-content: flex-start !important; }
 
+            /* HERO FIX: HEIGHT & POSITIONING */
+            .hero-section {
+                height: 58dvh !important; /* Fixed height for pocket effect */
+                background: transparent;
+                min-height: auto;
+            }
+
+            /* HERO FIX: TITLE PINNING */
             .fixed-header-bg {
                 position: fixed;
                 width: 100%;
                 left: 0; top: 0;
                 height: 100vh;
-                padding-top: 15vh;
+                padding-top: 15vh !important; /* Pinned padding */
                 pointer-events: none;
                 z-index: 1;
             }
 
             .hero-title-container { padding: 0 20px; align-items: center; }
+            
+            /* HERO FIX: FONT SCALING */
             .hero-title-line { 
-                font-size: clamp(32px, 12vw, 50px);
+                font-size: clamp(32px, 10vw, 48px); /* Adjusted clamping */
                 text-align: center; 
                 width: 100%; 
                 white-space: normal;
                 line-height: 0.95;
             }
 
-            .hero-section {
-                background: transparent;
-                min-height: 45vh; 
-            }
-            
+            /* HERO FIX: PRODUCT IMAGE SCALING */
             .product-image-container {
-                width: 100%;
-                margin-left: 0; 
+                width: 110%; /* Wider than screen */
+                margin-left: -5%; /* Centered via negative margin */
                 margin-top: 0;
-                transform: none !important; 
+                transform: none !important; /* Disable transforms */
             }
             
             .hero-grid-overlay { opacity: 0.5; } 
             
             .stats-bar .container { padding: 0; max-width: none; }
             
+            /* STATS TICKER */
             .stats-grid { 
                 display: flex; 
                 width: max-content; 
@@ -566,6 +573,7 @@
                 animation: ticker-scroll 40s linear infinite;
                 grid-template-columns: none;
             }
+            .ticker-duplicate { display: block; }
             
             .stat-value { font-size: 14px; }
 
@@ -591,7 +599,6 @@
         }
 
         @media (max-width: 768px) {
-            .container { padding: 0 24px; }
             .nav { padding: 15px 24px; }
             .section { padding: 30px 0; }
             .flagship-image { height: 300px; }
@@ -1111,17 +1118,24 @@
             currentScroll += (targetScroll - currentScroll) * lerpAmount;
             
             if (orb) orb.style.transform = `translate3d(calc(${currentOrbX}px - 50%), calc(${currentOrbY}px - 50%), 0)`;
-            if (grid && !isTouch) grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
-            if (title && !isTouch) title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
-
+            
+            // Logic Split: Desktop Parallax vs Mobile Pinning
             if (window.innerWidth > 1024) {
+                 // DESKTOP: Apply parallax and opacity fade
+                 if (grid && !isTouch) grid.style.transform = `translate3d(0, ${currentScroll * 0.5}px, 0)`;
+                 if (title && !isTouch) title.style.transform = `translate3d(0, ${currentScroll * -0.15}px, 0)`;
+                 
                  const fadeDistance = 600; 
                  const opacity = Math.max(0, 1 - (currentScroll / fadeDistance));
                  if (title) title.style.opacity = opacity;
                  if (orb) orb.style.opacity = opacity;
             } else {
+                 // MOBILE: Disable title parallax, keep opacity full so it stays pinned visibly
                  if (orb) orb.style.opacity = 0.6;
-                 if (title) title.style.opacity = 1; 
+                 if (title) {
+                    title.style.opacity = 1; 
+                    title.style.transform = 'translate3d(0,0,0)'; // Reset transform
+                 }
             }
 
             requestAnimationFrame(animate);
@@ -1155,4 +1169,4 @@
         }
     </script>
 </body>
-</html>
+</html>v
