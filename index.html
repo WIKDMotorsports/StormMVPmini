@@ -91,9 +91,16 @@
 
         @media (hover: hover) and (pointer: fine) {
             #wikd-cursor { display: block; }
-            /* Hide system cursor ONLY in hero section */
-            .hero-section, .hero-section *, .nav, .nav * {
+            /* Hide system cursor ONLY in hero section. Exclude Nav so standard cursor shows there. */
+            .hero-section, .hero-section *, .fixed-header-bg, .fixed-header-bg *, .hero-bg-gradient {
                 cursor: none !important;
+            }
+            /* Explicitly ensure Nav and its children have a standard cursor */
+            .nav, .nav * {
+                cursor: auto !important;
+            }
+            .nav a, .nav button, .nav .nav-btn {
+                cursor: pointer !important;
             }
         }
 
@@ -968,13 +975,13 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
 
-            // Visibility Logic: Only show when hovering the hero or the nav
-            // (The fixed header area is visually part of the landing hero)
+            // Visibility Logic: Only show when hovering the hero area, NOT the nav
             const isOverHeroArea = e.target.closest('#hero') || 
-                                   e.target.closest('#parallaxTitle') || 
-                                   e.target.closest('.nav');
+                                   e.target.closest('#parallaxTitle');
+            const isOverNav = e.target.closest('.nav');
             
-            if (isOverHeroArea && window.innerWidth > 1024) {
+            // Only show custom cursor if over the hero area AND NOT over the nav
+            if (isOverHeroArea && !isOverNav && window.innerWidth > 1024) {
                 cursor.style.opacity = "1";
             } else {
                 cursor.style.opacity = "0";
