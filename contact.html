@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Contact StormPMC - Get in touch with our sales team to discuss your asset tracking requirements.">
     <title>Contact Us | StormPMC</title>
-    <!-- Leaflet CSS for Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- GSAP & SCROLLTRIGGER -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
         /* ============================================
-           STORMPMC - GLOBAL STYLES
-           Military-Grade Asset Tracking
+           GLOBAL VARIABLES (From Main Page)
            ============================================ */
-        
-        /* CSS Variables */
         :root {
-            color-scheme: dark; /* Signals browser to use dark-themed native UI/tooltips */
+            /* Site Palette */
             --color-bg-primary: #050505;
             --color-bg-secondary: #0a0a0a;
             --color-bg-tertiary: #111111;
@@ -31,154 +32,116 @@
             --color-text-tertiary: rgba(255, 255, 255, 0.4);
             --color-text-muted: rgba(255, 255, 255, 0.3);
             --color-accent: #4ade80;
+            
             --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-display: 'Space Grotesk', sans-serif;
-            --transition-fast: 0.2s ease;
+
             --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
             --border-radius-sm: 4px;
             --border-radius-md: 8px;
-            --border-radius-lg: 12px;
+            --border-radius-lg: 16px; 
             --border-radius-xl: 20px;
         }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Reset & Base */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
+        html { 
+            scroll-behavior: smooth; 
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
         }
         
         body {
             font-family: var(--font-primary);
-            background: var(--color-bg-primary);
+            background-color: var(--color-bg-primary);
             color: var(--color-text-primary);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
-        }
-        
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition-normal);
-        }
-        
-        ul, ol {
-            list-style: none;
-        }
-        
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* ============================================
-           UTILITY CLASSES
-           ============================================ */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 60px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 24px;
-            }
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
         }
 
+        a { text-decoration: none; color: inherit; transition: var(--transition-normal); }
+        ul { list-style: none; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+
         /* ============================================
-           BACKGROUND EFFECTS
+           NAV & FOOTER (Matches Main Page)
            ============================================ */
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-            background-size: 80px 80px;
-            pointer-events: none;
-            z-index: 0;
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-border);
         }
         
-        .glow-orb {
-            position: fixed;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -300px;
-            right: -300px;
-            pointer-events: none;
-            z-index: 0;
+        .logo { 
+            font-family: var(--font-display); 
+            font-size: 18px; 
+            font-weight: 700; 
+            letter-spacing: 4px;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
         }
-        
+
+        .logo-icon { 
+            width: 32px; height: 32px; 
+            border: 2px solid rgba(255, 255, 255, 0.3); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 12px; font-weight: 700; 
+        }
+
+        .nav-btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; 
+            background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); 
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .footer { background: var(--color-bg-secondary); border-top: 1px solid var(--color-border); padding: 80px 0 40px; margin-top: auto; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
+
         /* ============================================
-           BUTTONS
+           CONTACT FORM STYLES
            ============================================ */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-family: var(--font-primary);
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 16px 36px;
-            border-radius: var(--border-radius-sm);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition-normal);
-        }
-        
-        .btn-primary {
-            background: var(--color-text-primary);
-            color: var(--color-bg-primary);
-        }
-        
-        .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--color-text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-        
-        /* ============================================
-           SECTION STYLES
-           ============================================ */
-        .section {
+        .page-content {
+            padding-top: 180px; /* Space for Fixed Nav */
+            padding-bottom: 100px;
             position: relative;
-            z-index: 1;
-            padding: 120px 0;
+            z-index: 10;
+        }
+
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px; } 
+        .section-label { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-bottom: 1.5rem; }
+        .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
+        .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
+
+        .contact-form-wrapper {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
         
-        /* ============================================
-           FORMS
-           ============================================ */
-        .form-group {
-            margin-bottom: 24px;
+        .contact-form-header { margin-bottom: 40px; }
+        .contact-form-header h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
+        .contact-form-header p { color: var(--color-text-tertiary); font-size: 14px; }
         
+        /* Form Inputs */
+        .form-group { margin-bottom: 24px; }
         .form-label {
             display: block;
             font-size: 11px;
@@ -189,9 +152,7 @@
             margin-bottom: 10px;
         }
         
-        .form-input,
-        .form-textarea,
-        .form-select {
+        .form-input, .form-textarea {
             width: 100%;
             padding: 16px 20px;
             background: rgba(255, 255, 255, 0.03);
@@ -203,143 +164,91 @@
             transition: var(--transition-normal);
         }
         
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
+        .form-input:focus, .form-textarea:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.05);
         }
         
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            cursor: pointer;
+        /* Buttons */
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; 
+            font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; 
+            text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; 
+            transition: var(--transition-normal); text-align: center; 
         }
+        .btn-primary { background: var(--color-text-primary); color: var(--color-bg-primary); }
+        .btn-primary:hover { background: rgba(255, 255, 255, 0.9); transform: translateY(-2px); }
         
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Page Specific Inline Styles */
-        .contact-form-wrapper {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-lg);
-            padding: 50px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .contact-form-header {
-            margin-bottom: 40px;
-        }
-        
-        .contact-form-header h3 {
-            font-family: var(--font-display);
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .contact-form-header p {
-            color: var(--color-text-tertiary);
-            font-size: 14px;
-        }
-        
+        /* Success Message */
         .form-success {
-            display: none;
-            text-align: center;
-            padding: 60px 40px;
+            display: none; text-align: center; padding: 60px 40px;
         }
-        
-        .form-success.show {
-            display: block;
-        }
-        
-        .form-success h3 {
-            font-family: var(--font-display);
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-        
-        .form-success p {
-            color: var(--color-text-secondary);
-            font-size: 15px;
-        }
-        
-        .form-content.hidden {
-            display: none;
-        }
-        
-        /* ============================================
-           MAP STYLES
-           ============================================ */
-        #map-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        #map {
-            width: 100%; height: 100%;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            background-color: var(--color-bg-primary);
-            transform: scale(1.1);
-        }
-        .leaflet-container {
-            background-color: var(--color-bg-primary) !important;
-        }
-        .ping-container { width: 50px; height: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
-        .ping-dot { width: 10px; height: 10px; background-color: #00ced1; border-radius: 50%; box-shadow: 0 0 8px 3px #00ced1b3; position: absolute; transform: scale(1); opacity: 1; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.3s ease 0.1s; }
-        .ping-circle { width: 40px; height: 40px; border: 2px solid #00ced1; border-radius: 50%; box-shadow: inset 0 0 4px 1px #00ced180, 0 0 8px 2px #00ced1b3; position: absolute; animation: ping-animation 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1); transition: opacity 0.3s ease; }
-        
-        @keyframes ping-animation { 0% { transform: scale(0); opacity: 0.8; } 80% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
+        .form-success.show { display: block; }
+        .form-success h3 { font-family: var(--font-display); font-size: 28px; margin-bottom: 15px; }
+        .form-success p { color: var(--color-text-secondary); font-size: 15px; }
+        .form-content.hidden { display: none; }
 
-        .product-image {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-lg);
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Background Effects */
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none; z-index: 0;
+        }
+        .glow-orb {
+            position: fixed; width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.05) 0%, transparent 70%);
+            border-radius: 50%; top: -300px; right: -300px;
+            pointer-events: none; z-index: 0; filter: blur(80px);
         }
 
-        @media (max-width: 640px) {
-            .contact-form-wrapper {
-                padding: 30px;
-            }
+        /* Mobile */
+        @media (max-width: 768px) {
+            .nav { padding: 15px 24px; }
+            .container { padding: 0 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            .contact-form-wrapper { padding: 30px; }
+            .footer-bottom { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .page-content { padding-top: 140px; }
         }
     </style>
 </head>
 <body>
+
     <div class="grid-overlay"></div>
     <div class="glow-orb"></div>
 
-    <!-- Contact Section -->
-    <section class="section" style="padding-bottom: 40px;">
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">S</div>
+            STORMPMC
+        </a>
+        <div class="nav-right">
+            <a href="index.html" class="nav-btn">Back Home</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content">
         <div class="container">
-            <div class="contact-form-wrapper">
+            <div class="section-header reveal">
+                <span class="section-label">Get Connected</span>
+                <h2 class="section-title">Sales & Support</h2>
+                <p class="section-subtitle">Fill out the form below and our team will get back to you within 24 hours.</p>
+            </div>
+
+            <div class="contact-form-wrapper reveal">
                 <div class="form-content" id="formContent">
                     <div class="contact-form-header">
                         <h3>Send Us a Message</h3>
-                        <p>Fill out the form below and we'll get back to you within 24 hours.</p>
+                        <p>Tell us about your asset tracking requirements.</p>
                     </div>
                     
                     <form id="contactForm">
@@ -392,23 +301,34 @@
                 </div>
             </div>
         </div>
-    </section>
+    </main>
 
-    <!-- Map Section -->
-    <section class="section" style="padding-top: 0;">
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
-            <div class="product-image" style="max-width: 800px; margin: 0 auto;">
-                <div id="map-wrapper" style="border-radius: inherit; overflow: hidden;">
-                    <div id="map"></div>
-                </div>
+            <div class="footer-bottom">
+                <p>© 2025 StormPMC. HIGH-ASSET RELIABILITY.</p>
+                <p>MIL-STD-810H CERTIFIED SYSTEMS</p>
             </div>
         </div>
-    </section>
+    </footer>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        // Form submission logic
+        // -----------------------------------------------------------------
+        // ANIMATION ENTRANCE
+        // -----------------------------------------------------------------
+        gsap.from(".reveal", {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out",
+            delay: 0.2
+        });
+
+        // -----------------------------------------------------------------
+        // FORM LOGIC
+        // -----------------------------------------------------------------
         const contactForm = document.getElementById('contactForm');
         const formContent = document.getElementById('formContent');
         const formSuccess = document.getElementById('formSuccess');
@@ -446,7 +366,7 @@
                 `Message:\n${message}`
             );
 
-            // Open mail client - UPDATED EMAIL TO contact@syberstorm.com
+            // Open mail client
             window.location.href = `mailto:contact@syberstorm.com?subject=${subject}&body=${body}`;
 
             // Show success UI
@@ -459,495 +379,6 @@
                 formSuccess.classList.add('show');
             }, 1000);
         });
-
-        // Map Logic
-        const targetLocation = [33.2133976, -96.610987];
-        const map = L.map('map', { zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false, dragging: true }).setView(targetLocation, 16);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
-        
-        const customPingIcon = L.divIcon({
-            className: '',
-            html: `<div class="ping-container"><div class="ping-circle"></div><div class="ping-dot"></div></div>`,
-            iconSize: [50, 50],
-            iconAnchor: [25, 25]
-        });
-        L.marker(targetLocation, { icon: customPingIcon }).addTo(map);
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Contact StormPMC - Get in touch with our sales team to discuss your asset tracking requirements.">
-    <title>Contact Us | StormPMC</title>
-    <!-- Leaflet CSS for Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ============================================
-           STORMPMC - GLOBAL STYLES
-           Military-Grade Asset Tracking
-           ============================================ */
-        
-        /* CSS Variables */
-        :root {
-            color-scheme: dark; /* Signals browser to use dark-themed native UI/tooltips */
-            --color-bg-primary: #050505;
-            --color-bg-secondary: #0a0a0a;
-            --color-bg-tertiary: #111111;
-            --color-bg-card: rgba(255, 255, 255, 0.02);
-            --color-border: rgba(255, 255, 255, 0.08);
-            --color-border-hover: rgba(255, 255, 255, 0.15);
-            --color-text-primary: #ffffff;
-            --color-text-secondary: rgba(255, 255, 255, 0.6);
-            --color-text-tertiary: rgba(255, 255, 255, 0.4);
-            --color-text-muted: rgba(255, 255, 255, 0.3);
-            --color-accent: #4ade80;
-            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-display: 'Space Grotesk', sans-serif;
-            --transition-fast: 0.2s ease;
-            --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
-            --border-radius-sm: 4px;
-            --border-radius-md: 8px;
-            --border-radius-lg: 12px;
-            --border-radius-xl: 20px;
-        }
-        
-        /* Reset & Base */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: var(--font-primary);
-            background: var(--color-bg-primary);
-            color: var(--color-text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition-normal);
-        }
-        
-        ul, ol {
-            list-style: none;
-        }
-        
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* ============================================
-           UTILITY CLASSES
-           ============================================ */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 60px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 24px;
-            }
-        }
-
-        /* ============================================
-           BACKGROUND EFFECTS
-           ============================================ */
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-            background-size: 80px 80px;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .glow-orb {
-            position: fixed;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -300px;
-            right: -300px;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        /* ============================================
-           BUTTONS
-           ============================================ */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-family: var(--font-primary);
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 16px 36px;
-            border-radius: var(--border-radius-sm);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition-normal);
-        }
-        
-        .btn-primary {
-            background: var(--color-text-primary);
-            color: var(--color-bg-primary);
-        }
-        
-        .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--color-text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-        
-        /* ============================================
-           SECTION STYLES
-           ============================================ */
-        .section {
-            position: relative;
-            z-index: 1;
-            padding: 120px 0;
-        }
-        
-        /* ============================================
-           FORMS
-           ============================================ */
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--color-text-secondary);
-            margin-bottom: 10px;
-        }
-        
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-sm);
-            color: var(--color-text-primary);
-            font-family: var(--font-primary);
-            font-size: 14px;
-            transition: var(--transition-normal);
-        }
-        
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            cursor: pointer;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Page Specific Inline Styles */
-        .contact-form-wrapper {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-lg);
-            padding: 50px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .contact-form-header {
-            margin-bottom: 40px;
-        }
-        
-        .contact-form-header h3 {
-            font-family: var(--font-display);
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .contact-form-header p {
-            color: var(--color-text-tertiary);
-            font-size: 14px;
-        }
-        
-        .form-success {
-            display: none;
-            text-align: center;
-            padding: 60px 40px;
-        }
-        
-        .form-success.show {
-            display: block;
-        }
-        
-        .form-success h3 {
-            font-family: var(--font-display);
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-        
-        .form-success p {
-            color: var(--color-text-secondary);
-            font-size: 15px;
-        }
-        
-        .form-content.hidden {
-            display: none;
-        }
-        
-        /* ============================================
-           MAP STYLES
-           ============================================ */
-        #map-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        #map {
-            width: 100%; height: 100%;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            background-color: var(--color-bg-primary);
-            transform: scale(1.1);
-        }
-        .leaflet-container {
-            background-color: var(--color-bg-primary) !important;
-        }
-        .ping-container { width: 50px; height: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
-        .ping-dot { width: 10px; height: 10px; background-color: #00ced1; border-radius: 50%; box-shadow: 0 0 8px 3px #00ced1b3; position: absolute; transform: scale(1); opacity: 1; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.3s ease 0.1s; }
-        .ping-circle { width: 40px; height: 40px; border: 2px solid #00ced1; border-radius: 50%; box-shadow: inset 0 0 4px 1px #00ced180, 0 0 8px 2px #00ced1b3; position: absolute; animation: ping-animation 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1); transition: opacity 0.3s ease; }
-        
-        @keyframes ping-animation { 0% { transform: scale(0); opacity: 0.8; } 80% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
-
-        .product-image {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-lg);
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @media (max-width: 640px) {
-            .contact-form-wrapper {
-                padding: 30px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="grid-overlay"></div>
-    <div class="glow-orb"></div>
-
-    <!-- Contact Section -->
-    <section class="section" style="padding-bottom: 40px;">
-        <div class="container">
-            <div class="contact-form-wrapper">
-                <div class="form-content" id="formContent">
-                    <div class="contact-form-header">
-                        <h3>Send Us a Message</h3>
-                        <p>Fill out the form below and we'll get back to you within 24 hours.</p>
-                    </div>
-                    
-                    <form id="contactForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label" for="firstName">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="John" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Smith" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label" for="email">Email Address *</label>
-                                <input type="email" id="email" name="email" class="form-input" placeholder="john@company.com" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 (555) 123-4567">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="company">Company / Organization *</label>
-                            <input type="text" id="company" name="company" class="form-input" placeholder="Company Name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="message">Message *</label>
-                            <textarea id="message" name="message" class="form-textarea" placeholder="Tell us about your requirements..." required></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Submit Inquiry</button>
-                    </form>
-                </div>
-                
-                <div class="form-success" id="formSuccess">
-                    <div style="width: 80px; height: 80px; background: rgba(74, 222, 128, 0.1); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <h3>Message Sent!</h3>
-                    <p>Our team will review your inquiry and get back to you within 24 hours.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Map Section -->
-    <section class="section" style="padding-top: 0;">
-        <div class="container">
-            <div class="product-image" style="max-width: 800px; margin: 0 auto;">
-                <div id="map-wrapper" style="border-radius: inherit; overflow: hidden;">
-                    <div id="map"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script>
-        // Form submission logic
-        const contactForm = document.getElementById('contactForm');
-        const formContent = document.getElementById('formContent');
-        const formSuccess = document.getElementById('formSuccess');
-        
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Collect form data
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phoneVal = document.getElementById('phone').value;
-            const company = document.getElementById('company').value;
-            const message = document.getElementById('message').value;
-
-            // Minimal Phone validation (if provided)
-            const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
-            if (phoneVal && !phoneRegex.test(phoneVal)) {
-                const submitBtn = contactForm.querySelector('.btn-primary');
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Invalid Phone Number';
-                setTimeout(() => submitBtn.textContent = originalText, 2000);
-                return;
-            }
-
-            const phone = phoneVal || 'N/A';
-
-            // Construct email link
-            const subject = encodeURIComponent(`Inquiry from ${firstName} ${lastName} - ${company}`);
-            const body = encodeURIComponent(
-                `Name: ${firstName} ${lastName}\n` +
-                `Email: ${email}\n` +
-                `Phone: ${phone}\n` +
-                `Company: ${company}\n\n` +
-                `Message:\n${message}`
-            );
-
-            // Open mail client - UPDATED EMAIL TO contact@syberstorm.com
-            window.location.href = `mailto:contact@syberstorm.com?subject=${subject}&body=${body}`;
-
-            // Show success UI
-            const finalBtn = contactForm.querySelector('.btn-primary');
-            finalBtn.textContent = 'Opening Mail...';
-            finalBtn.disabled = true;
-            
-            setTimeout(() => {
-                formContent.classList.add('hidden');
-                formSuccess.classList.add('show');
-            }, 1000);
-        });
-
-        // Map Logic
-        const targetLocation = [33.2133976, -96.610987];
-        const map = L.map('map', { zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false, dragging: true }).setView(targetLocation, 16);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
-        
-        const customPingIcon = L.divIcon({
-            className: '',
-            html: `<div class="ping-container"><div class="ping-circle"></div><div class="ping-dot"></div></div>`,
-            iconSize: [50, 50],
-            iconAnchor: [25, 25]
-        });
-        L.marker(targetLocation, { icon: customPingIcon }).addTo(map);
     </script>
 </body>
 </html>
