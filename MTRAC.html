@@ -143,7 +143,8 @@
         @media (max-width: 1024px) {
             .features-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 768px) {
+        /* UPDATED: Changed breakpoint from 768px to 600px to keep tablet at 2 columns */
+        @media (max-width: 600px) {
             .features-grid { grid-template-columns: 1fr; }
             #features .card { padding: 2rem !important; }
         }
@@ -170,6 +171,9 @@
             --font-primary: 'Inter', sans-serif;
             --font-display: 'Space Grotesk', sans-serif;
             --border-radius-lg: 16px;
+
+            /* PING VARS */
+            --ping-color: #00E676; 
         }
 
         body {
@@ -222,7 +226,8 @@
 
         .product-hero-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            /* UPDATED: Changed from 1fr 1fr to minmax(0, 1fr) to prevent content expansion from shifting layout */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             align-items: center;
             gap: 4rem;
         }
@@ -248,10 +253,201 @@
             gap: 32px;
         }
 
+        /* --- MTRAC ACRONYM ANIMATION STYLES (INTEGRATED) --- */
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 80px; 
+            font-weight: 700;
+            line-height: 1.1; 
+            margin: 0 0 24px 0;
+            letter-spacing: -2px;
+            
+            /* FIXED DIMENSIONS & LAYOUT LOCK */
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            
+            /* MODIFIED: Changed to visible to allow Ping Superscript */
+            overflow: visible; 
+            position: relative;
+
+            flex-wrap: nowrap;        
+            cursor: pointer; /* Changed to pointer to indicate clickable */
+            
+            /* RETURN ANIMATION (Mouse Out) */
+            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+            
+            /* Disable user select to prevent highlighting text on multiple clicks */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .word-block {
+            display: inline-flex;
+            align-items: baseline;
+            margin-right: 2px;
+            position: relative; /* Anchor for Ping */
+        }
+
+        .initial {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .reveal {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            
+            /* BASE TRANSITION (Mouse Out / Collapse) */
+            transition: max-width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                        opacity 0.2s linear,
+                        margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- EXPANSION STATES --- */
+        .product-title.is-expanded,
+        .product-title.force-hover {
+            font-size: 22px; 
+            line-height: 1.2; 
+            letter-spacing: 0px; 
+            column-gap: 8px; 
+            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Desktop Only Hover (Strictly non-tablet/mobile) */
+        @media (hover: hover) and (min-width: 1025px) {
+            .product-title:hover {
+                font-size: 22px; 
+                line-height: 1.2; 
+                letter-spacing: 0px; 
+                column-gap: 8px; 
+                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .product-title:hover .initial {
+                color: var(--accent-defense);
+            }
+            .product-title:hover .reveal {
+                max-width: 200px; 
+                opacity: 1;
+                margin-right: 6px; 
+                transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                            opacity 0.4s ease 0.2s,
+                            margin-right 0.4s ease 0.2s;
+            }
+            .product-title:hover .ping-circle {
+                transform: scale(0) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: transform 0.2s ease 0s,
+                            opacity 0.2s ease 0s,
+                            visibility 0s linear 0.2s;
+            }
+        }
+
+        /* Class-Based Expansion (For Mobile/Click) */
+        .product-title.is-expanded .initial {
+            color: var(--accent-defense);
+        }
+
+        .product-title.is-expanded .reveal {
+            max-width: 200px; 
+            opacity: 1;
+            margin-right: 6px; 
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                        opacity 0.4s ease 0.2s,
+                        margin-right 0.4s ease 0.2s;
+        }
+        
+        /* Remove margin from last word block */
+        .word-block:last-child .reveal {
+            margin-right: 0;
+        }
+
+        /* --- CIRCULAR PING COMPONENT --- */
+        .ping-circle {
+            position: absolute;
+            top: 6px;    
+            right: -8px; 
+            transform: scale(1);
+            width: 24px;  
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            color: var(--ping-color);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s, 
+                        opacity 0.3s ease 0.8s,
+                        visibility 0.3s ease 0.8s,
+                        top 0.3s ease, right 0.3s ease;
+        }
+
+        /* Class-Based Hide (For Mobile/Click) */
+        .product-title.is-expanded .ping-circle {
+            transform: scale(0) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: transform 0.2s ease 0s,
+                        opacity 0.2s ease 0s,
+                        visibility 0s linear 0.2s;
+        }
+
+        .ping-circle::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px; 
+            background: currentColor;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .ping-circle::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0;
+            animation: pulse-ring-circle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring-circle {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
         @media (max-width: 1024px) {
             .industry-grid { grid-template-columns: 1fr; }
             .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
             .product-image { aspect-ratio: 16 / 9; }
+
+            /* Re-enable wrap on smaller screens */
+            .product-title { font-size: 56px; height: auto; min-height: 60px; flex-wrap: wrap; }
+            .ping-circle { top: -1px; right: -10px; transform: scale(0.9); }
+        }
+
+        @media (max-width: 600px) {
+            .product-title { font-size: 13vw; /* Responsive font sizing to prevent line breaking */ }
+            /* Hover style removed to prevent sticky hover on tap */
+            .ping-circle { top: -4px; right: -12px; transform: scale(0.8); }
         }
 
         .industry-card {
@@ -431,6 +627,11 @@
             gap: 24px 40px; 
         }
 
+        /* UPDATED: Collapsible containers to 1 column on mobile */
+        @media (max-width: 600px) {
+            .expansion-grid-spec { grid-template-columns: 1fr; gap: 16px; }
+        }
+
         .expansion-header { 
             font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; 
             border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; 
@@ -526,7 +727,21 @@
                 </div>
                 <div class="product-info">
                     <span class="section-label badge-flagship anim-hero-text">flagship system</span>
-                    <h1 class="product-title anim-hero-text">MTRAC</h1>
+                    
+                    <!-- NEW INTEGRATED ACRONYM TITLE -->
+                    <h1 class="product-title anim-hero-text">
+                        <span class="word-block"><span class="initial">M</span><span class="reveal">ilitary</span></span>
+                        <span class="word-block"><span class="initial">T</span><span class="reveal">racking</span></span>
+                        <span class="word-block"><span class="initial">R</span><span class="reveal">emote</span></span>
+                        <span class="word-block"><span class="initial">A</span><span class="reveal">ccess</span></span>
+                        <span class="word-block">
+                            <span class="initial">C</span>
+                            <span class="reveal">ommand</span>
+                            <!-- PING EFFECT ATTACHED TO 'C' -->
+                            <div class="ping-circle"></div>
+                        </span>
+                    </h1>
+
                     <p class="product-tagline anim-hero-text">Military-grade asset tracking built for decades of service in extreme environments.</p>
                     <p class="product-description anim-hero-text">The MTRAC is our flagship ruggedized asset tracker, engineered to withstand the harshest conditions on Earth. With a 10+ year battery life, global satellite connectivity, and full MIL-STD-810H certification, it's the definitive solution for tracking high-value assets in demanding operational theaters.</p>
                     <div class="product-cta anim-hero-text">
@@ -980,6 +1195,9 @@
             gsap.set(".grid-overlay", { autoAlpha: 0, y: 50 });
             gsap.set(".glow-orb", { autoAlpha: 0, scale: 0.8 });
             
+            // KEY INTEGRATION: Hide ping specifically for the GSAP entry so it can pop in.
+            gsap.set(".ping-circle", { scale: 0, autoAlpha: 0 });
+            
             // Scroll Reveal Elements
             gsap.set(".anim-reveal", { autoAlpha: 0, y: 40, scale: 0.98, filter: "blur(10px)" });
 
@@ -1001,6 +1219,16 @@
                 autoAlpha: 1, y: 0, filter: "blur(0px)",
                 duration: 0.6, stagger: 0.04, ease: "power3.out" // Faster, tighter stagger
             }, 0.2);
+            
+            // INTEGRATED: Ping Pop In
+            // Insert at absolute time 0.5s (While text is still revealing)
+            tl.to(".ping-circle", {
+                scale: 1, 
+                autoAlpha: 1, 
+                duration: 0.6, 
+                ease: "elastic.out(1, 0.5)",
+                clearProps: "all"
+            }, 0.5);
 
             // Highlights (Stats)
             tl.to(".anim-highlight", {
@@ -1156,6 +1384,29 @@
                     }
                 });
             });
+            
+            // -----------------------------------------------------------------
+            // INTEGRATED: ACRONYM CLICK LOGIC
+            // -----------------------------------------------------------------
+            const productTitle = document.querySelector('.product-title');
+            let contractionTimeout;
+
+            if (productTitle) {
+                productTitle.addEventListener('click', function() {
+                    // Add expanded class (triggers animation via CSS)
+                    this.classList.add('is-expanded');
+
+                    // Clear any existing timeout (in case of double clicks)
+                    if (contractionTimeout) {
+                        clearTimeout(contractionTimeout);
+                    }
+
+                    // Set timeout to auto-contract after 5 seconds (5000ms)
+                    contractionTimeout = setTimeout(() => {
+                        this.classList.remove('is-expanded');
+                    }, 5000);
+                });
+            }
         });
     </script>
 </body>
