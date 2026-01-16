@@ -439,8 +439,8 @@
             .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
             .product-image { aspect-ratio: 16 / 9; }
 
-            /* Re-enable wrap on smaller screens */
-            .product-title { font-size: 56px; height: auto; min-height: 60px; flex-wrap: wrap; }
+            /* Re-enable wrap on smaller screens, ensure min-height prevents layout shift */
+            .product-title { font-size: 56px; height: auto; min-height: 90px; flex-wrap: wrap; }
             .ping-circle { top: -1px; right: -10px; transform: scale(0.9); }
         }
 
@@ -1395,11 +1395,12 @@
             let contractionTimeout;
 
             if (productTitle) {
+                // Manual Click Handler
                 productTitle.addEventListener('click', function() {
                     // Add expanded class (triggers animation via CSS)
                     this.classList.add('is-expanded');
 
-                    // Clear any existing timeout (in case of double clicks)
+                    // Clear any existing timeout (in case of double clicks or auto-demo interference)
                     if (contractionTimeout) {
                         clearTimeout(contractionTimeout);
                     }
@@ -1409,6 +1410,19 @@
                         this.classList.remove('is-expanded');
                     }, 5000);
                 });
+
+                // Auto-trigger demo (NEW)
+                setTimeout(() => {
+                    // Check if user has already interacted (class exists)
+                    if (productTitle && !productTitle.classList.contains('is-expanded')) {
+                        productTitle.classList.add('is-expanded');
+                        
+                        // Set the timeout using the shared variable so clicks can override it
+                        contractionTimeout = setTimeout(() => {
+                            productTitle.classList.remove('is-expanded');
+                        }, 3000); // 3s demo duration
+                    }
+                }, 1500); // Wait 1.5s after load (after entrance anims settle)
             }
         });
     </script>
