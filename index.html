@@ -51,6 +51,10 @@
             --cursor-theme: #00E676;
             --cursor-bg: rgba(20, 20, 20, 0.4);
             --cursor-border: rgba(255, 255, 255, 0.9);
+
+            /* Ping Effect */
+            --ping-color: #00E676;
+            --accent-defense: #4ade80;
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -379,9 +383,237 @@
 
         .section { position: relative; z-index: 11; padding: 50px 0; pointer-events: auto; background: var(--color-bg-primary); }
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; } 
-        .section-label { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-bottom: 1.5rem; }
+        
+        /* TIGHTER VERTICAL SPACING FOR FLAGSHIP */
+        .section-label { 
+            display: inline-block; 
+            padding: 6px 12px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 4px; 
+            font-size: 10px; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            color: rgba(255, 255, 255, 0.6); 
+            margin-bottom: 12px; /* Reduced from 1.5rem to pull title closer */
+        }
+        
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
+        
+        /* === Product Title Specifics (ANIMATED ACRONYM) === */
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 80px; 
+            font-weight: 700;
+            line-height: 1.1; 
+            
+            /* Reduced margin to pull tagline up, compensating for internal container height */
+            margin: 0 0 12px 0; 
+            letter-spacing: -2px;
+            
+            /* FIXED DIMENSIONS & LAYOUT LOCK */
+            min-height: 90px; 
+            height: 90px; 
+            width: 100%;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            box-sizing: border-box; 
+            
+            overflow: visible; 
+            position: relative;
+
+            flex-wrap: nowrap;        
+            cursor: pointer; 
+            color: var(--color-text-primary);
+            
+            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+            
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .word-block {
+            display: inline-flex;
+            align-items: baseline;
+            margin-right: 2px;
+            position: relative; /* Anchor for Ping */
+        }
+
+        .initial {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .acronym-text {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            
+            /* BASE TRANSITION (Mouse Out / Collapse) */
+            transition: max-width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                        opacity 0.2s linear,
+                        margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- EXPANSION STATES --- */
+        .product-title.is-expanded,
+        .product-title.force-hover {
+            font-size: 22px; 
+            line-height: 1.2; 
+            letter-spacing: 0px; 
+            column-gap: 8px; 
+            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Desktop Only Hover (Strictly non-tablet/mobile) */
+        @media (hover: hover) and (min-width: 1025px) {
+            .product-title:hover {
+                font-size: 22px; 
+                line-height: 1.2; 
+                letter-spacing: 0px; 
+                column-gap: 8px; 
+                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .product-title:hover .initial {
+                color: var(--accent-defense);
+            }
+            .product-title:hover .acronym-text {
+                max-width: 200px; 
+                opacity: 1;
+                margin-right: 6px; 
+                transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                            opacity 0.4s ease 0.2s,
+                            margin-right 0.4s ease 0.2s;
+            }
+            .product-title:hover .ping-circle {
+                transform: scale(0) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: transform 0.2s ease 0s,
+                            opacity 0.2s ease 0s,
+                            visibility 0s linear 0.2s;
+            }
+        }
+
+        /* Class-Based Expansion (For Mobile/Click) */
+        .product-title.is-expanded .initial {
+            color: var(--accent-defense);
+        }
+
+        .product-title.is-expanded .acronym-text {
+            max-width: 200px; 
+            opacity: 1;
+            margin-right: 6px; 
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                        opacity 0.4s ease 0.2s,
+                        margin-right 0.4s ease 0.2s;
+        }
+        
+        /* Remove margin from last word block */
+        .word-block:last-child .acronym-text {
+            margin-right: 0;
+        }
+
+        /* --- CIRCULAR PING COMPONENT --- */
+        .ping-circle {
+            position: absolute;
+            top: 6px;    
+            right: -8px; 
+            transform: scale(1);
+            width: 24px;  
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            color: var(--ping-color);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s, 
+                        opacity 0.3s ease 0.8s,
+                        visibility 0.3s ease 0.8s,
+                        top 0.3s ease, right 0.3s ease;
+        }
+
+        /* Class-Based Hide (For Mobile/Click) */
+        .product-title.is-expanded .ping-circle {
+            transform: scale(0) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: transform 0.2s ease 0s,
+                        opacity 0.2s ease 0s,
+                        visibility 0s linear 0.2s;
+        }
+
+        .ping-circle::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px; 
+            background: currentColor;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .ping-circle::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0;
+            animation: pulse-ring-circle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring-circle {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            /* Re-enable wrap on smaller screens, ensure min-height prevents layout shift */
+            .product-title { font-size: 56px; height: auto; min-height: 90px; flex-wrap: wrap; }
+            .ping-circle { top: -1px; right: -10px; transform: scale(0.9); }
+        }
+
+        @media (max-width: 600px) {
+            .product-title { font-size: 13vw; /* Responsive font sizing to prevent line breaking */ }
+            /* Hover style removed to prevent sticky hover on tap */
+            .ping-circle { top: -4px; right: -12px; transform: scale(0.8); }
+        }
+        
+        .product-tagline {
+            font-family: var(--font-primary);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .product-description {
+            font-family: var(--font-primary);
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            display: block;
+        }
 
         /* ============================================
             STATS BAR
@@ -441,7 +673,25 @@
         /* ============================================
             FEATURES, INDUSTRIES & CARDS
            ============================================ */
-        .flagship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        /* FIX: Desktop Grid Lock - Prevents expansion shift */
+        @media (min-width: 1025px) {
+            .flagship-grid { 
+                display: grid; 
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); 
+                gap: 80px; 
+                align-items: center; /* Vertically center content */
+            }
+        }
+        
+        /* FIX: Flagship Content Alignment */
+        /* Fixes stretched badge by using flex-start alignment */
+        .flagship-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* CRITICAL: Prevents badge stretch */
+        }
+
         .flagship-image { 
             height: 500px; 
             background: var(--color-bg-card); 
@@ -859,8 +1109,25 @@
                     </div>
                     <div class="flagship-content reveal">
                         <span class="section-label">Flagship System</span>
-                        <h1 class="section-title">MTRAC Asset Tracker</h1>
-                        <p class="section-subtitle" style="margin-bottom: 40px;">Military Tracking Remote Access Command. Patent-pending thermal protection survives 270°F at 30 PSI for 30 minutes. Seamless BLE, Cellular, and SatCom connectivity ensures you always know where your assets are.</p>
+                        
+                        <!-- NEW INTEGRATED ACRONYM TITLE -->
+                        <h1 class="product-title">
+                            <span class="word-block"><span class="initial">M</span><span class="acronym-text">ilitary</span></span>
+                            <span class="word-block"><span class="initial">T</span><span class="acronym-text">racking</span></span>
+                            <span class="word-block"><span class="initial">R</span><span class="acronym-text">emote</span></span>
+                            <span class="word-block"><span class="initial">A</span><span class="acronym-text">ccess</span></span>
+                            <span class="word-block">
+                                <span class="initial">C</span>
+                                <span class="acronym-text">ommand</span>
+                                <!-- PING EFFECT ATTACHED TO 'C' -->
+                                <div class="ping-circle"></div>
+                            </span>
+                        </h1>
+
+                        <p class="product-tagline">Asset Tracker</p>
+                        <p class="product-description">
+                            Patent-pending thermal protection survives 270°F at 30 PSI for 30 minutes. Seamless BLE, Cellular, and SatCom connectivity ensures you always know where your assets are.
+                        </p>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                             <a href="contact.html" class="btn btn-primary" data-mobile-text="Details">Request Details</a>
                             <a href="MTRAC.html#specifications" class="btn btn-secondary" data-mobile-text="Docs">Documentation</a>
@@ -1555,6 +1822,51 @@
             }, { rootMargin: '-15% 0px -15% 0px', threshold: 0.1 });
 
             document.querySelectorAll('.card, .industry-card').forEach(card => scrollObserver.observe(card));
+        }
+
+        // -----------------------------------------------------------------
+        // INTEGRATED: ACRONYM CLICK LOGIC (SCROLL-AWARE AUTO TRIGGER)
+        // -----------------------------------------------------------------
+        const productTitle = document.querySelector('.product-title');
+        let contractionTimeout;
+        let hasAutoTriggered = false;
+
+        if (productTitle) {
+            // Manual Click Handler
+            productTitle.addEventListener('click', function() {
+                this.classList.add('is-expanded');
+                if (contractionTimeout) clearTimeout(contractionTimeout);
+                contractionTimeout = setTimeout(() => {
+                    this.classList.remove('is-expanded');
+                }, 5000);
+            });
+
+            // Intersection Observer for Auto-Trigger
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Only trigger if visible, hasn't triggered yet, and not already interacted with
+                    if (entry.isIntersecting && !hasAutoTriggered && !productTitle.classList.contains('is-expanded')) {
+                        hasAutoTriggered = true;
+                        
+                        // 1s delay after appearing on screen before expanding
+                        setTimeout(() => {
+                            if (!productTitle.classList.contains('is-expanded')) {
+                                productTitle.classList.add('is-expanded');
+                                
+                                // Auto-close after 3s
+                                contractionTimeout = setTimeout(() => {
+                                    productTitle.classList.remove('is-expanded');
+                                }, 3000); 
+                            }
+                        }, 1000);
+                        
+                        // Stop observing once triggered
+                        observer.unobserve(productTitle);
+                    }
+                });
+            }, { threshold: 0.5 }); // Trigger when 50% visible
+
+            observer.observe(productTitle);
         }
     </script>
 </body>
