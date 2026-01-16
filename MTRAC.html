@@ -59,7 +59,7 @@
         }
 
         /* Initial hidden state for GSAP targets */
-        .anim-reveal, .anim-hero-text, .anim-highlight, .product-image, .grid-overlay, .glow-orb {
+        .anim-reveal, .anim-hero-text, .anim-highlight, .product-image, .grid-overlay, .glow-orb, .cta-image-wrapper {
             visibility: hidden;
             opacity: 0;
             will-change: transform, opacity;
@@ -674,6 +674,74 @@
             filter: blur(80px);
         }
 
+        /* ------------------------------------------------------------- 
+           NEW CTA SECTION STYLES
+           ------------------------------------------------------------- */
+        .cta-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 3rem;
+        }
+
+        .cta-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .cta-title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .cta-text {
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .cta-image-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 300px; /* Scaled to 0.5x */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cta-image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            /* Base subtle shadow */
+            filter: drop-shadow(0 0 40px rgba(74, 222, 128, 0.05));
+            transform: perspective(1000px) rotateX(2deg);
+            transition: filter 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        /* Bloom on hover */
+        .cta-section.is-hovered .cta-image-wrapper img {
+            filter: drop-shadow(0 0 120px rgba(74, 222, 128, 0.25));
+        }
+
+        @media (max-width: 600px) {
+            .cta-stack { gap: 2.5rem; }
+            .cta-buttons { flex-direction: column; width: 100%; }
+            .cta-buttons .btn { width: 100%; }
+        }
+
     </style>
 </head>
 <body>
@@ -999,15 +1067,24 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
+    <!-- UPDATED CTA Section -->
     <section class="section cta-section" id="deploy">
         <div class="container">
-            <div class="cta-content anim-reveal">
-                <h2 class="cta-title">Ready to Deploy MTRAC?</h2>
-                <p class="cta-text">Contact our team to discuss your requirements, request pricing, or schedule a demonstration.</p>
-                <div class="cta-buttons">
-                    <a href="contact.html" class="btn btn-primary">Request Quote</a>
-                    <a href="products.html" class="btn btn-secondary">View All Products</a>
+            <div class="cta-stack">
+                <!-- Product Render (Scaled to 0.5x) -->
+                <div class="cta-image-wrapper">
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/MTRAC_Render_CTA_Section.webp?raw=true" alt="MTRAC Asset Tracker Render">
+                </div>
+
+                <!-- Text Content -->
+                <div class="cta-content anim-reveal">
+                    <h2 class="cta-title">Ready to Deploy MTRAC?</h2>
+                    <p class="cta-text">Contact our team to discuss your requirements, request pricing, or schedule a demonstration.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="contact.html" class="btn btn-primary" id="quote-btn">Request Quote</a>
+                        <a href="products.html" class="btn btn-secondary">View All Products</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1203,6 +1280,9 @@
             
             // Scroll Reveal Elements
             gsap.set(".anim-reveal", { autoAlpha: 0, y: 40, scale: 0.98, filter: "blur(10px)" });
+            
+            // CTA Image Initial State
+            gsap.set(".cta-image-wrapper", { autoAlpha: 0, scale: 0.8, y: 30 });
 
             // 2. HERO ENTRANCE TIMELINE
             const tl = gsap.timeline({ delay: 0.1 }); // Reduced delay
@@ -1263,8 +1343,11 @@
             }
 
             // 3. SCROLL REVEAL LOGIC
-            // Exclude hero-handled elements
+            // Exclude hero-handled elements and CTA elements which are handled separately
             gsap.utils.toArray(".anim-reveal:not(.hero-handled)").forEach(el => {
+                // If this is inside CTA section, skip it (we handle it below)
+                if(el.closest('.cta-section')) return;
+
                 gsap.to(el, {
                     scrollTrigger: {
                         trigger: el,
@@ -1280,7 +1363,49 @@
                 });
             });
 
-            // 4. SUBTLE PARALLAX
+            // 4. CTA SPECIFIC ANIMATION
+            const ctaSection = document.querySelector('.cta-section');
+            if (ctaSection) {
+                const ctaTl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: ctaSection,
+                        start: "top 70%",
+                        toggleActions: "play none none none"
+                    }
+                });
+                
+                // Image First
+                ctaTl.to(".cta-image-wrapper", {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+                
+                // Then Text Content
+                ctaTl.to(".cta-section .anim-reveal", {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    duration: 0.8,
+                    ease: "power4.out"
+                }, "-=0.5");
+                
+                // CTA Hover Interaction
+                const quoteBtn = document.getElementById('quote-btn');
+                if (quoteBtn) {
+                    quoteBtn.addEventListener('mouseenter', () => {
+                        ctaSection.classList.add('is-hovered');
+                    });
+                    quoteBtn.addEventListener('mouseleave', () => {
+                        ctaSection.classList.remove('is-hovered');
+                    });
+                }
+            }
+
+            // 5. SUBTLE PARALLAX
             if (window.innerWidth > 1024) {
                 gsap.to(".grid-overlay", {
                     scrollTrigger: {
@@ -1294,7 +1419,7 @@
                 });
             }
 
-            // 5. ORB ROAMING
+            // 6. ORB ROAMING
             const orb = document.querySelector('.glow-orb');
             if(orb) {
                 let time = 0;
