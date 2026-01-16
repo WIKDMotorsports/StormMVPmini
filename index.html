@@ -419,7 +419,8 @@
             font-size: 22px; 
             font-weight: 600; 
             margin-bottom: 4px;
-            white-space: nowrap; 
+            white-space: normal; /* Changed from nowrap to allow wrapping for long text */
+            line-height: 1.2;
         }
         
         .stat-value .mobile-text { display: none; }
@@ -598,6 +599,37 @@
         .cta-text { font-size: 16px; color: var(--color-text-secondary); margin-bottom: 40px; }
 
         .footer { background: var(--color-bg-secondary); border-top: 1px solid var(--color-border); padding: 80px 0 40px; position: relative; z-index: 11; pointer-events: auto; }
+        
+        /* Updated Footer for new copy structure */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-col h4 {
+            font-family: var(--font-display);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-text-primary);
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--color-text-primary);
+        }
+
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
         /* ============================================
@@ -669,7 +701,7 @@
             }
             .ticker-duplicate { display: block; }
             
-            .stat-value { font-size: 14px; }
+            .stat-value { font-size: 14px; white-space: nowrap; } /* Revert to nowrap for marquee */
 
             .stats-bar::before, .stats-bar::after {
                 content: '';
@@ -685,6 +717,8 @@
             .stat-label { display: none; }
             .stat-value .desktop-text { display: none; }
             .stat-value .mobile-text { display: inline; }
+            
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
         }
 
         @keyframes ticker-scroll {
@@ -761,18 +795,18 @@
                     <!-- Set 1 -->
                     <div class="stat-item">
                         <span class="stat-value">
-                            <span class="desktop-text">10+ Years</span>
-                            <span class="mobile-text">10+ Year Battery</span>
+                            <span class="desktop-text">~1 Year</span>
+                            <span class="mobile-text">~1 Year Battery</span>
                         </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">-40° to +85°C</span>
-                        <span class="stat-label">Operating Range</span>
+                        <span class="stat-value">270°F @ 30PSI / 30min</span>
+                        <span class="stat-label">Heat Survival</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">IP69K</span>
-                        <span class="stat-label">Ingress Protection</span>
+                        <span class="stat-value">IP67</span>
+                        <span class="stat-label">Water Resistant</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-value">MIL-STD-810H</span>
@@ -782,18 +816,18 @@
                     <!-- Set 2 (Ticker Mobile) -->
                     <div class="stat-item ticker-duplicate">
                         <span class="stat-value">
-                            <span class="desktop-text">10+ Years</span>
-                            <span class="mobile-text">10+ Year Battery</span>
+                            <span class="desktop-text">~1 Year</span>
+                            <span class="mobile-text">~1 Year Battery</span>
                         </span>
                         <span class="stat-label">Battery Life</span>
                     </div>
                     <div class="stat-item ticker-duplicate">
-                        <span class="stat-value">-40° to +85°C</span>
-                        <span class="stat-label">Operating Range</span>
+                        <span class="stat-value">270°F @ 30PSI / 30min</span>
+                        <span class="stat-label">Heat Survival</span>
                     </div>
                     <div class="stat-item ticker-duplicate">
-                        <span class="stat-value">IP69K</span>
-                        <span class="stat-label">Ingress Protection</span>
+                        <span class="stat-value">IP67</span>
+                        <span class="stat-label">Water Resistant</span>
                     </div>
                     <div class="stat-item ticker-duplicate">
                         <span class="stat-value">MIL-STD-810H</span>
@@ -826,7 +860,7 @@
                     <div class="flagship-content reveal">
                         <span class="section-label">Flagship System</span>
                         <h1 class="section-title">MTRAC Asset Tracker</h1>
-                        <p class="section-subtitle" style="margin-bottom: 40px;">Our primary military-grade asset tracker engineered for long-duration operations in austere and contested environments. MTRAC delivers decade-long battery life, resilient communications, and full MIL-STD-810H certification.</p>
+                        <p class="section-subtitle" style="margin-bottom: 40px;">Military Tracking Remote Access Command. Patent-pending thermal protection survives 270°F at 30 PSI for 30 minutes. Seamless BLE, Cellular, and SatCom connectivity ensures you always know where your assets are.</p>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                             <a href="contact.html" class="btn btn-primary" data-mobile-text="Details">Request Details</a>
                             <a href="MTRAC.html#specifications" class="btn btn-secondary" data-mobile-text="Docs">Documentation</a>
@@ -849,43 +883,55 @@
                                 <span class="expansion-header green">Asset Trackers</span>
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3>
-                                    <p class="expansion-desc">Our flagship ruggedized tracker with 10-year battery, global satellite connectivity, and full MIL-STD-810H certification.</p>
+                                    <p class="expansion-desc">Military Tracking Remote Access Command. Patent-pending thermal protection, seamless BLE/Cellular/SatCom connectivity, IP67 rated, MIL-STD-810H certified.</p>
                                 </div>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">MTRAC Lite <span class="badge-green">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Compact tracker for smaller assets and equipment. Same rugged DNA in a lighter form factor.</p>
+                                    <h3 class="expansion-name">MTRAC & Satcom <span class="badge-green">Global Coverage</span></h3>
+                                    <p class="expansion-desc">MTRAC with integrated satellite communication for tracking in remote locations without cellular coverage.</p>
                                 </div>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">MTRAC Container <span class="badge-green">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Specialized tracker for shipping containers with door sensors and tamper detection.</p>
+                                    <h3 class="expansion-name">MTRAC Lite <span class="badge-cyan">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Compact tracker with essential features for cost-effective asset monitoring.</p>
+                                </div>
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">MTRAC Lite & Satcom <span class="badge-cyan">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Lightweight tracker with satellite connectivity for remote tracking needs.</p>
+                                </div>
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">MTRAC Micro (BLE) <span class="badge-cyan">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Ultra-compact Bluetooth Low Energy tracker for small asset and inventory tracking.</p>
                                 </div>
                             </div>
 
                             <div class="expansion-category">
                                 <span class="expansion-header magenta">Gateways</span>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Storm Gateway <span class="badge-magenta">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Long-range mesh gateway for remote deployments. Creates robust network coverage in challenging terrain.</p>
+                                    <h3 class="expansion-name">Gateway (Vehicle) Cellular <span class="badge-magenta">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Vehicle-mounted gateway with cellular connectivity for fleet tracking and convoy operations.</p>
                                 </div>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Gateway Mobile <span class="badge-magenta">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Vehicle-mounted gateway for mobile command posts and convoy operations.</p>
+                                    <h3 class="expansion-name">Gateway (Aviation) BLE <span class="badge-magenta">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Aviation-certified BLE gateway designed for aircraft cargo and equipment tracking.</p>
                                 </div>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Gateway Solar <span class="badge-magenta">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Self-powered gateway with integrated solar panel for off-grid installations.</p>
+                                    <h3 class="expansion-name">Gateway (Warehouse) BLE <span class="badge-magenta">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Fixed-position BLE gateway for warehouse and facility asset management.</p>
                                 </div>
                             </div>
                             
                             <div class="expansion-category">
                                 <span class="expansion-header white">Accessories</span>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Power Pack <span class="badge-white">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Extended battery module for multi-year deployments where replacement isn't an option.</p>
+                                    <h3 class="expansion-name">Harness For Vehicles <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Secure mounting harness designed for vehicle installations with integrated power connection.</p>
                                 </div>
                                 <div class="expansion-item">
-                                    <h3 class="expansion-name">Universal Mount <span class="badge-white">Coming Soon</span></h3>
-                                    <p class="expansion-desc">Heavy-duty mounting solutions for any surface. Includes bolt-on and magnetic options.</p>
+                                    <h3 class="expansion-name">Harness For Aircraft & Marine <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Corrosion-resistant harness for aviation and marine environments.</p>
+                                </div>
+                                <div class="expansion-item">
+                                    <h3 class="expansion-name">Charging Station <span class="badge-white">Coming Soon</span></h3>
+                                    <p class="expansion-desc">Multi-device charging station for efficient tracker fleet management.</p>
                                 </div>
                             </div>
 
@@ -894,10 +940,6 @@
                                 <div class="expansion-item">
                                     <h3 class="expansion-name">Real-Time Dashboard</h3>
                                     <p class="expansion-desc">Unified view of all assets with live location updates, status monitoring, and customizable alerts.</p>
-                                </div>
-                                <div class="expansion-item">
-                                    <h3 class="expansion-name">API Integration</h3>
-                                    <p class="expansion-desc">RESTful API for seamless integration with existing logistics, ERP, and asset management systems.</p>
                                 </div>
                             </div>
                         </div>
@@ -925,72 +967,72 @@
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">Extreme Durability</h3>
+                                <h3 class="card-title">Extreme Thermal Protection</h3>
                             </div>
-                            <p class="card-text">MIL-STD-810H certified to withstand shock, vibration, and extreme temperatures from -40°C to +85°C.</p>
+                            <p class="card-text">Patent-pending insulation with phase change material. Survives 270°F at 30 PSI for 30 minutes with no damage to box or internals.</p>
                         </div>
                         <div class="card-visual">
-                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Durability.png?raw=true" alt="Extreme Durability">
+                            <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Durability.png?raw=true" alt="Extreme Thermal Protection">
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">Decade-Long Battery</h3>
+                                <h3 class="card-title">Seamless Connectivity</h3>
                             </div>
-                            <p class="card-text">Advanced power management delivers 10+ years of operation on a single battery in typical use cases.</p>
+                            <p class="card-text">Automatic failover between BLE, Cellular, and SatCom. Priority: BLE → Cellular → SatCom. Never lose track of your assets.</p>
                         </div>
                         <div class="card-visual">
-                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Decade-Long%20Battery.png?raw=true" alt="Decade-Long Battery">
+                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Global.png?raw=true" alt="Seamless Connectivity">
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">Global Coverage</h3>
+                                <h3 class="card-title">Adaptive Ping Intervals</h3>
                             </div>
-                            <p class="card-text">Satellite connectivity ensures tracking anywhere on Earth—from dense urban environments to remote wilderness.</p>
+                            <p class="card-text">BLE as low as 8 seconds, Cellular as low as 1 minute, SatCom as low as 30 minutes. Optimize for speed or battery life.</p>
                         </div>
                         <div class="card-visual">
-                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Global.png?raw=true" alt="Global Coverage">
+                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Decade-Long%20Battery.png?raw=true" alt="Adaptive Ping Intervals">
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">IP69K Sealed</h3>
+                                <h3 class="card-title">IP67 Water Resistant</h3>
                             </div>
-                            <p class="card-text">Fully sealed against water, dust, and high-pressure wash-downs. Submersible to specified depths.</p>
+                            <p class="card-text">Steam and humidity resistant. Handles 3ft of water for 30 minutes. Built for harsh industrial environments.</p>
                         </div>
                         <div class="card-visual">
-                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/IP%20Rated.png?raw=true" alt="IP69K Sealed">
+                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/IP%20Rated.png?raw=true" alt="IP67 Water Resistant">
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">Mesh Networking</h3>
+                                <h3 class="card-title">Gateway Integration</h3>
                             </div>
-                            <p class="card-text">Devices communicate via encrypted mesh network, extending range and ensuring data delivery.</p>
+                            <p class="card-text">Each Gateway handles 100+ devices in a small area. Encrypted mesh network extends range and ensures data delivery.</p>
                         </div>
                         <div class="card-visual">
-                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Mesh%20Networking.png?raw=true" alt="Mesh Networking">
+                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Mesh%20Networking.png?raw=true" alt="Gateway Integration">
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">Real-Time Platform</h3>
+                                <h3 class="card-title">Security Features</h3>
                             </div>
-                            <p class="card-text">Cloud-based command center provides real-time visibility, alerts, and analytics across your entire fleet.</p>
+                            <p class="card-text">Tamper detection, GeoFencing alerts, and encrypted transmission. CMMC 2.0, SOC 2 Type II, ISO 27001 compliance roadmap.</p>
                         </div>
                         <div class="card-visual">
-                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Real-Time%20Platform.png?raw=true" alt="Real-Time Platform">
+                             <img src="https://github.com/WIKDMotorsports/Misc/blob/main/renders2/stylized/Real-Time%20Platform.png?raw=true" alt="Security Features">
                         </div>
                     </div>
                 </div>
@@ -1067,6 +1109,37 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
+            <div class="footer-grid">
+                <!-- Column 1: Identity -->
+                <div class="footer-col">
+                    <a href="index.html" class="logo" style="margin-bottom: 20px; opacity: 1; transform: none; filter: none;">
+                        <div class="logo-icon">S</div>
+                        STORMPMC
+                    </a>
+                    <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 300px; line-height: 1.6;">
+                        Military-grade asset tracking solutions engineered for the world's most demanding environments.
+                    </p>
+                </div>
+
+                <!-- Column 2: Products -->
+                <div class="footer-col">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="#">MTRAC Tracker</a></li>
+                        <li><a href="#">All Products</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact -->
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="contact.html">Get in Touch</a></li>
+                        <li><a href="#">Technical Support</a></li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="footer-bottom">
                 <p>© 2025 StormPMC. HIGH-ASSET RELIABILITY.</p>
                 <p>MIL-STD-810H CERTIFIED SYSTEMS</p>
