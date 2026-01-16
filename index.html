@@ -17,7 +17,7 @@
 
     <style>
         /* ============================================
-           GLOBAL VARIABLES
+            GLOBAL VARIABLES
            ============================================ */
         :root {
             /* Site Palette */
@@ -82,7 +82,7 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
 
         /* ============================================
-           CUSTOM CERAMIC CURSOR STYLES
+            CUSTOM CERAMIC CURSOR STYLES
            ============================================ */
         #wikd-cursor {
             position: fixed;
@@ -159,7 +159,7 @@
         }
 
         /* ============================================
-           HERO & PARALLAX STYLES
+            HERO & PARALLAX STYLES
            ============================================ */
         
         .hero-bg-gradient {
@@ -326,7 +326,7 @@
         }
 
         /* ============================================
-           SITE COMPONENT STYLES
+            SITE COMPONENT STYLES
            ============================================ */
         
         .nav {
@@ -402,6 +402,17 @@
         .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
         .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
         
+        /* GSAP Reveal Helper - CRITICAL FIX FOR POPPING */
+        .reveal {
+            /* Performance: Inform browser of upcoming changes to filter */
+            will-change: transform, opacity, filter;
+            /* Performance: Force GPU acceleration to smooth out the blur calculation */
+            transform: translate3d(0, 0, 0); 
+            backface-visibility: hidden;
+            /* Logic: Prevent CSS transitions from fighting GSAP */
+            transition: none !important; 
+        }
+
         /* === Product Title Specifics (ANIMATED ACRONYM) === */
         .product-title {
             font-family: var(--font-display);
@@ -616,7 +627,7 @@
         }
 
         /* ============================================
-           STAT BAR
+            STATS BAR
            ============================================ */
         .stats-bar { 
             background: var(--color-bg-tertiary); 
@@ -671,7 +682,7 @@
         }
 
         /* ============================================
-           FEATURES, INDUSTRIES & CARDS
+            FEATURES, INDUSTRIES & CARDS
            ============================================ */
         /* FIX: Desktop Grid Lock - Prevents expansion shift */
         @media (min-width: 1025px) {
@@ -843,78 +854,10 @@
         
         .expansion-desc { font-size: 13px; color: var(--color-text-tertiary); line-height: 1.5; }
 
-        /* ============================================
-           UPDATED CTA SECTION STYLES
-           ============================================ */
-        .cta-section { 
-            background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)); 
-        }
-
-        .cta-stack {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 3rem;
-        }
-
-        .cta-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            max-width: 100% !important; /* Override target's constraint for wrapper */
-            margin: 0 auto;
-        }
-
-        .cta-title {
-            margin: 0;
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        .cta-text {
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-            color: var(--color-text-secondary);
-            font-size: 16px;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-
-        .cta-image-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 300px; /* Scaled to 0.5x */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
-            /* Initial Hidden State for GSAP */
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .cta-image-wrapper img {
-            max-width: 100%;
-            height: auto;
-            /* Base subtle shadow */
-            filter: drop-shadow(0 0 40px rgba(74, 222, 128, 0.05));
-            transform: perspective(1000px) rotateX(2deg);
-            transition: filter 0.8s cubic-bezier(0.2, 0, 0.2, 1);
-        }
-
-        /* Bloom on hover */
-        .cta-section.is-hovered .cta-image-wrapper img {
-            filter: drop-shadow(0 0 120px rgba(74, 222, 128, 0.25));
-        }
+        .cta-section { background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)); text-align: center; }
+        .cta-content { max-width: 600px; margin: 0 auto; }
+        .cta-title { font-family: var(--font-display); font-size: clamp(28px, 4vw, 42px); font-weight: 700; margin-bottom: 20px; }
+        .cta-text { font-size: 16px; color: var(--color-text-secondary); margin-bottom: 40px; }
 
         .footer { background: var(--color-bg-secondary); border-top: 1px solid var(--color-border); padding: 80px 0 40px; position: relative; z-index: 11; pointer-events: auto; }
         
@@ -951,7 +894,7 @@
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
 
         /* ============================================
-           MOBILE & RESPONSIVE CONFIGURATION
+            MOBILE & RESPONSIVE CONFIGURATION
            ============================================ */
         
         @media (max-width: 1024px) {
@@ -960,6 +903,10 @@
             .features-grid { grid-template-columns: repeat(2, 1fr); }
             
             .section-header, .cta-section, .stat-item, .flagship-content { text-align: left; }
+            
+            /* Spacing fix for mobile stack */
+            .flagship-content { margin-top: 32px; }
+
             .cta-content { margin-left: 0; max-width: 100%; }
             .cta-content div { justify-content: flex-start !important; }
 
@@ -1037,15 +984,6 @@
             .stat-value .mobile-text { display: inline; }
             
             .footer-grid { grid-template-columns: 1fr; gap: 40px; }
-        }
-
-        @media (max-width: 600px) {
-            .cta-stack { gap: 2.5rem; }
-            .cta-buttons { flex-direction: column; width: 100%; }
-            .cta-buttons .btn { width: 100%; }
-            .cta-content div { justify-content: center !important; }
-            .cta-section { text-align: center; }
-            .cta-content { align-items: center; }
         }
 
         @keyframes ticker-scroll {
@@ -1435,23 +1373,14 @@
         </section>
 
         <!-- CTA Section -->
-        <section class="section cta-section" id="deploy">
+        <section class="section cta-section">
             <div class="container">
-                <div class="cta-stack">
-                    <!-- Product Render (Scaled to 0.5x) -->
-                    <div class="cta-image-wrapper">
-                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/MTRAC_Render_CTA_Section.webp?raw=true" alt="MTRAC Asset Tracker Render">
-                    </div>
-
-                    <!-- Text Content -->
-                    <div class="cta-content anim-reveal">
-                        <h2 class="cta-title">Ready to Deploy MTRAC?</h2>
-                        <p class="cta-text">Contact our team to discuss your requirements, request pricing, or schedule a demonstration.</p>
-                        
-                        <div class="cta-buttons">
-                            <a href="contact.html" class="btn btn-primary" id="quote-btn">Request Quote</a>
-                            <a href="products.html" class="btn btn-secondary">View All Products</a>
-                        </div>
+                <div class="cta-content reveal">
+                    <h2 class="cta-title">Ready to Get Started?</h2>
+                    <p class="cta-text">Connect with our team to discuss your tracking requirements.</p>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <a href="contact.html" class="btn btn-primary" data-mobile-text="Sales">Contact Sales</a>
+                        <a href="MTRAC.html#overview" class="btn btn-secondary" data-mobile-text="Explore">Explore MTRAC</a>
                     </div>
                 </div>
             </div>
@@ -1751,51 +1680,6 @@
                 }
             );
         });
-
-        // 3. CTA SPECIFIC ANIMATION
-        // Initial setup to prevent FOUC
-        gsap.set(".cta-image-wrapper", { autoAlpha: 0, scale: 0.8, y: 30 });
-        
-        const ctaSection = document.querySelector('.cta-section');
-        if (ctaSection) {
-            const ctaTl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: ctaSection,
-                    start: "top 70%",
-                    toggleActions: "play none none none"
-                }
-            });
-            
-            // Image First
-            ctaTl.to(".cta-image-wrapper", {
-                autoAlpha: 1,
-                y: 0,
-                scale: 1,
-                duration: 1,
-                ease: "power3.out"
-            });
-            
-            // Then Text Content
-            ctaTl.to(".cta-section .anim-reveal", {
-                autoAlpha: 1,
-                y: 0,
-                scale: 1,
-                filter: "blur(0px)",
-                duration: 0.8,
-                ease: "power4.out"
-            }, "-=0.5");
-            
-            // CTA Hover Interaction
-            const quoteBtn = document.getElementById('quote-btn');
-            if (quoteBtn) {
-                quoteBtn.addEventListener('mouseenter', () => {
-                    ctaSection.classList.add('is-hovered');
-                });
-                quoteBtn.addEventListener('mouseleave', () => {
-                    ctaSection.classList.remove('is-hovered');
-                });
-            }
-        }
 
         // 4. HERO IMAGE & STATS BAR SMART REVEAL
         const heroImg = document.getElementById('heroImage');
