@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="StormPMC - About Us. Military-grade asset tracking solutions engineered for extreme environments.">
+    <title>About Us | StormPMC</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- EXTERNAL DEPENDENCIES (Icons & Animations) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* ============================================
+           GLOBAL VARIABLES
+           ============================================ */
+        :root {
+            /* Site Palette */
+            --color-bg-primary: #050505;
+            --color-bg-secondary: #0a0a0a;
+            --color-bg-tertiary: #111111;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(255, 255, 255, 0.15);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            --color-accent: #4ade80;
+            
+            /* Hero Specific Variables */
+            --hero-bg: #242424;
+            --hero-text: #ffffff;
+            --hero-accent-glow: rgba(74, 222, 128, 0.12); 
+            --hero-title-glow: rgba(255, 255, 255, 0.08);
+
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
+            --transition-normal: 0.3s ease;
+            --border-radius-lg: 16px; 
+            --border-radius-xl: 20px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { 
+            scroll-behavior: smooth; 
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition-normal); }
+        ul { list-style: none; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+
+        /* ============================================
+           BACKGROUND LAYERS (DEPTH SYSTEM)
+           ============================================ */
+        
+        /* 1. Static Gradient (Deepest) */
+        .hero-bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: linear-gradient(180deg, #050505 0%, #1a1a1a 100%);
+            z-index: 0; pointer-events: none; opacity: 0;
+        }
+
+        /* 2. Fixed Grid (Middle - Revealed by Transparent Sections) */
+        .fixed-grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
+            z-index: 0; 
+            pointer-events: none; 
+            opacity: 0;
+        }
+
+        /* 3. Moving Glow (Effect) */
+        .hero-glow-orb {
+            position: fixed; top: 50%; left: 50%; width: 60vmax; height: 60vmax;
+            background: radial-gradient(circle, var(--hero-accent-glow) 0%, transparent 70%);
+            transform: translate(-50%, -50%); z-index: 0; filter: blur(100px); pointer-events: none; opacity: 0;
+        }
+
+        /* ============================================
+           SECTIONS LAYOUT
+           ============================================ */
+        
+        /* TRANSPARENT SECTION (Reveals Grid) */
+        .section { 
+            position: relative; 
+            z-index: 1; 
+            padding: 100px 0; 
+            pointer-events: auto; 
+            background: transparent; 
+        }
+
+        /* SOLID SECTION (Covers Grid) */
+        .section-solid {
+            background: var(--color-bg-secondary);
+            position: relative;
+            z-index: 2; /* Slides OVER the transparent sections */
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Depth shadow */
+        }
+
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px; } 
+        
+        .section-label { 
+            display: inline-block; 
+            padding: 6px 12px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 4px; 
+            font-size: 10px; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            color: rgba(255, 255, 255, 0.6); 
+            margin-bottom: 20px;
+        }
+        
+        .section-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
+        .section-subtitle { font-size: 17px; color: var(--color-text-secondary); line-height: 1.7; }
+        
+        .reveal {
+            will-change: transform, opacity, filter;
+            transform: translate3d(0, 0, 0); 
+            backface-visibility: hidden;
+            transition: none !important; 
+        }
+
+        /* ============================================
+           COMPONENTS
+           ============================================ */
+        
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .logo { 
+            font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 4px;
+            display: flex; align-items: center; gap: 12px;
+            opacity: 0; transform: translateY(-15px); filter: blur(5px);
+            will-change: transform, opacity, filter; transition: none;
+        }
+
+        .logo-icon { 
+            width: 32px; height: 32px; border: 2px solid rgba(255, 255, 255, 0.3); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 12px; font-weight: 700; 
+        }
+
+        .nav-btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; 
+            background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); 
+            opacity: 0; transform: translateY(-15px); filter: blur(5px);
+            will-change: transform, opacity, filter;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-primary); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition-normal); text-align: center; }
+        .btn-primary { background: var(--color-text-primary); color: var(--color-bg-primary); }
+        .btn-secondary { background: transparent; color: var(--color-text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
+
+        /* HERO STYLES */
+        .page-hero {
+            position: relative;
+            padding: 220px 0 120px;
+            text-align: center;
+            overflow: visible; 
+            z-index: 1;
+        }
+
+        .hero-content { position: relative; z-index: 2; }
+        
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* MISSION SECTION (Specific Layout) */
+        .mission-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .mission-image {
+            position: relative;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+        }
+
+        .mission-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            display: block;
+            filter: grayscale(100%) contrast(1.1);
+            transition: filter 0.5s ease;
+        }
+        .mission-image:hover img { filter: grayscale(0%) contrast(1); }
+
+        .mission-content h2 { font-family: var(--font-display); font-size: 32px; font-weight: 700; margin-bottom: 24px; color: var(--color-text-primary); }
+        .mission-content p { font-size: 16px; color: var(--color-text-secondary); line-height: 1.8; margin-bottom: 20px; }
+
+        /* CARDS */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover { 
+            background: rgba(255, 255, 255, 0.05); 
+            border-color: var(--color-border-hover); 
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            width: 64px; height: 64px;
+            background: rgba(74, 222, 128, 0.05);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+            border: 1px solid rgba(74, 222, 128, 0.1);
+            overflow: hidden; 
+        }
+        .card-icon animated-icons { width: 48px; height: 48px; }
+
+        .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-primary); }
+        .card-text { font-size: 15px; color: var(--color-text-secondary); line-height: 1.6; }
+
+        /* STATS BAR */
+        .stats-bar { 
+            background: transparent; /* Default to transparent to show grid */
+            position: relative; 
+            z-index: 1; 
+            overflow: hidden; 
+            pointer-events: auto;
+            backdrop-filter: blur(5px); /* Mild blur for legibility on grid */
+        }
+
+        .stats-grid { 
+            display: grid; grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; padding: 60px 0;
+        }
+
+        .stat-item { text-align: center; flex-shrink: 0; }
+
+        .stat-value { 
+            display: block; font-family: var(--font-display); font-size: 22px; font-weight: 600; 
+            margin-bottom: 4px; white-space: normal; line-height: 1.2;
+        }
+        .stat-value .mobile-text { display: none; }
+
+        .stat-label { 
+            display: block; font-size: 10px; letter-spacing: 1.5px; 
+            text-transform: uppercase; color: var(--color-text-tertiary); white-space: nowrap;
+        }
+
+        @media (min-width: 1025px) { .ticker-duplicate { display: none; } }
+
+        /* CERTIFICATIONS */
+        .cert-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        
+        .cert-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .cert-card:hover { border-color: var(--color-border-hover); background: rgba(255, 255, 255, 0.03); }
+        
+        .cert-badge {
+            width: 48px; height: 48px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+        }
+        .cert-badge animated-icons { width: 32px; height: 32px; }
+
+        .cert-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--color-text-primary); }
+        .cert-text { font-size: 13px; color: var(--color-text-tertiary); }
+
+        animated-icons svg + svg { display: none !important; }
+
+        /* CTA SECTION */
+        .cta-section { 
+            background: transparent; /* Default transparent */
+            text-align: center; padding: 120px 0;
+            position: relative; z-index: 1;
+        }
+        .cta-content { max-width: 600px; margin: 0 auto; }
+        .cta-title { font-family: var(--font-display); font-size: clamp(28px, 4vw, 42px); font-weight: 700; margin-bottom: 20px; }
+        .cta-text { font-size: 16px; color: var(--color-text-secondary); margin-bottom: 40px; }
+
+        /* FOOTER */
+        .footer { 
+            background: var(--color-bg-secondary); 
+            border-top: 1px solid var(--color-border); 
+            padding: 80px 0 40px; 
+            position: relative; z-index: 20; 
+        }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-col h4 { font-family: var(--font-display); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-primary); margin-bottom: 20px; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { font-size: 14px; color: var(--color-text-secondary); }
+        .footer-col ul li a:hover { color: var(--color-text-primary); }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-muted); }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .container { padding: 0 24px; }
+            .mission-grid { grid-template-columns: 1fr; gap: 40px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .cert-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            .footer-bottom { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .page-hero { padding: 180px 0 80px; }
+            
+            .stats-bar .container { padding: 0; max-width: none; }
+            .stats-grid { 
+                display: flex; width: max-content; gap: 60px; 
+                padding: 12px 0; padding-right: 60px; 
+                animation: ticker-scroll 40s linear infinite; grid-template-columns: none;
+            }
+            .ticker-duplicate { display: block; }
+            .stat-value { font-size: 14px; white-space: nowrap; } 
+            
+            .stats-bar::before, .stats-bar::after {
+                content: ''; position: absolute; top: 0; width: 40px; height: 100%; z-index: 2; pointer-events: none;
+            }
+            /* Adjusted mask gradients for stats bar since it might be transparent now */
+            .stats-bar::before { left: 0; background: linear-gradient(to right, var(--color-bg-primary), transparent); }
+            .stats-bar::after { right: 0; background: linear-gradient(to left, var(--color-bg-primary), transparent); }
+
+            .stat-label { display: none; }
+            .stat-value .desktop-text { display: none; }
+            .stat-value .mobile-text { display: inline; }
+        }
+
+        @keyframes ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @media (max-width: 768px) {
+            .nav { padding: 15px 24px; }
+            .section { padding: 60px 0; }
+            .cta-buttons { flex-direction: column; width: 100%; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Background Layers -->
+    <div class="hero-bg-gradient"></div>
+    <div class="fixed-grid-bg"></div>
+    <div class="hero-glow-orb"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">S</div>
+            STORMPMC
+        </a>
+        <div class="nav-right">
+            <a href="contact.html" class="nav-btn">Contact Sales</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section (Transparent - Shows Grid) -->
+    <section class="page-hero section">
+        <div class="container hero-content">
+            <span class="section-label reveal">About Us</span>
+            <h1 class="page-title reveal">Built for the Extreme</h1>
+            <p class="page-subtitle reveal">We engineer asset tracking solutions that thrive where others fail. Military-grade reliability for mission-critical operations.</p>
+        </div>
+    </section>
+
+    <!-- Mission Section (Transparent - Inverted to show grid) -->
+    <section class="section">
+        <div class="container">
+            <div class="mission-grid">
+                <div class="mission-content reveal">
+                    <h2>Our Mission</h2>
+                    <p>StormPMC was founded with a singular focus: build asset tracking hardware that refuses to fail. We believe organizations operating in extreme conditions deserve technology that matches their commitment to the mission.</p>
+                    <p>From contested military environments to remote energy infrastructure, our customers depend on real-time asset visibility when it matters most. We engineer every component to exceed the harshest operational requirements.</p>
+                    <p>Our products aren't designed to survive extreme conditions—they're designed to perform in them.</p>
+                </div>
+                <div class="mission-image reveal">
+                    <img src="Optimized Images/Industries/Military_With_Gateway_Rim_light-Camera 2.webp" alt="StormPMC Hardware" loading="lazy" 
+                         onerror="this.onerror=null; this.src='https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Industries/Military_With_Gateway_Rim_light-Camera%202.webp?raw=true'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section (Solid - Slides over grid) -->
+    <section class="section section-solid">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Our Values</span>
+                <h2 class="section-title">What Drives Us</h2>
+                <p class="section-subtitle">The principles that guide every decision we make.</p>
+            </div>
+            <div class="cards-grid reveal">
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=GDPR&style=minimalistic&token=f877a444-2693-4001-a8d0-5f3de951d700"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="48"
+                            width="48">
+                        </animated-icons>
+                    </div>
+                    <h3 class="card-title">Uncompromising Reliability</h3>
+                    <p class="card-text">We over-engineer every component. Our hardware is rated for conditions far beyond what most customers will ever encounter.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=Chatbot&style=minimalistic&token=6b3aba1e-cf81-46d6-8923-cca76667c70d"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="48"
+                            width="48">
+                        </animated-icons>
+                    </div>
+                    <h3 class="card-title">Mission-Critical Engineering</h3>
+                    <p class="card-text">Patent-pending thermal protection. Seamless multi-mode communication. We build products that perform in extreme conditions because your mission demands it.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=Chatbot&style=minimalistic&token=6b3aba1e-cf81-46d6-8923-cca76667c70d"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="48"
+                            width="48">
+                        </animated-icons>
+                    </div>
+                    <h3 class="card-title">Customer Partnership</h3>
+                    <p class="card-text">We work directly with operators to understand real-world requirements. Every feature exists because a customer needed it.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section (Transparent - Shows Grid) -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid reveal">
+                <!-- Set 1 -->
+                <div class="stat-item">
+                    <span class="stat-value">
+                        <span class="desktop-text">~1 Year</span>
+                        <span class="mobile-text">~1 Year Battery</span>
+                    </span>
+                    <span class="stat-label">Average Battery Life</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">270°F</span>
+                    <span class="stat-label">30min Heat Survival</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">IP67</span>
+                    <span class="stat-label">Water Resistant</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">MIL-STD</span>
+                    <span class="stat-label">810H Certified</span>
+                </div>
+
+                <!-- Set 2 (Ticker Mobile) -->
+                <div class="stat-item ticker-duplicate">
+                    <span class="stat-value">
+                        <span class="desktop-text">~1 Year</span>
+                        <span class="mobile-text">~1 Year Battery</span>
+                    </span>
+                    <span class="stat-label">Average Battery Life</span>
+                </div>
+                <div class="stat-item ticker-duplicate">
+                    <span class="stat-value">270°F</span>
+                    <span class="stat-label">30min Heat Survival</span>
+                </div>
+                <div class="stat-item ticker-duplicate">
+                    <span class="stat-value">IP67</span>
+                    <span class="stat-label">Water Resistant</span>
+                </div>
+                <div class="stat-item ticker-duplicate">
+                    <span class="stat-value">MIL-STD</span>
+                    <span class="stat-label">810H Certified</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section (Solid - Slides over grid) -->
+    <section class="section section-solid">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Certifications</span>
+                <h2 class="section-title">Industry Standards</h2>
+                <p class="section-subtitle">Our hardware meets or exceeds the most demanding military and industrial specifications.</p>
+            </div>
+            <div class="cert-grid reveal">
+                <div class="cert-card">
+                    <div class="cert-badge">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=Accreditation&style=minimalistic&token=f7f902ac-91df-4d7d-8444-71b41d1a2a9e"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="32"
+                            width="32">
+                        </animated-icons>
+                    </div>
+                    <h4 class="cert-title">MIL-STD-810H</h4>
+                    <p class="cert-text">Military environmental testing standard</p>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-badge">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=Rain%20Fall&style=minimalistic&token=bd76bece-b33e-4cb2-b7a8-440145486d58"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="32"
+                            width="32">
+                        </animated-icons>
+                    </div>
+                    <h4 class="cert-title">IP67 Rated</h4>
+                    <p class="cert-text">Water resistant (3ft for 30 minutes)</p>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-badge">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=Warranty&style=minimalistic&token=240003ce-c76a-49ff-b69a-4123c54f8934"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="32"
+                            width="32">
+                        </animated-icons>
+                    </div>
+                    <h4 class="cert-title">FCC & CE</h4>
+                    <p class="cert-text">Global regulatory compliance</p>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-badge">
+                        <animated-icons
+                            src="https://animatedicons.co/get-icon?name=GDPR&style=minimalistic&token=f877a444-2693-4001-a8d0-5f3de951d700"
+                            trigger="loop"
+                            attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}'
+                            height="32"
+                            width="32">
+                        </animated-icons>
+                    </div>
+                    <h4 class="cert-title">AES-256</h4>
+                    <p class="cert-text">End-to-end encryption</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section (Transparent - Shows Grid) -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content reveal">
+                <h2 class="cta-title">Ready to Work With Us?</h2>
+                <p class="cta-text">Contact our team to discuss your asset tracking requirements.</p>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;" class="cta-buttons">
+                    <a href="contact.html" class="btn btn-primary">Contact Sales</a>
+                    <a href="MTRAC.html" class="btn btn-secondary">View Products</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Column 1: Identity -->
+                <div class="footer-col">
+                    <a href="index.html" class="logo" style="margin-bottom: 20px; opacity: 1; transform: none; filter: none;">
+                        <div class="logo-icon">S</div>
+                        STORMPMC
+                    </a>
+                    <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 300px; line-height: 1.6;">
+                        Military-grade asset tracking solutions engineered for the world's most demanding environments.
+                    </p>
+                </div>
+
+                <!-- Column 2: Products -->
+                <div class="footer-col">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="product-mtrac.html">MTRAC Tracker</a></li>
+                        <li><a href="products.html">All Products</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact -->
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="contact.html">Get in Touch</a></li>
+                        <li><a href="mailto:support@stormpmc.com">Technical Support</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2026 StormPMC. All rights reserved.</p>
+                <div class="footer-legal" style="display: flex; gap: 20px;">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // -----------------------------------------------------------------
+        // FAIL-SAFE: REMOVE INLINE BODY STYLES (Scroll Fix)
+        // -----------------------------------------------------------------
+        (function() {
+            function nukeScrollLocks() {
+                document.documentElement.style.cssText = "overflow-y: scroll !important; height: 100% !important;";
+                document.body.style.cssText = "overflow: visible !important; height: auto !important; position: relative !important;";
+            }
+            nukeScrollLocks();
+            let attempts = 0;
+            const interval = setInterval(() => {
+                nukeScrollLocks();
+                attempts++;
+                if(attempts > 20) clearInterval(interval);
+            }, 100);
+        })();
+
+        // -----------------------------------------------------------------
+        // ANIMATION LOGIC (GSAP)
+        // -----------------------------------------------------------------
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. HERO ENTRANCE
+        const textTl = gsap.timeline({ delay: 0.1 });
+        
+        // Background & Glow
+        textTl.to(".hero-bg-gradient", { opacity: 1, duration: 0.8, ease: "power2.out" }, 0);
+        textTl.to(".fixed-grid-bg", { opacity: 1, duration: 1.0, ease: "power2.out" }, 0); // Fade in Fixed Grid
+        textTl.to(".hero-glow-orb", { opacity: 1, duration: 1.2, ease: "power2.out" }, 0);
+        
+        // Nav Entrance
+        textTl.to(".logo", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power4.out" }, 0.2);
+        textTl.to(".nav-btn", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power4.out" }, 0.2);
+
+        // Hero Text Entrance (Manual Reveal Setup)
+        const heroElements = document.querySelectorAll('.page-hero .reveal');
+        gsap.set(heroElements, { opacity: 0, y: 30, filter: "blur(10px)" });
+        
+        textTl.to(heroElements, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out"
+        }, 0.3);
+
+        // 2. GLOBAL SCROLL REVEAL
+        const revealElements = document.querySelectorAll(".reveal:not(.page-hero .reveal)"); // Exclude hero
+        revealElements.forEach((el) => {
+            gsap.fromTo(el, 
+                { 
+                    opacity: 0, 
+                    filter: "blur(15px)", 
+                    y: 40,
+                    scale: 0.98 
+                }, 
+                {
+                    opacity: 1, 
+                    filter: "blur(0px)", 
+                    y: 0,
+                    scale: 1,
+                    duration: 0.6, 
+                    ease: "power3.out", 
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 90%", 
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+        // -----------------------------------------------------------------
+        // MOBILE TICKER DUPLICATION (For seamless loop on mobile)
+        // -----------------------------------------------------------------
+        if (window.innerWidth <= 1024) {
+            document.querySelectorAll('.mobile-dupe').forEach(el => el.style.display = 'block');
+        }
+    </script>
+</body>
+</html>
