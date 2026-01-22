@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StormPMC SKU Mapping & Ecosystem</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-secondary: #0a0a0a;
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            --color-accent: #4ade80;
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --transition-normal: 0.3s ease;
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ECOSYSTEM SECTION STYLES */
+        .ecosystem-container { 
+            margin-top: 30px; 
+            border-top: 1px solid var(--color-border); 
+        }
+
+        .collapsible-trigger {
+            width: 100%; 
+            padding: 24px 0; 
+            background: none; 
+            border: none;
+            color: var(--color-text-primary); 
+            font-family: var(--font-display);
+            font-size: 20px; 
+            font-weight: 600; 
+            text-align: left; 
+            cursor: pointer;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            transition: var(--transition-normal);
+        }
+
+        .collapsible-trigger:hover { 
+            color: var(--color-text-secondary); 
+        }
+
+        .collapsible-trigger .icon { 
+            font-size: 24px; 
+            transition: transform 0.3s ease; 
+        }
+
+        .collapsible-trigger.active .icon { 
+            transform: rotate(45deg); 
+        }
+
+        .collapsible-content { 
+            height: 0; 
+            overflow: hidden; 
+        }
+
+        .collapsible-content.open { 
+            padding-bottom: 60px; 
+        }
+
+        .expansion-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 32px; 
+        }
+
+        .expansion-header { 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid var(--color-border); 
+            padding-bottom: 8px; 
+            display: block; 
+        }
+
+        /* CATEGORY HEADER COLORS */
+        .expansion-header.green { color: #00FF44; border-bottom-color: rgba(0, 255, 68, 0.2); }
+        .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
+        .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+        .expansion-header.cyan { color: #12FBFD; border-bottom-color: rgba(18, 251, 253, 0.2); }
+        
+        .expansion-item { margin-bottom: 20px; }
+
+        .expansion-name { 
+            font-family: var(--font-display); 
+            font-size: 15px; 
+            margin-bottom: 6px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+
+        .expansion-name span, .sku-badge { 
+            font-size: 9px; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            white-space: nowrap; 
+        }
+
+        /* TECH BADGE COLORS */
+        .expansion-name span.badge-green, .sku-badge.badge-green { /* Cell / WiFi */
+            color: #6ee7b7; 
+            background: rgba(16, 185, 129, 0.15); 
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+        }
+        .expansion-name span.badge-cyan, .sku-badge.badge-cyan { /* BLE */
+            color: #7dd3fc; 
+            background: rgba(14, 165, 233, 0.15); 
+            border: 1px solid rgba(14, 165, 233, 0.2); 
+        }
+        .expansion-name span.badge-sat, .sku-badge.badge-sat { /* Sat / Satellite */
+            color: #fdba74; 
+            background: rgba(245, 158, 11, 0.15); 
+            border: 1px solid rgba(245, 158, 11, 0.2); 
+        }
+        .expansion-name span.badge-magenta, .sku-badge.badge-magenta { /* Gateway Theme */
+            color: #FF00FF; 
+            background: rgba(255, 0, 255, 0.15); 
+            border: 1px solid rgba(255, 0, 255, 0.2); 
+        }
+        .expansion-name span.badge-white, .sku-badge.badge-white { /* GPS / Positioning / IP67 / Support */
+            color: #e5e7eb; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+        }
+        .expansion-name span.badge-hazard, .sku-badge.badge-hazard { /* Hazard */
+            color: #fca5a5; 
+            background: rgba(239, 68, 68, 0.15); 
+            border: 1px solid rgba(239, 68, 68, 0.2); 
+        }
+        
+        .expansion-desc { 
+            font-size: 13px; 
+            color: var(--color-text-tertiary); 
+            line-height: 1.5; 
+        }
+
+        .summary-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .summary-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            margin-bottom: 24px;
+            color: var(--color-text-primary);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        /* Card-style Summary Items */
+        .summary-item {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .summary-item:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .summary-content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .summary-header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .summary-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+            color: var(--color-accent);
+        }
+
+        .summary-item h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-text-primary);
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .summary-item p {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Divider and SKU Section */
+        .summary-divider {
+            width: 100%;
+            height: 1px;
+            background: var(--color-border);
+        }
+
+        .sku-list-section {
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sku-list-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-text-muted);
+            font-weight: 600;
+        }
+
+        .sku-badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .collapse-footer { 
+            text-align: center; 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid var(--color-border); 
+        }
+
+        @media (max-width: 1024px) {
+            .expansion-grid, .summary-grid { grid-template-columns: 1fr; gap: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SKU Mapping & Ecosystem Accordion Section -->
+        <div class="ecosystem-container">
+            <button class="collapsible-trigger" id="expandBtn">
+                <span class="trigger-text">STORMPMC SKUs</span>
+                <span class="icon">+</span>
+            </button>
+            <div class="collapsible-content" id="expandContent">
+                
+                <div class="expansion-grid">
+                    <!-- Column 1: Core Asset Trackers -->
+                    <div class="expansion-category">
+                        <span class="expansion-header green">Asset Trackers (Battery Powered)</span>
+                        
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700001 <span class="badge-green">Ground</span> <span class="badge-white">IP67</span></h3>
+                            <p class="expansion-desc">Cellular + GPS + BLE Asset Tracker. Optimized for rugged ground transport environments.</p>
+                        </div>
+                        
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700002 <span class="badge-green">Ground</span> <span class="badge-sat">Satcom</span> <span class="badge-white">IP67</span></h3>
+                            <p class="expansion-desc">Cellular + Satcom + GPS + BLE Asset Tracker. Dual-mode connectivity for remote ground transport.</p>
+                        </div>
+                        
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700005 <span class="badge-green">Ground</span> <span class="badge-white">Warehouse</span> <span class="badge-hazard">Hazard</span></h3>
+                            <p class="expansion-desc">Cellular + GPS + BLE. Specialized hazard-rated packaging for volatile warehousing and transit.</p>
+                        </div>
+                        
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700006 <span class="badge-white">Multi-Group</span> <span class="badge-sat">Satcom</span> <span class="badge-hazard">Hazard</span></h3>
+                            <p class="expansion-desc">Cellular + Satcom + GPS + BLE. Maximum survival packaging for Warehousing, Ground, and Aircraft transport.</p>
+                        </div>
+
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700010 <span class="badge-cyan">BLE</span> <span class="badge-white">IP67</span></h3>
+                            <p class="expansion-desc">BLE Only Asset Tracker. Lightweight monitoring for Warehousing, Ground, Aircraft, and Water Transport.</p>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Gateways & Support -->
+                    <div class="expansion-category">
+                        <span class="expansion-header magenta">Gateways & Infrastructure</span>
+                        
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700003 <span class="badge-magenta">Satcom Gateway</span> <span class="badge-white">Ext. Power</span></h3>
+                            <p class="expansion-desc">External Powered IP67 Gateway for Aircraft, Marine, and Ground Vehicle use. High-altitude and deep-sea capable.</p>
+                        </div>
+
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700004 <span class="badge-magenta">WiFi Gateway</span> <span class="badge-white">IP67</span></h3>
+                            <p class="expansion-desc">External Powered BLE Receivers with WiFi backhaul. Dedicated to industrial Warehousing environments.</p>
+                        </div>
+
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700009 <span class="badge-magenta">Cellular Gateway</span> <span class="badge-white">IP67</span></h3>
+                            <p class="expansion-desc">External Powered Gateway for Vehicles and Marine craft. Ruggedized for constant cellular connectivity.</p>
+                        </div>
+
+                        <span class="expansion-header white" style="margin-top: 32px;">Support Systems</span>
+
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700007 / 700008 <span class="badge-white">Power Harness</span></h3>
+                            <p class="expansion-desc">External power support for Ground, Aircraft, and Water transport environments.</p>
+                        </div>
+
+                        <div class="expansion-item">
+                            <h3 class="expansion-name">SKU 700011 <span class="badge-white">Charge Station</span></h3>
+                            <p class="expansion-desc">Multi-unit battery charging station optimized for Warehousing facility operations.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group Summary Section -->
+                <div class="summary-box">
+                    <h3 class="summary-title">Operational Group Summary</h3>
+                    <div class="summary-grid">
+                        
+                        <!-- Packaging Group -->
+                        <div class="summary-item">
+                            <div class="summary-content">
+                                <div class="summary-header-row">
+                                    <svg viewBox="0 0 24 24" class="summary-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                                    <h4>Packaging Systems</h4>
+                                </div>
+                                <p>Hazard-rated and high-survival specialized packaging for volatile transit and warehouse conditions.</p>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="sku-list-section">
+                                <div class="sku-list-title">Mapped SKUs</div>
+                                <div class="sku-badges-row">
+                                    <span class="sku-badge badge-green">SKU 700005</span>
+                                    <span class="sku-badge badge-white">SKU 700006</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warehousing Group -->
+                        <div class="summary-item">
+                            <div class="summary-content">
+                                <div class="summary-header-row">
+                                    <svg viewBox="0 0 24 24" class="summary-icon" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>
+                                    <h4>Warehousing Operations</h4>
+                                </div>
+                                <p>Indoor inventory monitoring and facility logistics utilizing WiFi, BLE, and cellular backhaul.</p>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="sku-list-section">
+                                <div class="sku-list-title">Mapped SKUs</div>
+                                <div class="sku-badges-row">
+                                    <span class="sku-badge badge-magenta">SKU 700004</span>
+                                    <span class="sku-badge badge-green">SKU 700005</span>
+                                    <span class="sku-badge badge-white">SKU 700006</span>
+                                    <span class="sku-badge badge-cyan">SKU 700010</span>
+                                    <span class="sku-badge badge-white">SKU 700011</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ground Transport Group -->
+                        <div class="summary-item">
+                            <div class="summary-content">
+                                <div class="summary-header-row">
+                                    <svg viewBox="0 0 24 24" class="summary-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4V5H2v12h3"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M19 17h3v-5l-2-2h-3v4"/><path d="M14 10h1"/></svg>
+                                    <h4>Ground Transport</h4>
+                                </div>
+                                <p>Comprehensive global logistics coverage for road and rail using multi-mode cellular and satellite connectivity.</p>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="sku-list-section">
+                                <div class="sku-list-title">Mapped SKUs</div>
+                                <div class="sku-badges-row">
+                                    <span class="sku-badge badge-green">SKU 700001</span>
+                                    <span class="sku-badge badge-sat">SKU 700002</span>
+                                    <span class="sku-badge badge-magenta">SKU 700003</span>
+                                    <span class="sku-badge badge-green">SKU 700005</span>
+                                    <span class="sku-badge badge-white">SKU 700006</span>
+                                    <span class="sku-badge badge-magenta">SKU 700009</span>
+                                    <span class="sku-badge badge-cyan">SKU 700010</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Air & Water Transport Group -->
+                        <div class="summary-item">
+                            <div class="summary-content">
+                                <div class="summary-header-row">
+                                    <svg viewBox="0 0 24 24" class="summary-icon" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.24V7.76a2 2 0 0 0-1.4-1.9l-7-3a2 2 0 0 0-1.2 0l-7 3A2 2 0 0 0 4 7.76v8.48a2 2 0 0 0 1.4 1.9l7 3a2 2 0 0 0 1.2 0l7-3a2 2 0 0 0 1.4-1.9Z"/><path d="M12 22V12"/><path d="m12 12 8.7-5"/><path d="m12 12-8.7-5"/><path d="M12 12V2"/></svg>
+                                    <h4>Air & Water Transport</h4>
+                                </div>
+                                <p>Specialized satellite-first operations for high-altitude and blue-water marine environments.</p>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="sku-list-section">
+                                <div class="sku-list-title">Mapped SKUs</div>
+                                <div class="sku-badges-row">
+                                    <span class="sku-badge badge-magenta">SKU 700003</span>
+                                    <span class="sku-badge badge-white">SKU 700006</span>
+                                    <span class="sku-badge badge-magenta">SKU 700009</span>
+                                    <span class="sku-badge badge-cyan">SKU 700010</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <p style="font-size: 12px; color: var(--color-text-muted); margin-top: 24px; font-style: italic;">
+                        *Note: Power harnesses (SKUs 700007 and 700008) support external gateways across all transport environments.
+                    </p>
+                </div>
+
+                <div class="collapse-footer">
+                    <button id="collapseBtnBottom" style="background: none; border: none; color: var(--color-text-tertiary); font-family: var(--font-display); font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; padding: 10px; transition: color 0.3s ease;">
+                        ↑ Collapse Mapping Section
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const expandBtn = document.getElementById('expandBtn');
+        const expandContent = document.getElementById('expandContent');
+        const collapseBtnBottom = document.getElementById('collapseBtnBottom');
+
+        function toggleExpansion() {
+            expandBtn.classList.toggle('active');
+            const isOpen = expandContent.classList.toggle('open');
+            expandBtn.querySelector('.icon').textContent = isOpen ? '×' : '+';
+            
+            if (isOpen) {
+                // GSAP Open Animation
+                gsap.to(expandContent, { 
+                    height: "auto", 
+                    duration: 0.7, 
+                    ease: "power3.inOut" 
+                });
+
+                // Content Reveal Sequence
+                const elementsToAnimate = expandContent.querySelectorAll('.expansion-header, .expansion-item, .summary-box, .collapse-footer');
+                
+                gsap.fromTo(elementsToAnimate, 
+                    { 
+                        opacity: 0, 
+                        y: 30, 
+                        filter: "blur(12px)" 
+                    }, 
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        filter: "blur(0px)", 
+                        duration: 0.6, 
+                        stagger: 0.04, 
+                        ease: "power2.out",
+                        delay: 0.1 
+                    }
+                );
+            } else {
+                // GSAP Close Animation
+                gsap.to(expandContent, { 
+                    height: 0, 
+                    duration: 0.5, 
+                    ease: "power2.inOut" 
+                });
+            }
+        }
+
+        if (expandBtn) expandBtn.addEventListener('click', toggleExpansion);
+        
+        if (collapseBtnBottom) {
+            collapseBtnBottom.addEventListener('click', () => {
+                if (expandContent.classList.contains('open')) {
+                    toggleExpansion();
+                    expandBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
