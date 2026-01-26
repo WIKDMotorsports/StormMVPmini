@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Storm K9 - A tier-one biological response system engineered for definitive threat verification.">
+    <title>Storm K9 | StormPMC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://raw.githack.com/WIKDMotorsports/StormMVPmini/refs/heads/main/styles.css">
+    
+    <!-- External Dependencies for Animated Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+
+    <!-- GSAP & SCROLLTRIGGER & SCROLLTO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <style>
+        /* ------------------------------------------------------------- 
+           THE FINAL SCROLLBAR FIX
+           ------------------------------------------------------------- */
+        html {
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
+            height: 100% !important;
+            width: 100% !important;
+            overscroll-behavior: none;
+        }
+
+        body {
+            position: static !important;
+            overflow-y: visible !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #wrapper, .wrapper, .main-content, #smooth-wrapper, #smooth-content, .page-container {
+            height: auto !important;
+            overflow: visible !important;
+            position: static !important;
+        }
+
+        /* ------------------------------------------------------------- 
+           ANIMATION SMOOTHNESS FIX
+           ------------------------------------------------------------- */
+        /* Only allow transitions on properties GSAP doesn't touch */
+        .industry-card, .specs-group, .card, .btn {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease !important;
+        }
+
+        /* Initial hidden state for GSAP targets */
+        .anim-reveal, .anim-hero-text, .anim-highlight, .product-image, .grid-overlay, .glow-orb, .cta-image-wrapper {
+            visibility: hidden;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        /* ------------------------------------------------------------- 
+           ICON DUPLICATION FIX (CRITICAL)
+           ------------------------------------------------------------- */
+        /* If the script runs twice, it appends a second SVG. We hide it. */
+        animated-icons svg + svg {
+            display: none !important;
+        }
+        
+        /* Hard constrain the container to only allow 1 icon */
+        .card-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            
+            width: 50px !important;
+            height: 50px !important;
+            min-height: 50px !important;
+            
+            overflow: hidden !important; /* Cuts off any duplicates that persist */
+            margin: 0 auto 1.25rem auto !important;
+        }
+
+        .card-icon animated-icons { 
+            display: block; 
+            margin: 0 auto;
+            flex-shrink: 0; /* Prevents squashing if multiples try to fit */
+        }
+
+        /* ------------------------------------------------------------- 
+           FEATURES GRID & CARD LAYOUT NORMALIZATION
+           ------------------------------------------------------------- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        #features .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem 2rem !important; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            position: relative;
+        }
+
+        #features .card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        #features .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        #features .card-text {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        /* UPDATED: Changed breakpoint from 768px to 600px to keep tablet at 2 columns */
+        @media (max-width: 600px) {
+            .features-grid { grid-template-columns: 1fr; }
+            #features .card { padding: 2rem !important; }
+        }
+
+        /* ------------------------------------------------------------- 
+           THEME VARIABLES & CUSTOM STYLES
+           ------------------------------------------------------------- */
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(255, 255, 255, 0.15);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            
+            --accent-defense: #4ade80;
+            --accent-energy: #a78bfa;
+            --accent-heavy: #fb923c;
+            --accent-logistics: #38bdf8;
+            --color-cyan: #00FFFF;
+
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --border-radius-lg: 16px;
+
+            /* PING VARS */
+            --ping-color: #00E676; 
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+        }
+
+        .section {
+            padding: 3.5rem 0 !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem !important;
+        }
+
+        .section-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-flagship {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .nav {
+            overflow: visible !important;
+            z-index: 1000;
+        }
+
+        .product-hero {
+            margin-top: 80px; 
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+            overflow: visible !important;
+        }
+
+        .product-hero-grid {
+            display: grid;
+            /* UPDATED: Changed from 1fr 1fr to minmax(0, 1fr) to prevent content expansion from shifting layout */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .product-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3; 
+            overflow: hidden;
+            border-radius: 16px;
+            background: #111;
+        }
+
+        .product-image img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; object-position: center; display: block;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        /* --- MTRAC ACRONYM ANIMATION STYLES (INTEGRATED) --- */
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 80px; 
+            font-weight: 700;
+            line-height: 1.1; 
+            margin: 0 0 24px 0;
+            letter-spacing: -2px;
+            
+            /* FIXED DIMENSIONS & LAYOUT LOCK */
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            
+            /* MODIFIED: Changed to visible to allow Ping Superscript */
+            overflow: visible; 
+            position: relative;
+
+            flex-wrap: nowrap;        
+            cursor: pointer; /* Changed to pointer to indicate clickable */
+            
+            /* RETURN ANIMATION (Mouse Out) */
+            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+            
+            /* Disable user select to prevent highlighting text on multiple clicks */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .word-block {
+            display: inline-flex;
+            align-items: baseline;
+            margin-right: 2px;
+            position: relative; /* Anchor for Ping */
+        }
+
+        .initial {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .reveal {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            
+            /* BASE TRANSITION (Mouse Out / Collapse) */
+            transition: max-width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                        opacity 0.2s linear,
+                        margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- EXPANSION STATES --- */
+        .product-title.is-expanded,
+        .product-title.force-hover {
+            font-size: 22px; 
+            line-height: 1.2; 
+            letter-spacing: 0px; 
+            column-gap: 8px; 
+            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Desktop Only Hover (Strictly non-tablet/mobile) */
+        @media (hover: hover) and (min-width: 1025px) {
+            .product-title:hover {
+                font-size: 22px; 
+                line-height: 1.2; 
+                letter-spacing: 0px; 
+                column-gap: 8px; 
+                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .product-title:hover .initial {
+                color: var(--accent-defense);
+            }
+            .product-title:hover .reveal {
+                max-width: 200px; 
+                opacity: 1;
+                margin-right: 6px; 
+                transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                            opacity 0.4s ease 0.2s,
+                            margin-right 0.4s ease 0.2s;
+            }
+            .product-title:hover .ping-circle {
+                transform: scale(0) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: transform 0.2s ease 0s,
+                            opacity 0.2s ease 0s,
+                            visibility 0s linear 0.2s;
+            }
+        }
+
+        /* Class-Based Expansion (For Mobile/Click) */
+        .product-title.is-expanded .initial {
+            color: var(--accent-defense);
+        }
+
+        .product-title.is-expanded .reveal {
+            max-width: 200px; 
+            opacity: 1;
+            margin-right: 6px; 
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                        opacity 0.4s ease 0.2s,
+                        margin-right 0.4s ease 0.2s;
+        }
+        
+        /* Remove margin from last word block */
+        .word-block:last-child .reveal {
+            margin-right: 0;
+        }
+
+        /* --- CIRCULAR PING COMPONENT --- */
+        .ping-circle {
+            position: absolute;
+            top: 6px;    
+            right: -8px; 
+            transform: scale(1);
+            width: 24px;  
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            color: var(--ping-color);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s, 
+                        opacity 0.3s ease 0.8s,
+                        visibility 0.3s ease 0.8s,
+                        top 0.3s ease, right 0.3s ease;
+        }
+
+        /* Class-Based Hide (For Mobile/Click) */
+        .product-title.is-expanded .ping-circle {
+            transform: scale(0) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: transform 0.2s ease 0s,
+                        opacity 0.2s ease 0s,
+                        visibility 0s linear 0.2s;
+        }
+
+        .ping-circle::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px; 
+            background: currentColor;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .ping-circle::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0;
+            animation: pulse-ring-circle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring-circle {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .industry-grid { grid-template-columns: 1fr; }
+            .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .product-image { aspect-ratio: 16 / 9; }
+
+            /* Re-enable wrap on smaller screens, ensure min-height prevents layout shift */
+            .product-title { font-size: 56px; height: auto; min-height: 90px; flex-wrap: wrap; }
+            .ping-circle { top: -1px; right: -10px; transform: scale(0.9); }
+        }
+
+        @media (max-width: 600px) {
+            .product-title { font-size: 13vw; /* Responsive font sizing to prevent line breaking */ }
+            /* Hover style removed to prevent sticky hover on tap */
+            .ping-circle { top: -4px; right: -12px; transform: scale(0.8); }
+        }
+
+        .industry-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .industry-card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .industry-info { flex: 1; }
+
+        .industry-label {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .card-defense .industry-label { color: var(--accent-defense); border-color: rgba(74, 222, 128, 0.2); }
+        .card-energy .industry-label { color: var(--accent-energy); border-color: rgba(167, 139, 250, 0.2); }
+        .card-heavy .industry-label { color: var(--accent-heavy); border-color: rgba(251, 146, 60, 0.2); }
+        .card-logistics .industry-label { color: var(--accent-logistics); border-color: rgba(56, 189, 248, 0.2); }
+
+        .industry-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .industry-desc {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .gallery-module {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.1);
+            transition: opacity 1.5s ease, transform 3s ease;
+            z-index: 1;
+        }
+
+        .gallery-slide.active { opacity: 1; transform: scale(1); z-index: 2; }
+
+        .gallery-vignette {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .gallery-ui {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .gallery-coords { display: flex; flex-direction: column; }
+
+        .gallery-coords-label {
+            font-size: 9px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        .gallery-app-text {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            min-height: 20px;
+            white-space: pre;
+        }
+
+        .gallery-progress { display: flex; gap: 4px; margin-bottom: 4px; }
+        .gallery-dot { height: 2px; width: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; transition: all 0.5s ease; }
+        .gallery-dot.active { width: 16px; background: #fff; }
+
+        .specs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .specs-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .specs-group summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 1.25rem 1.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #fff;
+            user-select: none;
+        }
+
+        .specs-group summary::-webkit-details-marker { display: none; }
+
+        .specs-group .summary-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .specs-group[open] .summary-icon { transform: rotate(180deg); color: rgba(255, 255, 255, 0.8); }
+
+        .specs-content {
+            padding: 1rem 2rem 2rem 2rem;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            /* CRITICAL: Prevent CSS transitions on the content to stop fighting GSAP */
+            transition: none !important;
+            will-change: height, opacity; /* Hint browser to optimize */
+        }
+
+        .expansion-grid-spec { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 24px 40px; 
+        }
+
+        /* UPDATED: Collapsible containers to 1 column on mobile */
+        @media (max-width: 600px) {
+            .expansion-grid-spec { grid-template-columns: 1fr; gap: 16px; }
+        }
+
+        .expansion-header { 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; 
+            border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; 
+            grid-column: 1 / -1;
+        }
+        
+        .expansion-header.green { color: #4ade80; border-bottom-color: rgba(74, 222, 128, 0.2); }
+        .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
+        .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+
+        .expansion-item { margin-bottom: 0; }
+        .expansion-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #fff; }
+        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; font-weight: 400; text-transform: uppercase; white-space: nowrap; }
+        
+        .expansion-name span.badge-green { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); }
+        .expansion-name span.badge-magenta { color: #FF00FF; border-color: rgba(255, 0, 255, 0.3); }
+        .expansion-name span.badge-cyan { color: var(--color-cyan); border-color: rgba(0, 255, 255, 0.3); }
+        
+        .expansion-desc { font-size: 14px; color: rgba(255, 255, 255, 0.5); line-height: 1.6; }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .glow-orb {
+            position: fixed;
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            margin-left: -400px;
+            margin-top: -400px;
+            z-index: -2;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        /* ------------------------------------------------------------- 
+           NEW CTA SECTION STYLES
+           ------------------------------------------------------------- */
+        .cta-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 3rem;
+        }
+
+        .cta-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .cta-title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .cta-text {
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .cta-image-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 300px; /* Scaled to 0.5x */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cta-image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            /* Base subtle shadow */
+            filter: drop-shadow(0 0 40px rgba(74, 222, 128, 0.05));
+            transform: perspective(1000px) rotateX(2deg);
+            transition: filter 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        /* Bloom on hover */
+        .cta-section.is-hovered .cta-image-wrapper img {
+            filter: drop-shadow(0 0 120px rgba(74, 222, 128, 0.25));
+        }
+
+        @media (max-width: 600px) {
+            .cta-stack { gap: 2.5rem; }
+            .cta-buttons { flex-direction: column; width: 100%; }
+            .cta-buttons .btn { width: 100%; }
+        }
+
+    </style>
+</head>
+<body>
+    <script>
+        (function() {
+            function nukeScrollLocks() {
+                document.documentElement.style.cssText = "overflow-y: scroll !important; height: 100% !important;";
+                document.body.style.cssText = "overflow: visible !important; height: auto !important; position: static !important;";
+            }
+            nukeScrollLocks();
+            let attempts = 0;
+            const interval = setInterval(() => {
+                nukeScrollLocks();
+                attempts++;
+                if(attempts > 20) clearInterval(interval);
+            }, 100);
+        })();
+    </script>
+
+    <div class="grid-overlay" id="parallaxGrid"></div>
+    <div class="glow-orb" id="ambientGlow"></div>
+
+    <nav class="nav" id="navbar">
+        <a href="index.html" class="logo"><div class="logo-icon">S</div>STORMPMC</a>
+        <div class="nav-center">
+            <a href="product-k9.html" class="nav-link active">STORM K9</a>
+        </div>
+        <div class="nav-right">
+            <a href="contact.html" class="nav-btn">Contact Operations</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <nav class="mobile-nav">
+            <a href="product-k9.html" class="mobile-nav-link active">STORM K9</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </nav>
+        <div class="mobile-nav-footer"><a href="contact.html" class="btn btn-primary" style="width: 100%;">Contact Operations</a></div>
+    </div>
+
+    <!-- Product Hero -->
+    <section class="product-hero" id="overview">
+        <div class="container">
+            <div class="product-hero-grid">
+                <div class="product-image">
+                    <!-- Placeholder used to represent Grey Clay Render as no image URL provided -->
+                    <img src="https://placehold.co/800x600/111/444?text=Storm+K9+Grey+Clay" alt="Storm K9 Grey Clay Render" id="heroImage">
+                </div>
+                <div class="product-info">
+                    <span class="section-label badge-flagship anim-hero-text">OPERATIONAL BIOLOGICAL ASSET</span>
+                    
+                    <h1 class="product-title anim-hero-text">STORM K9</h1>
+
+                    <p class="product-tagline anim-hero-text">High-fidelity detection and controlled kinetic intervention.</p>
+                    <p class="product-description anim-hero-text">A tier-one biological response system engineered for definitive threat verification. Storm K9 assets provide molecular-level detection and physical suspect control, validated for deployment in high-consequence operational theaters.</p>
+                    <div class="product-cta anim-hero-text">
+                        <a href="contact.html" class="btn btn-primary">Request Program Overview</a>
+                        <a href="campus.html" class="btn btn-secondary">View Training Campus</a>
+                    </div>
+                    <div class="product-highlights">
+                        <div class="highlight-item anim-highlight"><div class="highlight-value">Biological</div><div class="highlight-label">Modality</div></div>
+                        <div class="highlight-item anim-highlight"><div class="highlight-value">Handler-Loop</div><div class="highlight-label">Control</div></div>
+                        <div class="highlight-item anim-highlight"><div class="highlight-value">Tier 1</div><div class="highlight-label">Standard</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="section" style="background: var(--color-bg-secondary);" id="features">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Capabilities</span>
+                <h2 class="section-title">Engineered for the Impossible</h2>
+                <p class="section-subtitle">Every component of the STORM K9 system is designed to exceed expectations in the most demanding scenarios.</p>
+            </div>
+            <div class="features-grid">
+                <!-- Card 1: Molecular Detection -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Chemist&style=minimalistic&token=454afbc2-12fd-492b-9b69-6f0e6132f331" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Molecular Detection</h3>
+                    <p class="card-text" style="text-align: center;">Assets are imprinted on specific chemical compounds for source-level identification. A biological sensor provides intent verification where electronics only detect presence.</p>
+                </div>
+                <!-- Card 2: Environmental Neutrality -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Unmute%20V3&style=minimalistic&token=454afbc2-12fd-492b-9b69-6f0e6132f331" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Environmental Neutrality</h3>
+                    <p class="card-text" style="text-align: center;">Inoculated against heavy gunfire, flash-bangs, and industrial noise. Assets remain under 100% handler control regardless of kinetic stress or environmental chaos.</p>
+                </div>
+                <!-- Card 3: Zero-Ambiguity Protocol -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Eye%20V2&style=minimalistic&token=b475525b-bc75-4278-8410-1dd06840d386" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Zero-Ambiguity Protocol</h3>
+                    <p class="card-text" style="text-align: center;">We do not cross-train odors. Mutually exclusive target profiles (Bombs OR Drugs) ensure the handler knows exactly what the alert signifies.</p>
+                </div>
+                <!-- Card 4: Sensing Endurance -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=time&style=minimalistic&token=457c3e19-27d2-4e71-9f69-58f140e78e09" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Sensing Endurance</h3>
+                    <p class="card-text" style="text-align: center;">Conditioned for high-duration screening operations. Assets maintain neurological focus and drive through extended search patterns without signal degradation.</p>
+                </div>
+                <!-- Card 5: Proprietary SRL Standard -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Accreditation&style=minimalistic&token=b475525b-bc75-4278-8410-1dd06840d386" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Proprietary SRL Standard</h3>
+                    <p class="card-text" style="text-align: center;">Every asset must pass the Storm Readiness Level (SRL) certification. We do not grade on a curve; evaluation is continuous and standards are absolute.</p>
+                </div>
+                <!-- Card 6: Controlled Kinetic -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Running%20Person&style=minimalistic&token=f6cc1292-1aa7-4566-89b2-c5bfa23de4b6" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Controlled Kinetic</h3>
+                    <p class="card-text" style="text-align: center;">The "Takedown" is a mechanical function. Assets engage and release strictly on command, ensuring managed escalation of force and liability control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industry Grid Section -->
+    <section class="section" id="industries">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Field Deployment</span>
+                <h2 class="section-title">Industry Solutions</h2>
+                <p class="section-subtitle">Storm assets are purpose-built to survive environments where traditional systems fail.</p>
+            </div>
+            <div class="industry-grid">
+                <!-- Module 01 -->
+                <div class="industry-card card-defense anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Dedicated Sensing Asset</span>
+                        <h3 class="industry-title">Module 01: Single-Purpose</h3>
+                        <p class="industry-desc">Engineered for a singular mission: Odor Identification. By removing the requirement for physical apprehension, we maximize "Sensing Endurance." Optimized for high-volume screening operations.</p>
+                    </div>
+                    <div id="gallery-module-01" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 02 -->
+                <div class="industry-card card-energy anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Integrated Response Asset</span>
+                        <h3 class="industry-title">Module 02: Multi-Purpose</h3>
+                        <p class="industry-desc">A dual-modality asset providing both high-fidelity detection and physical interdiction. Designed for patrol and special operations where the asset must locate a threat and, on command, neutralize it.</p>
+                    </div>
+                    <div id="gallery-module-02" class="gallery-module">
+                        <div class="gallery-vignette"></div>
+                        <div class="gallery-ui">
+                            <div class="gallery-coords">
+                                <span class="gallery-coords-label">Application</span>
+                                <span class="gallery-app-text"></span>
+                            </div>
+                            <div class="gallery-progress"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Specifications -->
+    <section class="section" id="specifications">
+        <div class="container">
+            <div class="section-header anim-reveal" style="text-align: center;">
+                <span class="section-label">Technical Data</span>
+                <h2 class="section-title">Technical Specifications</h2>
+                <p class="section-subtitle">Detailed performance metrics and environmental ratings.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group anim-reveal" open>
+                    <summary>Operational Leadership<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Operational Leadership</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Trainer Name 1 <span>Lead Operational Instructor</span></h3><p class="expansion-desc">15 Years experience. "The dog is the sensor, the handler is the processor."</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Trainer Name 2 <span>Director of K9 Programs</span></h3><p class="expansion-desc">"We don't train for sport points; we train for the day the radio goes silent."</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group anim-reveal">
+                    <summary>Detection Configurations<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Detection Configurations</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Explosives (EDD) <span>Compounds</span></h3><p class="expansion-desc">Nitrate, Chlorate, Peroxide-based compounds.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Narcotics (NDD) <span>Derivatives</span></h3><p class="expansion-desc">Opioids, Amphetamines, Cocaine derivatives.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Electronics (ESD) <span>Storage</span></h3><p class="expansion-desc">Lithium, Polymer, Storage Device compounds.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group anim-reveal">
+                    <summary>Environmental Ratings<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Environmental Ratings</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Temp Range <span>Operational</span></h3><p class="expansion-desc">-20°F to 110°F.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Transport <span>Multi-Modal</span></h3><p class="expansion-desc">Rotary Wing, Fixed Wing, Maritime (RHIB).</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Inoculation <span>Stressor</span></h3><p class="expansion-desc">Heavy gunfire, flash-bang, industrial noise.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Works With Section -->
+    <section class="section" id="ecosystem">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Ecosystem</span>
+                <h2 class="section-title">Works With</h2>
+                <p class="section-subtitle">Expand your capabilities with compatible hardware and future-ready solutions.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group anim-reveal" open>
+                    <summary>StormCloud Integration<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header green">StormCloud Integration</span>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC <span>Positioning</span></h3><p class="expansion-desc">K9 Handlers utilize MTRAC units for positioning and asset accountability.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- UPDATED CTA Section -->
+    <section class="section cta-section" id="deploy">
+        <div class="container">
+            <div class="cta-stack">
+                <!-- Product Render (Scaled to 0.5x) -->
+                <div class="cta-image-wrapper">
+                    <img src="https://placehold.co/600x400/111/444?text=Storm+K9+Render" alt="Storm K9 Asset Render">
+                </div>
+
+                <!-- Text Content -->
+                <div class="cta-content anim-reveal">
+                    <h2 class="cta-title">Configure Your Capability.</h2>
+                    <p class="cta-text">Storm K9 is not a service; it is a modular response system tailored to your specific threat environment.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="contact.html" class="btn btn-primary" id="quote-btn">Contact Operations</a>
+                        <a href="program-brief.pdf" class="btn btn-secondary">Download Program Brief</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer anim-reveal">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">S</div>
+                        STORMPMC
+                    </a>
+                    <p>Military-grade asset tracking solutions engineered for the world's most demanding environments.</p>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="product-k9.html">Storm K9</a></li>
+                        <li><a href="products.html">All Products</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Get in Touch</a></li>
+                        <li><a href="mailto:support@stormpmc.com">Technical Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2026 StormPMC. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // -----------------------------------------------------------------
+        // FAIL-SAFE: REMOVE INLINE BODY STYLES
+        // This runs after page load to strip any styles added by external scripts
+        // -----------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+             const body = document.body;
+             const html = document.documentElement;
+             
+             // Strip inline styles that might lock scroll
+             if(body.style.overflow) body.style.overflow = '';
+             if(body.style.height) body.style.height = '';
+             if(html.style.overflow) html.style.overflow = '';
+             if(html.style.height) html.style.height = '';
+             
+             console.log("Scroll locks cleared.");
+        });
+
+        // -----------------------------------------------------------------
+        // NAVIGATION & MOBILE MENU LOGIC
+        // -----------------------------------------------------------------
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => { if (window.scrollY > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled'); });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        function openMobileMenu() { mobileMenu.classList.add('active'); mobileMenuBtn.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeMobileMenu() { mobileMenu.classList.remove('active'); mobileMenuBtn.classList.remove('active'); document.body.style.overflow = ''; }
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+
+        // -----------------------------------------------------------------
+        // INDUSTRY GALLERY LOGIC
+        // -----------------------------------------------------------------
+        class GalleryModule {
+            constructor(elementId, slideData, staggerDelay = 0) {
+                this.container = document.getElementById(elementId);
+                this.slideData = slideData;
+                this.activeIdx = 0;
+                this.isAnimating = false;
+                this.interval = 8000; 
+                this.typewriterTimeout = null;
+                if (this.container) {
+                    this.initStatic();
+                    setTimeout(() => this.startCycle(), staggerDelay);
+                }
+            }
+            initStatic() {
+                this.slideData.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `gallery-slide ${index === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${item.img}')`;
+                    slide.dataset.index = index;
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = "position:absolute; inset:0; background: rgba(0,0,0,0.1);";
+                    slide.appendChild(overlay);
+                    this.container.prepend(slide);
+
+                    const dot = document.createElement('div');
+                    dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
+                    this.container.querySelector('.gallery-progress').appendChild(dot);
+                });
+                const textEl = this.container.querySelector('.gallery-app-text');
+                if (textEl) textEl.textContent = this.slideData[0].text;
+            }
+            startCycle() {
+                this.cycleInterval = setInterval(() => this.nextSlide(), this.interval);
+            }
+            nextSlide() {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                this.activeIdx = (this.activeIdx + 1) % this.slideData.length;
+                const slides = this.container.querySelectorAll('.gallery-slide');
+                const dots = this.container.querySelectorAll('.gallery-dot');
+                const textEl = this.container.querySelector('.gallery-app-text');
+                slides.forEach(s => s.classList.remove('active'));
+                slides.forEach(s => { if(parseInt(s.dataset.index) === this.activeIdx) s.classList.add('active'); });
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === this.activeIdx));
+                if (textEl) this.runTypewriter(textEl, this.slideData[this.activeIdx].text);
+                setTimeout(() => { this.isAnimating = false; }, 1500);
+            }
+            runTypewriter(element, targetText) {
+                if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
+                const currentText = element.textContent;
+                let i = currentText.length;
+                const del = () => {
+                    if (i > 0) {
+                        element.textContent = currentText.substring(0, i - 1);
+                        i--;
+                        this.typewriterTimeout = setTimeout(del, 30);
+                    } else {
+                        let j = 0;
+                        const type = () => {
+                            if (j < targetText.length) {
+                                element.textContent = targetText.substring(0, j + 1);
+                                j++;
+                                this.typewriterTimeout = setTimeout(type, 50);
+                            }
+                        };
+                        this.typewriterTimeout = setTimeout(type, 100);
+                    }
+                };
+                del();
+            }
+        }
+
+        const industryData = {
+            module01: [
+                { img: "https://placehold.co/800x450/222/555?text=K9+Head+Shoulders+Grey+Clay", text: "Odor Identification" },
+                { img: "https://placehold.co/800x450/222/555?text=Red+Detection+Cone", text: "Sensing Endurance" },
+                { img: "https://placehold.co/800x450/222/555?text=High+Volume+Screening", text: "Screening Ops" }
+            ],
+            module02: [
+                { img: "https://placehold.co/800x450/222/555?text=K9+Drive+Posture+Grey+Clay", text: "Physical Interdiction" },
+                { img: "https://placehold.co/800x450/222/555?text=Red+Harness+Accents", text: "Threat Neutralization" },
+                { img: "https://placehold.co/800x450/222/555?text=Patrol+Ops", text: "Special Operations" }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new GalleryModule('gallery-module-01', industryData.module01, 0);
+            new GalleryModule('gallery-module-02', industryData.module02, 2000);
+
+            // -----------------------------------------------------------------
+            // ANIMATION LOGIC (GSAP)
+            // -----------------------------------------------------------------
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 1. Initial Styles Setup
+            // Use autoAlpha (combines opacity + visibility) for better FOUC prevention
+            gsap.set(".anim-hero-text", { autoAlpha: 0, y: 30, filter: "blur(15px)" });
+            gsap.set(".anim-highlight", { autoAlpha: 0, y: 20, filter: "blur(8px)" });
+            gsap.set(".product-image", { autoAlpha: 0, scale: 0.95, y: 40 }); 
+            gsap.set(".grid-overlay", { autoAlpha: 0, y: 50 });
+            gsap.set(".glow-orb", { autoAlpha: 0, scale: 0.8 });
+            
+            // Scroll Reveal Elements
+            gsap.set(".anim-reveal", { autoAlpha: 0, y: 40, scale: 0.98, filter: "blur(10px)" });
+            
+            // CTA Image Initial State
+            gsap.set(".cta-image-wrapper", { autoAlpha: 0, scale: 0.8, y: 30 });
+
+            // 2. HERO ENTRANCE TIMELINE
+            const tl = gsap.timeline({ delay: 0.1 }); // Reduced delay
+
+            // Background & Ambient
+            tl.to(".grid-overlay", { autoAlpha: 1, y: 0, duration: 1.0, ease: "power3.out" }, 0); // Faster
+            tl.to(".glow-orb", { autoAlpha: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
+
+            // Hero Image Reveal
+            tl.to(".product-image", {
+                autoAlpha: 1, scale: 1, y: 0,
+                duration: 0.8, ease: "power3.out" // Faster
+            }, 0.1);
+
+            // Hero Text Elements (Staggered)
+            tl.to(".anim-hero-text", {
+                autoAlpha: 1, y: 0, filter: "blur(0px)",
+                duration: 0.6, stagger: 0.04, ease: "power3.out" // Faster, tighter stagger
+            }, 0.2);
+            
+            // Highlights (Stats)
+            tl.to(".anim-highlight", {
+                autoAlpha: 1, y: 0, filter: "blur(0px)",
+                duration: 0.5, stagger: 0.03, ease: "power3.out" // Faster
+            }, 0.4);
+
+            // --- CONDITIONAL FEATURE SEQUENCING ---
+            const featuresSection = document.querySelector('#features');
+            const featuresRect = featuresSection.getBoundingClientRect();
+            // Check if feature section top is within viewport or if it's visible
+            const isFeaturesVisible = featuresRect.top < window.innerHeight;
+
+            if (isFeaturesVisible) {
+                const featureElements = featuresSection.querySelectorAll('.anim-reveal');
+                // Mark them to be ignored by generic loop
+                featureElements.forEach(el => el.classList.add('hero-handled'));
+                
+                // Add to main timeline
+                tl.to(featureElements, {
+                    autoAlpha: 1, 
+                    y: 0, 
+                    scale: 1, 
+                    filter: "blur(0px)", 
+                    duration: 0.6,
+                    stagger: 0.05, // Tight stagger
+                    ease: "power3.out"
+                }, "-=0.5"); // Big overlap
+            }
+
+            // 3. SCROLL REVEAL LOGIC
+            // Exclude hero-handled elements and CTA elements which are handled separately
+            gsap.utils.toArray(".anim-reveal:not(.hero-handled)").forEach(el => {
+                // If this is inside CTA section, skip it (we handle it below)
+                if(el.closest('.cta-section')) return;
+
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 95%", 
+                        toggleActions: "play none none none"
+                    },
+                    autoAlpha: 1, // Uses visibility + opacity
+                    y: 0,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    duration: 0.6,
+                    ease: "power3.out"
+                });
+            });
+
+            // 4. CTA SPECIFIC ANIMATION
+            const ctaSection = document.querySelector('.cta-section');
+            if (ctaSection) {
+                const ctaTl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: ctaSection,
+                        start: "top 70%",
+                        toggleActions: "play none none none"
+                    }
+                });
+                
+                // Image First
+                ctaTl.to(".cta-image-wrapper", {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+                
+                // Then Text Content
+                ctaTl.to(".cta-section .anim-reveal", {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    duration: 0.8,
+                    ease: "power4.out"
+                }, "-=0.5");
+                
+                // CTA Hover Interaction
+                const quoteBtn = document.getElementById('quote-btn');
+                if (quoteBtn) {
+                    quoteBtn.addEventListener('mouseenter', () => {
+                        ctaSection.classList.add('is-hovered');
+                    });
+                    quoteBtn.addEventListener('mouseleave', () => {
+                        ctaSection.classList.remove('is-hovered');
+                    });
+                }
+            }
+
+            // 5. SUBTLE PARALLAX
+            if (window.innerWidth > 1024) {
+                gsap.to(".grid-overlay", {
+                    scrollTrigger: {
+                        trigger: "body",
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 1
+                    },
+                    y: 100, 
+                    ease: "none"
+                });
+            }
+
+            // 6. ORB ROAMING
+            const orb = document.querySelector('.glow-orb');
+            if(orb) {
+                let time = 0;
+                function roam() {
+                    time += 0.002;
+                    const x = Math.sin(time) * 50;
+                    const y = Math.cos(time * 0.8) * 30;
+                    orb.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+                    requestAnimationFrame(roam);
+                }
+                roam();
+            }
+
+            // -----------------------------------------------------------------
+            // ACCORDION LOGIC - REVERSE ANIMATION TECHNIQUE (NO SNAP)
+            // -----------------------------------------------------------------
+            const detailGroups = document.querySelectorAll('details.specs-group');
+            
+            detailGroups.forEach((detail, index) => {
+                const summary = detail.querySelector('summary');
+                const content = detail.querySelector('.specs-content');
+                
+                summary.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    
+                    const isOpen = detail.hasAttribute('open');
+                    const tl = gsap.timeline({
+                        defaults: { duration: 0.35, ease: "power3.inOut" }, // Faster, smoother
+                        onComplete: () => ScrollTrigger.refresh()
+                    });
+
+                    if (isOpen) {
+                        // --- CLOSING ---
+                        tl.to(content, {
+                            height: 0,
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                            opacity: 0,
+                            onComplete: () => {
+                                detail.removeAttribute('open');
+                                // Reset inline styles so next open works perfectly from DOM state
+                                gsap.set(content, { clearProps: "all" }); 
+                            }
+                        });
+                        
+                        // --- AUTO-OPEN NEXT ---
+                        const nextDetail = detailGroups[index + 1];
+                        
+                        if (nextDetail) {
+                            if (!nextDetail.hasAttribute('open')) {
+                                nextDetail.setAttribute('open', '');
+                                const nextContent = nextDetail.querySelector('.specs-content');
+                                
+                                // REVERSE ANIMATION TRICK:
+                                // 1. Browser renders full height immediately because of 'open' attribute
+                                // 2. We instantly force it to 0 height with GSAP
+                                // 3. We animate it back to its natural state
+                                
+                                tl.from(nextContent, { 
+                                    height: 0, 
+                                    paddingTop: 0, 
+                                    paddingBottom: 0, 
+                                    opacity: 0,
+                                    clearProps: "all" // Ensure no lingering styles at end
+                                }, "<"); // Sync start with close
+                            }
+                        } else {
+                            // --- LAST ITEM: SCROLL PAGE ---
+                            const nextSection = document.getElementById('ecosystem');
+                            if(nextSection) {
+                                tl.to(window, { 
+                                    scrollTo: { y: nextSection, offsetY: 80 }, 
+                                    duration: 0.8, 
+                                    ease: "power2.out" 
+                                }, "-=0.3");
+                            }
+                        }
+                    } else {
+                        // --- MANUAL OPENING ---
+                        detail.setAttribute('open', '');
+                        
+                        // Same Reverse Animation Trick
+                        tl.from(content, { 
+                            height: 0, 
+                            paddingTop: 0, 
+                            paddingBottom: 0, 
+                            opacity: 0,
+                            clearProps: "all"
+                        });
+                    }
+                });
+            });
+            
+        });
+    </script>
+</body>
+</html>
