@@ -27,6 +27,7 @@
             --glow-green: rgba(16, 185, 129, 0.5);
             --glow-orange: rgba(245, 158, 11, 0.5);
             --glow-white: rgba(255, 255, 255, 0.2);
+            --glow-blue: rgba(14, 165, 233, 0.5);
 
             /* HARDWARE TYPE COLORS */
             --type-tracker: #6ee7b7;   /* Trackers (Green) */
@@ -47,11 +48,11 @@
             overflow: auto;
         }
 
-        /* GRAPHIC CONTAINER - 1800x950 compressed vertical */
+        /* GRAPHIC CONTAINER - Expanded Height for better spacing */
         .chart-container {
             position: relative;
             width: 1800px;
-            height: 950px;
+            height: 1060px; /* Reduced by 40px to match the upward shift */
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 1) 0%, rgba(0, 0, 0, 1) 100%);
             border: none;
             border-radius: 36px;
@@ -113,7 +114,7 @@
             box-shadow: 0 4px 24px rgba(0,0,0,0.4);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            gap: 20px; 
+            gap: 15px; 
             align-items: center; 
             transform: translateX(-50%);
         }
@@ -125,10 +126,31 @@
             width: 300px !important;
         }
 
-        #gps, #sat-backhaul, #cell-backhaul {
-            padding-top: 12px;
-            padding-bottom: 12px;
+        /* SMALL CARDS - 250px Width Group */
+        #gps, #cell-backhaul, 
+        #military-cloud, #sat-ground {
+            padding: 15px; /* Tighter padding for small cards */
             width: 250px;
+        }
+        
+        /* WIDER CARDS - Adjusted to 275px */
+        #sat-backhaul, #storm-servers {
+            padding: 15px;
+            width: 275px;
+        }
+        
+        /* Ensure font wraps or fits better on small cards */
+        #gps .node-header, #sat-backhaul .node-header, #cell-backhaul .node-header,
+        #military-cloud .node-header, #storm-servers .node-header, #sat-ground .node-header {
+             font-size: 16px; /* Slightly smaller font to prevent wrapping */
+             white-space: nowrap; /* Force one line */
+        }
+        
+        /* Adjusted image sizing: Reverted to include all small cards including storm-servers and sat-ground */
+        #gps .node-img-placeholder, #sat-backhaul .node-img-placeholder, #cell-backhaul .node-img-placeholder,
+        #military-cloud .node-img-placeholder, #storm-servers .node-img-placeholder, #sat-ground .node-img-placeholder {
+            max-width: 90px; /* Slightly smaller image to give text room */
+            max-height: 90px;
         }
 
         .node:hover {
@@ -157,6 +179,7 @@
             flex-direction: column;
             justify-content: center;
             white-space: normal; /* Allow text wrapping within the fixed width */
+            overflow: hidden; /* Prevent spillover */
         }
 
         .node-header {
@@ -165,7 +188,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             color: #f3f4f6;
             line-height: 1.2;
         }
@@ -192,6 +215,7 @@
         .tag.sat { color: #fdba74; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.2); }
         .tag.gps { color: #e5e7eb; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.15); }
         .tag.hazard { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.2); }
+        .tag.support { color: var(--type-support); background: rgba(229, 231, 235, 0.15); border-color: rgba(229, 231, 235, 0.2); }
 
         /* SKU STYLES */
         .node-divider {
@@ -237,14 +261,25 @@
         .badge-gateway { color: var(--type-gateway); background: rgba(255, 0, 255, 0.1); border-color: rgba(255, 0, 255, 0.2); }
         .badge-support { color: var(--type-support); background: rgba(229, 231, 235, 0.1); border-color: rgba(229, 231, 235, 0.2); }
 
-        /* POSITIONING - Compressed Vertically */
-        #packaging { top: 60px; left: 300px; } 
-        #gps { top: 60px; left: 900px; }
-        #sat-backhaul { top: 60px; left: 1500px; }
-        #cell-backhaul { top: 270px; left: 300px; }
-        #zone-warehouse { top: 600px; left: 300px; }
-        #zone-ground { top: 600px; left: 900px; }
-        #zone-remote { top: 600px; left: 1500px; }
+        /* POSITIONING - EXPANDED LAYOUT - Shifted up by 40px */
+        
+        /* Row 1: Top (Sky) - y=40 (was 80) */
+        #packaging { top: 40px; left: 300px; } 
+        #gps { top: 40px; left: 900px; }
+        #sat-backhaul { top: 40px; left: 1500px; }
+        
+        /* Row 2: Infrastructure (Middle) - y=235 (was 275) */
+        #cell-backhaul { top: 235px; left: 215px; }
+        #military-cloud { top: 235px; left: 620px; }
+        
+        /* Floaters (Vertical y=480 - was 520) */
+        #storm-servers { top: 480px; left: 590px; }
+        #sat-ground { top: 480px; left: 1210px; }
+
+        /* Row 3: Zones (Bottom) - y=685 (was 725) */
+        #zone-warehouse { top: 685px; left: 300px; }
+        #zone-ground { top: 685px; left: 900px; }
+        #zone-remote { top: 685px; left: 1500px; }
 
         /* CONNECTOR LINES */
         .connections {
@@ -277,6 +312,13 @@
         .flow-satellite {
             stroke: #fb923c !important;
             filter: drop-shadow(0 0 6px var(--glow-orange));
+        }
+        
+        .flow-cloud {
+            stroke: #0ea5e9 !important;
+            stroke-dasharray: 4 4;
+            animation: dash 60s linear infinite;
+            filter: drop-shadow(0 0 6px var(--glow-blue));
         }
 
         .handover-label {
@@ -332,22 +374,52 @@
                     </marker>
                 </defs>
 
-                <!-- GPS DOWNLINKS - Compressed vertically -->
-                <path d="M900,185 L900,520 L330,520 L330,600" class="signal-flow" />
-                <path d="M900,185 L900,600" class="signal-flow" />
-                <path d="M900,185 L900,520 L1470,520 L1470,600" class="signal-flow" />
+                <!-- 1. GPS DOWNLINKS (Center) -->
+                <!-- Central Beam to Ground - Passes between Infra nodes -->
+                <path d="M900,160 L900,685" class="signal-flow" /> 
+                <!-- Left Branch to Warehouse (Right Input: x=320) - Horizontal y=645 -->
+                <path d="M900,645 L320,645 L320,685" class="signal-flow" />
+                <!-- Right Branch to Remote (Left Input: x=1480) - Horizontal y=645 -->
+                <path d="M900,645 L1480,645 L1480,685" class="signal-flow" />
 
-                <!-- CELLULAR BACKHAUL - Compressed vertically -->
-                <path d="M300,395 L300,600" class="signal-flow flow-cellular" />
-                <path d="M300,395 L300,460 L820,460 L820,600" class="signal-flow flow-cellular" />
+                <!-- 2. SATELLITE CHAIN (Right) -->
+                <!-- Backhaul to Remote (Right Input: x=1520) - Horizontal y=605 -->
+                <path d="M1500,160 L1500,605 L1520,605 L1520,685" class="signal-flow flow-satellite" />
+                
+                <!-- Backhaul to Satcom Ground (Direct input top-right of card) - Horizontal y=420 -->
+                <path d="M1500,420 L1250,420 L1250,480" class="signal-flow flow-satellite" />
+                
+                <!-- Backhaul to Ground (Right Input: x=920) - Horizontal y=400 -->
+                <path d="M1500,400 L920,400 L920,685" class="signal-flow flow-satellite" />
 
-                <!-- SATCOM BACKHAUL - Compressed vertically -->
-                <path d="M1500,185 L1500,600" class="signal-flow flow-satellite" />
-                <path d="M1500,185 L1500,340 L980,340 L980,600" class="signal-flow flow-satellite" />
+                <!-- 3. CELLULAR CHAIN (Left) -->
+                <!-- Tower to Warehouse (Left Input: x=280) - Horizontal y=605 -->
+                <path d="M215,355 L215,605 L280,605 L280,685" class="signal-flow flow-cellular" />
+                <!-- Tower to Ground (Left Input: x=860) - Horizontal y=440 -->
+                <path d="M215,355 L215,440 L860,440 L860,685" class="signal-flow flow-cellular" />
+                
+                <!-- 4. MILITARY CLOUD CONNECTIONS (Blue Dashed) -->
+                <!-- Cloud to Cellular Tower (Horizontal from Left Side - y=265) -->
+                <path d="M495,265 L340,265" class="flow-cloud" />
+                
+                <!-- Cloud to Warehousing (Center Input: x=300) - Horizontal y=380 -->
+                <path d="M580,355 L580,380 L300,380 L300,685" class="flow-cloud" />
+                
+                <!-- Cloud to Ground Transport (Center-Left Input: x=880) - Horizontal y=325 -->
+                <path d="M745,325 L880,325 L880,685" class="flow-cloud" />
+                
+                <!-- Cloud to Satcom Ground (From Right Side - y=305) -->
+                <path d="M745,305 L1150,305 L1150,480" class="flow-cloud" />
+                
+                <!-- Cloud to Air & Water (Center Input: x=1500) - Horizontal y=625 -->
+                <path d="M745,285 L1420,285 L1420,625 L1500,625 L1500,685" class="flow-cloud" />
 
-                <!-- HANDOVER CONNECTIONS - Compressed vertically -->
-                <path d="M300,692 L555,692 M645,692 L900,692" class="signal-flow flow-cellular" />
-                <path d="M900,692 L1155,692 M1245,692 L1500,692" class="signal-flow flow-cellular" />
+                <!-- Cloud to StormPMC Servers (Vertical from Bottom) -->
+                <path d="M620,355 L620,480" class="flow-cloud" />
+
+                <!-- 5. HANDOVER CONNECTIONS (Bottom) -->
+                <path d="M300,777 L555,777 M645,777 L900,777" class="signal-flow flow-cellular" />
+                <path d="M900,777 L1155,777 M1245,777 L1500,777" class="signal-flow flow-cellular" />
             </svg>
 
             <!-- INFRASTRUCTURE NODES -->
@@ -390,6 +462,8 @@
                 </div>
             </div>
 
+            <!-- MIDDLE ROW INFRASTRUCTURE -->
+
             <div class="node" id="cell-backhaul">
                 <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Cell.png?raw=true" class="node-img-placeholder" alt="Cell Tower">
                 <div class="node-content">
@@ -400,7 +474,32 @@
                 </div>
             </div>
 
-            <!-- OPERATIONAL ZONES -->
+            <div class="node" id="military-cloud">
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Cloud.webp?raw=true" class="node-img-placeholder" alt="Cloud">
+                <div class="node-content">
+                    <div class="node-header"><span>Military Cloud</span></div>
+                </div>
+            </div>
+
+            <div class="node" id="sat-ground">
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Satcom_ground.webp?raw=true" class="node-img-placeholder" alt="Sat Ground">
+                <div class="node-content">
+                    <div class="node-header"><span>Satcom Ground</span></div>
+                </div>
+            </div>
+
+             <!-- FLOATER NODE (Lower Left Quadrant) -->
+            <div class="node" id="storm-servers">
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Military_server.webp?raw=true" class="node-img-placeholder" alt="Servers">
+                <div class="node-content">
+                    <div class="node-header"><span>StormPMC Servers</span></div>
+                    <div class="tech-tags">
+                        <span class="tag support">24/7 Support</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM ROW ZONES -->
             <div class="node" id="zone-warehouse">
                 <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Warehousing.png?raw=true" class="node-img-placeholder" alt="Warehouse">
                 <div class="node-content">
@@ -424,7 +523,7 @@
                 </div>
             </div>
 
-            <div class="handover-label" style="top: 692px; left: 600px;">Auto H/O</div>
+            <div class="handover-label" style="top: 777px; left: 600px;">Auto H/O</div>
 
             <div class="node" id="zone-ground">
                 <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/Ground.png?raw=true" class="node-img-placeholder" alt="Ground Transport">
@@ -450,7 +549,7 @@
                 </div>
             </div>
 
-            <div class="handover-label" style="top: 692px; left: 1200px;">Auto H/O</div>
+            <div class="handover-label" style="top: 777px; left: 1200px;">Auto H/O</div>
 
             <div class="node" id="zone-remote">
                 <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Icons/WaterAir.png?raw=true" class="node-img-placeholder" alt="Air & Water Transport">
