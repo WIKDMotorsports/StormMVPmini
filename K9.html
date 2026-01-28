@@ -206,6 +206,21 @@
             margin-bottom: 1.5rem;
         }
 
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
         .badge-flagship {
             color: #4ade80;
             border-color: rgba(74, 222, 128, 0.3);
@@ -742,6 +757,198 @@
             .cta-buttons .btn { width: 100%; }
         }
 
+        /* ------------------------------------------------------------- 
+           NEW INTERFACE SECTION STYLES (Clean CSS, No Tailwind)
+           ------------------------------------------------------------- */
+        .scenario-hero {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 1024px) {
+            .scenario-hero {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .scenario-hero-img {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        @media (min-width: 1024px) {
+            .scenario-hero-img {
+                border-bottom: none;
+                border-right: 1px solid var(--color-border);
+            }
+        }
+
+        .scenario-hero-img img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .scenario-hero-content {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .scenario-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scenario-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            font-family: var(--font-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .scenario-text {
+            font-size: 0.95rem;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .scan-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .scan-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .scan-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s ease;
+        }
+
+        .scan-card:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .scan-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--color-border);
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .scan-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: var(--font-primary);
+        }
+
+        .scan-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+        }
+
+        .badge-red { background: rgba(220, 38, 38, 0.2); color: #ef4444; border-color: rgba(220, 38, 38, 0.3); }
+        .badge-violet { background: rgba(124, 58, 237, 0.2); color: #a78bfa; border-color: rgba(124, 58, 237, 0.3); }
+        .badge-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; border-color: rgba(234, 179, 8, 0.3); }
+
+        .scan-viewport {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .scan-viewport img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .scan-img-base { z-index: 1; }
+        .scan-img-layer { z-index: 2; }
+        
+        /* Object fit helper classes */
+        .obj-cover { object-fit: cover; }
+        .obj-contain { object-fit: contain; }
+        .obj-bottom { object-position: bottom; }
+
+        /* Scanner Animation */
+        .scan-layer {
+            animation: wipe-fade-cycle 9s infinite;
+            will-change: clip-path, opacity;
+        }
+
+        .scanner-line {
+            position: absolute;
+            left: 0; width: 100%; height: 1px;
+            box-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
+            opacity: 0; z-index: 20; pointer-events: none;
+            animation: single-scan-cycle 9s infinite;
+            will-change: top, opacity;
+        }
+
+        .line-red { color: #ef4444; background: #ef4444; }
+        .line-violet { color: #a78bfa; background: #a78bfa; }
+        .line-yellow { color: #facc15; background: #facc15; }
+
+        .delay-step-1 { animation-delay: 0s; }
+        .delay-step-2 { animation-delay: 2s; }
+        .delay-step-3 { animation-delay: 4s; }
+
+        @keyframes wipe-fade-cycle {
+            0% { clip-path: inset(0 0 100% 0); opacity: 1; }
+            5% { clip-path: inset(0 0 100% 0); }
+            20% { clip-path: inset(0 0 0 0); opacity: 1; animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+            44% { clip-path: inset(0 0 0 0); opacity: 1; }
+            55% { clip-path: inset(0 0 0 0); opacity: 0; }
+            55.1% { clip-path: inset(0 0 100% 0); opacity: 0; }
+            100% { clip-path: inset(0 0 100% 0); opacity: 1; }
+        }
+
+        @keyframes single-scan-cycle {
+            0%, 4% { top: 0%; opacity: 0; }
+            5% { top: 0%; opacity: 1; }
+            20% { top: 100%; opacity: 1; }
+            21%, 100% { top: 100%; opacity: 0; }
+        }
+
     </style>
 </head>
 <body>
@@ -876,6 +1083,142 @@
         </div>
     </section>
 
+    <!-- ================= INSERTED SECTION: INTERFACE ================= -->
+    <section class="section" id="live-interface">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Live Threat Detection</span>
+                <h2 class="section-title">Operational Scenarios</h2>
+                <p class="section-subtitle">Real-time asset deployment across critical infrastructure vectors.</p>
+            </div>
+
+            <!-- Content Wrapper -->
+            <div style="display: flex; flex-direction: column; gap: 4rem;">
+                
+                <!-- SUB-SECTION A: BORDER SECURITY -->
+                <div class="scenario-block anim-reveal">
+                    <!-- Hero A -->
+                    <div class="scenario-hero">
+                        <div class="scenario-hero-img">
+                            <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Checkpoint_Iso_Top.png?raw=true" alt="Border Security Isometric View">
+                            <div class="gallery-vignette"></div>
+                        </div>
+                        <div class="scenario-hero-content">
+                            <h2 class="scenario-title">Border Security</h2>
+                            <p class="scenario-meta">Sector A // Ingress Control & Validation</p>
+                            <p class="scenario-text">
+                                STORM PMC K9 units provide rapid, non-intrusive screening for high-volume border crossings. By detecting narcotics and explosives in moving vehicles, our teams ensure secure borders without impeding critical commerce and traffic flow.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Grid A -->
+                    <div class="scan-grid">
+                        <!-- Card 1: Bomb -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: EXPLOSIVE</h2>
+                                <span class="scan-badge badge-red">PREVENTION</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-red delay-step-1"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Bombcar_00000.png?raw=true" class="scan-img-base obj-cover">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Bombcar_00001.png?raw=true" class="scan-img-layer obj-cover scan-layer delay-step-1">
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Drug -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: NARCOTICS</h2>
+                                <span class="scan-badge badge-violet">SEIZURE</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-violet delay-step-2"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Drugcar_00000.png?raw=true" class="scan-img-base obj-contain">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Drugcar_00001.png?raw=true" class="scan-img-layer obj-contain scan-layer delay-step-2">
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Electronics -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: ELECTRONICS</h2>
+                                <span class="scan-badge badge-yellow">SURVEILLANCE</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-yellow delay-step-3"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Bus_00000.png?raw=true" class="scan-img-base obj-contain">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Bus_00001.png?raw=true" class="scan-img-layer obj-contain scan-layer delay-step-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-SECTION B: AIR CARGO -->
+                <div class="scenario-block anim-reveal">
+                    <!-- Hero B -->
+                    <div class="scenario-hero">
+                        <div class="scenario-hero-img">
+                            <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/K9_Plane%20_No_Glass-TopISO.png?raw=true" alt="Air Cargo Isometric View">
+                            <div class="gallery-vignette"></div>
+                        </div>
+                        <div class="scenario-hero-content">
+                            <h2 class="scenario-title">Air Cargo</h2>
+                            <p class="scenario-meta">Sector B // Military & Commercial</p>
+                            <p class="scenario-text">
+                                Securing military supply chains requires rapid, accurate screening of palletized freight. STORM PMC K9s detect minute traces of explosives and illicit materials within complex cargo configurations, guaranteeing safe transport for mission-critical assets.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Grid B -->
+                    <div class="scan-grid">
+                        <!-- Card 4: Plane Explosive -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: EXPLOSIVE</h2>
+                                <span class="scan-badge badge-red">PREVENTION</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-red delay-step-1"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Explosives_00000.png?raw=true" class="scan-img-base obj-cover obj-bottom">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Explosives_00001.png?raw=true" class="scan-img-layer obj-cover obj-bottom scan-layer delay-step-1">
+                            </div>
+                        </div>
+
+                        <!-- Card 5: Plane Narcotics -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: NARCOTICS</h2>
+                                <span class="scan-badge badge-violet">SEIZURE</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-violet delay-step-2"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Narcotics_00000.png?raw=true" class="scan-img-base obj-contain">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Narcotics_00001.png?raw=true" class="scan-img-layer obj-contain scan-layer delay-step-2">
+                            </div>
+                        </div>
+
+                        <!-- Card 6: Plane Electronics -->
+                        <div class="scan-card group">
+                            <div class="scan-header">
+                                <h2 class="scan-title">THREAT: ELECTRONICS</h2>
+                                <span class="scan-badge badge-yellow">SURVEILLANCE</span>
+                            </div>
+                            <div class="scan-viewport">
+                                <div class="scanner-line line-yellow delay-step-3"></div>
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Electronics_00000.png?raw=true" class="scan-img-base obj-cover obj-bottom">
+                                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Cargo_Plane/Cargo_Plane_Electronics_00001.png?raw=true" class="scan-img-layer obj-cover obj-bottom scan-layer delay-step-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Industry Grid Section -->
     <section class="section" id="industries">
         <div class="container">
@@ -922,8 +1265,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- -->
             </div>
         </div>
     </section>
@@ -991,12 +1332,9 @@
     <section class="section cta-section" id="deploy">
         <div class="container">
             <div class="cta-stack">
-                <!-- Product Render (Scaled to 0.5x) -->
                 <div class="cta-image-wrapper">
                     <img src="https://placehold.co/600x400/111/444?text=Storm+K9+Render" alt="Storm K9 Asset Render">
                 </div>
-
-                <!-- Text Content -->
                 <div class="cta-content anim-reveal">
                     <h2 class="cta-title">Configure Your Capability.</h2>
                     <p class="cta-text">Storm K9 is not a service; it is a modular response system tailored to your specific threat environment.</p>
@@ -1377,7 +1715,7 @@
                                     height: 0, 
                                     paddingTop: 0, 
                                     paddingBottom: 0, 
-                                    opacity: 0,
+                                    opacity: 0, 
                                     clearProps: "all" // Ensure no lingering styles at end
                                 }, "<"); // Sync start with close
                             }
@@ -1401,7 +1739,7 @@
                             height: 0, 
                             paddingTop: 0, 
                             paddingBottom: 0, 
-                            opacity: 0,
+                            opacity: 0, 
                             clearProps: "all"
                         });
                     }
