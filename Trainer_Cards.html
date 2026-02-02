@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leadership | StormPMC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.12);
+            --color-border-hover: rgba(255, 255, 255, 0.2);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            --accent-red: #ff3131;
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            
+            --border-radius-lg: 4px;
+            --subject-height: 96%;
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+        }
+
+        li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .section-label {
+            display: inline-block;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+        }
+
+        .leadership-focus {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+            gap: 24px;      
+            width: 100%;
+        }
+
+        .trainer-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            
+            /* Layout: 2 Cards share row */
+            flex: 1 1 45%; 
+            min-width: 300px; 
+            max-width: 640px; 
+            cursor: pointer; /* Indicate interaction */
+
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease, background 0.4s ease, transform 0.4s ease;
+
+            /* UX: Prevent highlighting UI elements on click */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            .trainer-card {
+                flex: 1 1 100%; 
+                max-width: 100%; 
+            }
+        }
+
+        /* Hover OR Mobile Active Class */
+        .trainer-card:hover,
+        .trainer-card.mobile-active {
+            border-color: rgba(255, 49, 49, 0.4);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-5px);
+            z-index: 20; 
+        }
+
+        /* IMAGE STAGE */
+        .profile-stage {
+            width: 100%;
+            height: 320px; 
+            position: relative;
+            background: #080808; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; 
+            overflow: hidden;
+        }
+
+        /* STAGE LAYERS */
+        .stage-texture {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            filter: grayscale(100%) contrast(1.2) brightness(0.7);
+            z-index: 0;
+            pointer-events: none;
+            transform: scale(1.05);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, filter 0.5s ease;
+        }
+
+        .trainer-card:hover .stage-texture,
+        .trainer-card.mobile-active .stage-texture {
+            transform: scale(1.0);
+            opacity: 0.1;
+            filter: grayscale(100%) contrast(1.2) brightness(0.4);
+        }
+
+        .stage-bg {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 50% 100%, rgba(255, 49, 49, 0.08) 0%, transparent 80%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.01) 0%, transparent 100%);
+            z-index: 0; 
+        }
+
+        .stage-ui {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .profile-stage::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 20px; bottom: 20px; right: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .trainer-card:hover .profile-stage::before,
+        .trainer-card.mobile-active .profile-stage::before {
+            top: 23px; left: 23px; bottom: 23px; right: 23px;
+        }
+
+        .line-isolation-group {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            isolation: isolate; 
+        }
+
+        .stage-line-bottom {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--color-border) 0%, var(--color-border) 100%);
+            background-size: 100% 1px;
+            background-position: bottom center;
+            background-repeat: no-repeat;
+        }
+
+        .instructor-eraser {
+            height: var(--subject-height);
+            width: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%); 
+            transform-origin: bottom center;
+            filter: brightness(0); 
+            mix-blend-mode: destination-out;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform; 
+        }
+
+        .character-glow {
+            position: absolute;
+            bottom: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140%; 
+            height: 80%;
+            background: radial-gradient(ellipse at center, rgba(255, 49, 49, 0.15) 0%, transparent 75%);
+            z-index: 4;
+            filter: blur(80px); 
+            opacity: 0.2;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .instructor-img {
+            height: var(--subject-height);
+            width: auto;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%); 
+            z-index: 5; 
+            display: block;
+            transform-origin: bottom center;
+            filter: grayscale(100%) contrast(1.1) brightness(0.8);
+            transition: filter 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* RESTORED TO LINEAR: Simple, robust fade */
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            
+            /* THE FIX: Inset the mask slightly (98%) to hide the hard edges of the image file */
+            -webkit-mask-size: 98% 100%;
+            mask-size: 98% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center top;
+            mask-position: center top;
+            
+            will-change: transform, filter; 
+        }
+
+        .trainer-card:hover .instructor-img,
+        .trainer-card.mobile-active .instructor-img {
+            transform: translateX(-50%) scale(1.05); 
+            filter: grayscale(0%) contrast(1.0) brightness(1.0) drop-shadow(0 0 30px rgba(255, 49, 49, 0.1));
+        }
+
+        .trainer-card:hover .instructor-eraser,
+        .trainer-card.mobile-active .instructor-eraser {
+            transform: translateX(-50%) scale(1.06);
+        }
+
+        .light-wrap {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: var(--subject-height);
+            width: 100%;
+            z-index: 6; 
+            pointer-events: none;
+            
+            -webkit-mask-image: var(--subject-url);
+            mask-image: var(--subject-url);
+            
+            /* Also inset the glow mask to prevent reflection */
+            -webkit-mask-size: 98% 100%;
+            mask-size: 98% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: bottom center;
+            mask-position: bottom center;
+
+            background: var(--accent-red);
+            mix-blend-mode: plus-lighter; 
+            filter: blur(25px) brightness(1.2) contrast(1.2); 
+            opacity: 0;
+            transform-origin: bottom center;
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .trainer-card:hover .light-wrap,
+        .trainer-card.mobile-active .light-wrap {
+            opacity: 0.2; 
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .stage-grounding {
+            position: absolute;
+            bottom: -40px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180%; 
+            height: 120px;
+            background: radial-gradient(ellipse at 50% 100%, rgba(255, 49, 49, 0.2) 0%, transparent 70%);
+            z-index: 7; 
+            pointer-events: none;
+            opacity: 0.4;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .trainer-card:hover .stage-grounding,
+        .trainer-card.mobile-active .stage-grounding { 
+            opacity: 1; 
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .trainer-card:hover .character-glow,
+        .trainer-card.mobile-active .character-glow { 
+            opacity: 0.5; 
+            transform: translateX(-50%) scale(1.1);
+        }
+
+
+        /* --- CARD CONTENT LAYOUT --- */
+        .card-content {
+            padding: 24px 28px 24px 28px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #050505;
+            position: relative;
+            z-index: 10;
+        }
+
+        .trainer-info h3 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            margin: 0 0 4px 0;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .trainer-role {
+            font-size: 0.8rem;
+            color: var(--accent-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .trainer-subtitle {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* GRID STACK for overlapping content */
+        .content-stack-grid {
+            display: grid;
+            grid-template-areas: "stack";
+            min-height: 200px; /* Increased to accommodate content */
+            align-items: start;
+        }
+
+        .view-section {
+            grid-area: stack;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .view-section.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .section-header-small {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .bio-text {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+            
+            /* Allow text selection for info */
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        
+        .bio-list {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--color-text-secondary);
+            
+            /* Allow text selection for info */
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        /* Footer / Hint Area */
+        .interaction-bar {
+            margin-top: auto;
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            /* Redundant safety, though inherited from card */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .hint {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--color-text-muted);
+            transition: color 0.3s ease;
+        }
+        
+        .trainer-card:hover .hint,
+        .trainer-card.mobile-active .hint {
+            color: #fff;
+        }
+
+        .nav-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            color: var(--accent-red);
+            font-size: 14px;
+        }
+
+        .trainer-card:hover .nav-arrow,
+        .trainer-card.mobile-active .nav-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .anim-reveal {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-overlay"></div>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Command & Control</span>
+                <h2 class="section-title">Lead Master Trainers</h2>
+            </div>
+
+            <div class="leadership-focus">
+                
+                <!-- CARD 1: Martina Mrazovac -->
+                <div class="trainer-card anim-reveal" style="--subject-url: url('https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/Martina_00000.webp?raw=true');">
+                    <!-- IMAGE STAGE -->
+                    <div class="profile-stage">
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/Martina_00001.webp?raw=true" alt="" class="stage-texture">
+                        <div class="stage-bg"></div>
+                        <div class="stage-ui"></div>
+                        
+                        <div class="line-isolation-group">
+                            <div class="stage-line-bottom"></div>
+                            <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/Martina_00000.webp?raw=true" class="instructor-eraser" alt="">
+                        </div>
+                        
+                        <div class="character-glow"></div>
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/Martina_00000.webp?raw=true" class="instructor-img" alt="Martina Mrazovac">
+
+                        <div class="light-wrap"></div>
+                        <div class="stage-grounding"></div>
+                    </div>
+
+                    <!-- CARD CONTENT -->
+                    <div class="card-content">
+                        <div class="trainer-info">
+                            <h3>Martina Mrazovac</h3>
+                            <div class="trainer-role">Instructor</div>
+                            <span class="trainer-subtitle">Certified Dog Training Specialist | USA, EU</span>
+                        </div>
+
+                        <!-- Content Stack (Grid) -->
+                        <div class="content-stack-grid">
+                            
+                            <!-- 0: Summary (Default) -->
+                            <div class="view-section view-0 active">
+                                <span class="section-header-small">Professional Summary</span>
+                                <div class="bio-text">
+                                    Master Trainer of Trainers certified by the International Cynological Federation (FCI) and Golden Crown Master Trainer. Internationally certified Dog Training Specialist with extensive experience in Schutzhund (SchH), personal protection, and law enforcement and military working dogs. Licensed through MEOE (F.C.I.) Hungary and EHU – Budapest, with proven instructional experience across Europe and the United States.
+                                </div>
+                            </div>
+
+                            <!-- 1: Certifications -->
+                            <div class="view-section view-1">
+                                <span class="section-header-small">Certifications & Licenses</span>
+                                <ul class="bio-list">
+                                    <li>Dog Training Specialist – SchH</li>
+                                    <li>MEOE (F.C.I.) License – Hungary</li>
+                                    <li>EHU – Budapest Certification</li>
+                                    <li>Certified Instructor – Personal Protection, Law Enforcement, and Military Working Dogs (USA)</li>
+                                </ul>
+                            </div>
+
+                            <!-- 2: Core Competencies -->
+                            <div class="view-section view-2">
+                                <span class="section-header-small">Core Competencies</span>
+                                <ul class="bio-list">
+                                    <li>Advanced SchH obedience, tracking, and protection</li>
+                                    <li>K9 program development for law enforcement and military applications</li>
+                                    <li>Personal protection dog instruction</li>
+                                    <li>Handler education, team coordination, and operational deployment</li>
+                                    <li>Multi-environment training (urban, tactical, family integration)</li>
+                                </ul>
+                            </div>
+
+                            <!-- 3: Experience -->
+                            <div class="view-section view-3">
+                                <span class="section-header-small">Experience</span>
+                                <ul class="bio-list">
+                                    <li>International Dog Training Specialist & Instructor — Hungary | USA</li>
+                                    <li>Trained and certified working dogs for police, military, and private security operations</li>
+                                    <li>Designed curricula for tactical obedience, protection, and decoy engagement</li>
+                                    <li>Delivered handler courses and K9 readiness programs for international teams</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Interaction Footer -->
+                        <div class="interaction-bar">
+                            <div class="hint">Click to see Certifications</div>
+                            <div class="nav-arrow">→</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: László Pek -->
+                <div class="trainer-card anim-reveal" style="--subject-url: url('https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/PekBg_00000.webp?raw=true');">
+                    <div class="profile-stage">
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/PekBg_00001.webp?raw=true" alt="" class="stage-texture">
+                        <div class="stage-bg"></div>
+                        <div class="stage-ui"></div>
+                        
+                        <div class="line-isolation-group">
+                            <div class="stage-line-bottom"></div>
+                            <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/PekBg_00000.webp?raw=true" class="instructor-eraser" alt="">
+                        </div>
+                        
+                        <div class="character-glow"></div>
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Trainer_Cards/PekBg_00000.webp?raw=true" class="instructor-img" alt="László Pek">
+
+                        <div class="light-wrap"></div>
+                        <div class="stage-grounding"></div>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="trainer-info">
+                            <h3>László Pek</h3>
+                            <div class="trainer-role">Instructor / Decoy</div>
+                            <span class="trainer-subtitle">Certified Protection Specialist | USA, EU</span>
+                        </div>
+
+                        <div class="content-stack-grid">
+                            
+                            <!-- 0: Summary -->
+                            <div class="view-section view-0 active">
+                                <span class="section-header-small">Professional Summary</span>
+                                <div class="bio-text">
+                                    Master Trainer of Trainers certified by the International Cynological Federation (FCI) and Golden Crown Master Trainer. Certified Instructor and Decoy with extensive experience in Schutzhund (SchH), personal protection, and law enforcement and military working dog training. Licensed through MEOE (F.C.I.) Hungary, with proven international credentials and specialization in high-intensity decoy work and combat-oriented bite development.
+                                </div>
+                            </div>
+
+                            <!-- 1: Certifications -->
+                            <div class="view-section view-1">
+                                <span class="section-header-small">Certifications & Licenses</span>
+                                <ul class="bio-list">
+                                    <li>Instructor / Decoy – SchH</li>
+                                    <li>MEOE (F.C.I.) License – Hungary</li>
+                                    <li>Certified Instructor/Decoy – Personal Protection, Law Enforcement, and Military Working Dogs (USA)</li>
+                                </ul>
+                            </div>
+
+                            <!-- 2: Competencies -->
+                            <div class="view-section view-2">
+                                <span class="section-header-small">Core Competencies</span>
+                                <ul class="bio-list">
+                                    <li>Decoy specialization in bite development, drive building, and combat scenarios</li>
+                                    <li>Tactical K9 training for law enforcement and military units</li>
+                                    <li>Handler instruction for real-world protection deployment</li>
+                                    <li>Development of high-performance working dogs (German Shepherds, Malinois, Dobermans)</li>
+                                </ul>
+                            </div>
+
+                            <!-- 3: Experience -->
+                            <div class="view-section view-3">
+                                <span class="section-header-small">Experience</span>
+                                <ul class="bio-list">
+                                    <li>International Instructor & Decoy – Hungary | USA</li>
+                                    <li>Provided decoy training and K9 instruction for police and military working dogs</li>
+                                    <li>Conducted protection and combat-scenario training for personal protection dogs</li>
+                                    <li>Integrated K9 teams into operational environments alongside handlers</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="interaction-bar">
+                            <div class="hint">Click to see Certifications</div>
+                            <div class="nav-arrow">→</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        window.onload = function() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Intro Animation
+            gsap.utils.toArray(".anim-reveal").forEach((el, index) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 90%",
+                        toggleActions: "play none none none"
+                    },
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    ease: "power3.out"
+                });
+            });
+            
+            // Interaction Logic
+            const cards = document.querySelectorAll('.trainer-card');
+            
+            cards.forEach(card => {
+                const hint = card.querySelector('.hint');
+                const views = card.querySelectorAll('.view-section');
+                
+                // State: 0=Summary, 1=Certs, 2=Comps, 3=Exp
+                let state = 0;
+                
+                function updateHint(currentState) {
+                     switch(currentState) {
+                        case 0: hint.textContent = "Click to see Certifications"; break;
+                        case 1: hint.textContent = "Click to see Core Competencies"; break;
+                        case 2: hint.textContent = "Click to see Experience"; break;
+                        case 3: hint.textContent = "Click to see Professional Summary"; break;
+                    }
+                }
+
+                function updateView(newState) {
+                    // Hide all
+                    views.forEach(v => v.classList.remove('active'));
+                    // Show target
+                    const target = card.querySelector(`.view-${newState}`);
+                    if(target) target.classList.add('active');
+                    
+                    state = newState;
+                    updateHint(state);
+                }
+
+                // Initial State Hint
+                updateHint(0);
+
+                // Click -> Cycle States (0 -> 1 -> 2 -> 3 -> 0)
+                card.addEventListener('click', () => {
+                    let next = state + 1;
+                    if(next > 3) next = 0; // Loop back to Summary (0)
+                    updateView(next);
+                });
+            });
+
+            // Mobile Scroll Interaction (Only runs on screens <= 768px)
+            ScrollTrigger.matchMedia({
+                "(max-width: 768px)": function() {
+                    gsap.utils.toArray(".trainer-card").forEach(card => {
+                        ScrollTrigger.create({
+                            trigger: card,
+                            start: "top 70%", // Start activating when card top hits 70% of viewport
+                            end: "bottom 30%", // End activation when card bottom hits 30% of viewport
+                            toggleClass: "mobile-active",
+                            // markers: true // Toggle for debugging
+                        });
+                    });
+                }
+            });
+        };
+    </script>
+</body>
+</html>
