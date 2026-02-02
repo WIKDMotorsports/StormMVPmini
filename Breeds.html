@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Assets | SyberStorm K9</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.12);
+            --color-border-hover: rgba(255, 255, 255, 0.2);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            --accent-red: #ff3131;
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            
+            --border-radius-lg: 6px;
+            /* Height of the dogs in the container */
+            --subject-height: 85%; 
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        ul { margin: 0; padding: 0; list-style: none; }
+        li { position: relative; padding-left: 16px; margin-bottom: 8px; }
+        li::before {
+            content: '›';
+            position: absolute;
+            left: 0; top: 0;
+            color: var(--accent-red);
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%; 
+            margin: 0 auto;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        /* --- CARD STYLES --- */
+        .trainer-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease, background 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .trainer-card:hover {
+            border-color: rgba(255, 49, 49, 0.4);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* IMAGE STAGE */
+        .profile-stage {
+            width: 100%;
+            height: 380px; 
+            position: relative;
+            background: #080808; 
+            display: block; 
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stage-texture {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.25; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.6);
+            z-index: 0;
+            pointer-events: none;
+            transform: scale(1.02);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .trainer-card:hover .stage-texture {
+            transform: scale(1.0);
+            opacity: 0.15;
+        }
+
+        .stage-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 100%, rgba(255, 49, 49, 0.08) 0%, transparent 80%);
+            z-index: 0; 
+        }
+
+        .stage-ui {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .profile-stage::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 20px; bottom: 20px; right: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .trainer-card:hover .profile-stage::before {
+            top: 25px; left: 25px; bottom: 25px; right: 25px;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- SUBJECT LAYERING --- */
+        .line-isolation-group {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            isolation: isolate; 
+        }
+
+        .stage-line-bottom {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--color-border) 0%, var(--color-border) 100%);
+            background-size: 100% 1px;
+            background-position: bottom center;
+            background-repeat: no-repeat;
+        }
+
+        /* Generic Class for all dogs (visible and eraser) */
+        .dog-asset {
+            height: var(--subject-height);
+            width: auto;
+            position: absolute;
+            bottom: 0;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+            max-width: none; 
+            margin: 0;
+            padding: 0;
+            /* Ensure images don't distort if squeezed */
+            object-fit: contain;
+        }
+
+        /* --- FIXED POSITIONING (UPDATED) --- */
+        /* BASE STATES */
+        .pos-center {
+            left: 50%;
+            /* Fixed: Changed from -79% to -50% to properly center the middle dog */
+            transform: translateX(-50%) scale(1.3);
+            bottom: -13%;
+            z-index: 10;
+            transform-origin: bottom center;
+        }
+
+        .pos-right {
+            right: 0; left: auto;
+            /* Fixed: Changed from 18% (push out) to -5% (pull in) to scoot towards center */
+            transform: translateX(-5%) scale(1.3);
+            bottom: -13%;
+            z-index: 5;
+            transform-origin: bottom right;
+        }
+
+        .pos-left {
+            left: 0; right: auto;
+            /* Fixed: Reset to 0 to ensure left dog is grounded properly */
+            transform: translateX(0%) scale(1.3);
+            bottom: -13%;
+            z-index: 5;
+            transform-origin: bottom left;
+        }
+
+        /* HOVER STATES */
+        .trainer-card:hover .pos-center,
+        .trainer-card:hover .instructor-eraser.pos-center {
+            transform: translateX(-50%) scale(1.35); 
+            bottom: -13%;
+        }
+
+        .trainer-card:hover .pos-right,
+        .trainer-card:hover .instructor-eraser.pos-right {
+            transform: translateX(-5%) scale(1.35); 
+            bottom: -13%;
+        }
+
+        .trainer-card:hover .pos-left,
+        .trainer-card:hover .instructor-eraser.pos-left {
+            transform: translateX(0%) scale(1.35); 
+            bottom: -13%;
+        }
+
+        /* Eraser Specifics */
+        .instructor-eraser {
+            filter: brightness(0); 
+            mix-blend-mode: destination-out;
+        }
+
+        .character-glow {
+            position: absolute;
+            bottom: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%; 
+            height: 80%;
+            background: radial-gradient(ellipse at center, rgba(255, 49, 49, 0.15) 0%, transparent 75%);
+            z-index: 3; /* Behind dogs */
+            filter: blur(80px); 
+            opacity: 0.2;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        /* Visible Image Specifics */
+        .instructor-img {
+            display: block;
+            filter: grayscale(100%) contrast(1.1) brightness(0.8);
+            
+            /* Gradient Mask to blend feet/bottom */
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            -webkit-mask-size: 98% 100%;
+            mask-size: 98% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center top;
+            mask-position: center top;
+        }
+
+        /* HOVER EFFECTS - FILTERS ONLY (Transforms handled above) */
+        .trainer-card:hover .instructor-img {
+            filter: grayscale(0%) contrast(1.0) brightness(1.0) drop-shadow(0 0 30px rgba(255, 49, 49, 0.1));
+        }
+
+        /* --- CONTENT AREA --- */
+        .card-content {
+            padding: 32px 40px;
+            background: #050505;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .static-info {
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding-right: 20px;
+            height: 100%;
+        }
+
+        .trainer-info h3 {
+            font-family: var(--font-display);
+            font-size: 1.75rem; 
+            margin: 0 0 8px 0;
+            color: #fff;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        
+        .trainer-role {
+            font-size: 0.9rem;
+            color: var(--accent-red);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .trainer-subtitle {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-bottom: 24px;
+            display: block;
+            line-height: 1.5;
+        }
+
+        /* Interactive hint */
+        .interaction-hint-wrapper {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hint-arrow {
+            color: var(--accent-red);
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trainer-card:hover .hint-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .hint-text {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--color-text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .trainer-card:hover .hint-text { color: #fff; }
+
+        /* Dynamic Content Area */
+        .dynamic-info-area {
+            position: relative;
+            min-height: 220px; 
+        }
+
+        .content-stack-grid {
+            display: grid;
+            grid-template-areas: "stack";
+        }
+
+        .view-section {
+            grid-area: stack;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(20px); 
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .view-section.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .section-header-small {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 16px;
+            display: block;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+            width: fit-content;
+        }
+
+        .bio-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--color-text-secondary);
+            user-select: text;
+        }
+        
+        .bio-list strong {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .static-info {
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding-right: 0;
+                padding-bottom: 24px;
+                height: auto;
+            }
+
+            .profile-stage {
+                height: 320px; 
+            }
+            
+            /* Even on mobile, keep them strictly at edges */
+            .pos-left { left: 0 !important; }
+            .pos-right { right: 0 !important; }
+
+            .trainer-info h3 { font-size: 1.5rem; }
+        }
+
+        .anim-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-overlay"></div>
+
+    <div class="container">
+        <!-- SINGLE FULL WIDTH CARD -->
+        <div class="trainer-card anim-reveal">
+            
+            <div class="profile-stage">
+                <!-- BG_00003 as Texture -->
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00003.webp?raw=true" alt="" class="stage-texture">
+                <div class="stage-bg"></div>
+                <div class="stage-ui"></div>
+                
+                <!-- Line Isolation Group (Erasers) -->
+                <div class="line-isolation-group">
+                    <div class="stage-line-bottom"></div>
+                    
+                    <!-- ERASER: Left (Now BG_00002) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00002.webp?raw=true" class="dog-asset instructor-eraser pos-left" alt="">
+                    
+                    <!-- ERASER: Right (Now BG_00000) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00000.webp?raw=true" class="dog-asset instructor-eraser pos-right" alt="">
+                    
+                    <!-- ERASER: Center (BG_00001) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00001.webp?raw=true" class="dog-asset instructor-eraser pos-center" alt="">
+                </div>
+                
+                <div class="character-glow"></div>
+                
+                <!-- VISIBLE IMAGES -->
+                
+                <!-- 3. Left Anchor: Now BG_00002 (Dutch) -->
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00002.webp?raw=true" class="dog-asset instructor-img pos-left" alt="Breed Asset Left">
+
+                <!-- 1. Right Align: Now BG_00000 (Malinois) -->
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00000.webp?raw=true" class="dog-asset instructor-img pos-right" alt="Breed Asset Right">
+
+                <!-- 2. Center: BG_00001 (Black GSD) -->
+                <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00001.webp?raw=true" class="dog-asset instructor-img pos-center" alt="Breed Asset Center">
+
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="card-content">
+                <div class="content-layout">
+                    
+                    <!-- LEFT COLUMN: HEADER INFO -->
+                    <div class="static-info">
+                        <div class="trainer-info">
+                            <h3>Operational Breed Selection</h3>
+                            <div class="trainer-role">Belgian Malinois · Dutch Shepherd · German Shepherd</div>
+                            <span class="trainer-subtitle">
+                                Specialized crosses available as specified
+                            </span>
+                        </div>
+                        
+                        <div class="interaction-hint-wrapper">
+                            <div class="hint-text">Click to see Availability</div>
+                            <div class="hint-arrow">→</div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: DYNAMIC LISTS -->
+                    <div class="dynamic-info-area">
+                        <div class="content-stack-grid">
+                            
+                            <!-- 0: Program Summary -->
+                            <div class="view-section view-0 active">
+                                <span class="section-header-small">Program Summary</span>
+                                <ul class="bio-list">
+                                    <li>Premium multi-generational breeding optimized for <strong>operational mission profiles</strong></li>
+                                    <li>Advanced pre-conditioning reduces training timelines and handler burden</li>
+                                    <li>Dual-capability foundation in <strong>detection and protection</strong> disciplines</li>
+                                    <li>Environmental adaptation and stress inoculation integrated into development</li>
+                                    <li><strong>95%+ evaluation pass rate</strong> with extended performance guarantee</li>
+                                </ul>
+                            </div>
+
+                            <!-- 1: Age & Availability -->
+                            <div class="view-section view-1">
+                                <span class="section-header-small">Age & Availability</span>
+                                <ul class="bio-list">
+                                    <li><strong>Adult Canines:</strong> 10–36 months, fully trained and evaluation-ready</li>
+                                    <li><strong>Puppies:</strong> 2–9 months, early-stage development aligned with standards</li>
+                                    <li><strong>Sex:</strong> Male and female canines available across all age ranges</li>
+                                    <li><strong>Reproductive:</strong> Provided intact or neutered as required</li>
+                                    <li>Deployment flexibility supports mission timelines</li>
+                                </ul>
+                            </div>
+
+                            <!-- 2: Core Capabilities -->
+                            <div class="view-section view-2">
+                                <span class="section-header-small">Core Capabilities</span>
+                                <ul class="bio-list">
+                                    <li>Sociability with handlers and operational environments</li>
+                                    <li><strong>Detection capabilities:</strong> explosives and contraband</li>
+                                    <li>Controlled bite work and protection protocols</li>
+                                    <li>Pursuit and apprehension (passive and low-light scenarios)</li>
+                                    <li>Confidence and stability under stress</li>
+                                </ul>
+                            </div>
+
+                            <!-- 3: Medical & Compliance -->
+                            <div class="view-section view-3">
+                                <span class="section-header-small">Medical & Compliance</span>
+                                <ul class="bio-list">
+                                    <li>Pre-delivery veterinary screening exceeding applicable standards</li>
+                                    <li><strong>Radiographic evaluation:</strong> hips, elbows, spine, thorax, abdomen</li>
+                                    <li>Parasite prevention and health documentation prepared for evaluation</li>
+                                    <li>Full warranty coverage with replacement provisions</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Entry Animation
+            gsap.to(".anim-reveal", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+            
+            // Interaction Logic
+            const card = document.querySelector('.trainer-card');
+            const hintText = card.querySelector('.hint-text');
+            const views = card.querySelectorAll('.view-section');
+            
+            // State: 0=Summary, 1=Availability, 2=Capabilities, 3=Medical
+            let state = 0;
+            
+            function updateHint(currentState) {
+                    switch(currentState) {
+                    case 0: hintText.textContent = "Click to see Age & Availability"; break;
+                    case 1: hintText.textContent = "Click to see Core Capabilities"; break;
+                    case 2: hintText.textContent = "Click to see Medical & Compliance"; break;
+                    case 3: hintText.textContent = "Click to see Program Summary"; break;
+                }
+            }
+
+            function updateView(newState) {
+                views.forEach(v => v.classList.remove('active'));
+                const target = card.querySelector(`.view-${newState}`);
+                if(target) target.classList.add('active');
+                
+                state = newState;
+                updateHint(state);
+            }
+
+            // Click -> Cycle States
+            card.addEventListener('click', () => {
+                let next = state + 1;
+                if(next > 3) next = 0; 
+                updateView(next);
+            });
+        };
+    </script>
+</body>
+</html>
