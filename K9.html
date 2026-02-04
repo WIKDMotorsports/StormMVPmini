@@ -2879,52 +2879,12 @@
                             <div class="crosshair-dot dot-bottom"><div class="crosshair-line"></div></div>
                             <div class="crosshair-dot dot-left"><div class="crosshair-line"></div></div>
                          </div>
-                         <div class="custom-info-box">
-                           <div class="line-connector"></div>
-                           <div class="info-content"></div>
-                       </div>
                        </div>`,
                 iconSize: [50, 50],
                 iconAnchor: [25, 25]
             });
 
             const marker = L.marker(targetLocation, { icon: customPingIcon }).addTo(map);
-
-            const textForInfoBox = '<h1>' + "K9 Campus" + '</h1>' +
-                                   '<p>' + "Restricted Access" + '</p>' +
-                                   '<a href="' + "https://maps.google.com/?daddr=33.2982,-96.3694" + '" target="_blank">Get Directions</a>';
-
-            // Slight delay to ensure DOM is ready inside Leaflet
-            setTimeout(() => {
-                const infoBox = document.querySelector('.custom-info-box');
-                const infoContent = document.querySelector('.info-content');
-
-                function animateText(htmlString) {
-                    if(!infoContent) return;
-                    infoContent.innerHTML = htmlString;
-                    const elementsToAnimate = infoContent.querySelectorAll('h1, p, a');
-                    let totalDelay = 0;
-                    elementsToAnimate.forEach(el => {
-                        const text = el.textContent;
-                        el.innerHTML = '';
-                        text.split('').forEach(letter => {
-                            const span = document.createElement('span');
-                            span.innerHTML = letter === ' ' ? '&nbsp;' : letter;
-                            span.style.animationDelay = `${totalDelay * 0.005}s`;
-                            el.appendChild(span);
-                            totalDelay++;
-                        });
-                    });
-                }
-
-                marker.on('click', () => {
-                    if (!infoBox || !infoContent) return;
-                    const isVisible = infoBox.classList.toggle('visible');
-                    if (isVisible) {
-                        animateText(textForInfoBox);
-                    }
-                });
-            }, 100);
         });
     </script>
 </body>
