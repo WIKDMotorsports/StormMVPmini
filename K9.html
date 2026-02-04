@@ -1400,15 +1400,15 @@
         }
 
         .pos-right {
-            right: 0; left: auto;
-            transform: translateX(-5%) scale(1.3);
+            right: -15%; left: auto; /* Increased spread */
+            transform: translateX(0%) scale(1.3);
             bottom: -13%;
             z-index: 5;
             transform-origin: bottom right;
         }
 
         .pos-left {
-            left: 0; right: auto;
+            left: -15%; right: auto; /* Increased spread */
             transform: translateX(0%) scale(1.3);
             bottom: -13%;
             z-index: 5;
@@ -1420,7 +1420,7 @@
         .breeds-card.mobile-active .pos-center { transform: translateX(-50%) scale(1.35); }
 
         .breeds-card:hover .pos-right,
-        .breeds-card.mobile-active .pos-right { transform: translateX(-5%) scale(1.35); }
+        .breeds-card.mobile-active .pos-right { transform: translateX(0%) scale(1.35); }
 
         .breeds-card:hover .pos-left,
         .breeds-card.mobile-active .pos-left { transform: translateX(0%) scale(1.35); }
