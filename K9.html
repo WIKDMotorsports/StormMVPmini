@@ -1441,6 +1441,8 @@
             border-right: 1px solid rgba(255,255,255,0.1);
             padding-right: 20px;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .breeds-card .dynamic-info-area {
@@ -1772,9 +1774,9 @@
                                 </span>
                             </div>
 
-                            <div class="interaction-hint-wrapper" style="margin-top: 30px; display: flex; align-items: center; gap: 12px;">
-                                <div class="hint-text" style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-muted); transition: color 0.3s ease;">Click to see Program Summary</div>
-                                <div class="hint-arrow" style="color: var(--accent-red); font-size: 1.2rem; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease;">→</div>
+                            <div class="interaction-bar">
+                                <div class="hint">Click to see Program Summary</div>
+                                <div class="nav-arrow">→</div>
                             </div>
                         </div>
 
