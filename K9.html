@@ -1531,7 +1531,7 @@
             border: 1px solid var(--color-border);
             height: 500px;
             width: 100%;
-            max-width: 900px;
+            max-width: 100%; /* Matches Operational Breed Selection Card */
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -1624,9 +1624,9 @@
         /* -------------------------------------------------------------
            CUSTOM MAP INTERFACE STYLES
            ------------------------------------------------------------- */
-        .ping-container { width: 50px; height: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
-        .ping-dot { width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; box-shadow: 0 0 8px 3px #ff3b30b3; position: absolute; transform: scale(1); opacity: 1; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.3s ease 0.1s; }
-        .ping-circle { width: 40px; height: 40px; border: 2px solid #ff3b30; border-radius: 50%; box-shadow: inset 0 0 4px 1px #ff3b3080, 0 0 8px 2px #ff3b30b3; position: absolute; animation: ping-animation 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1); transition: opacity 0.3s ease; }
+        .map-ping-container { width: 50px; height: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .map-ping-dot { width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; box-shadow: 0 0 8px 3px #ff3b30b3; position: absolute; transform: scale(1); opacity: 1; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.3s ease 0.1s; }
+        .map-ping-circle { width: 40px; height: 40px; border: 2px solid #ff3b30; border-radius: 50%; box-shadow: inset 0 0 4px 1px #ff3b3080, 0 0 8px 2px #ff3b30b3; position: absolute; animation: map-ping-animation 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1); transition: opacity 0.3s ease; }
         .crosshair-wrapper { position: absolute; width: 100%; height: 100%; transition: transform 0.3s ease; }
         .crosshair-dot { position: absolute; width: 1px; height: 1px; background-color: #ff3b30; border-radius: 50%; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.1s, opacity 0.4s ease 0.1s; }
         .crosshair-line { position: absolute; background-color: #ff3b30; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -1634,17 +1634,17 @@
         .dot-bottom .crosshair-line { width: 1px; height: 10px; top: 0; left: 0; transform-origin: top; transform: scaleY(0); }
         .dot-left .crosshair-line { width: 10px; height: 1px; right: 0; top: 0; transform-origin: right; transform: scaleX(0); }
         .dot-right .crosshair-line { width: 10px; height: 1px; left: 0; top: 0; transform-origin: left; transform: scaleX(0); }
-        .ping-container.crosshair-active .ping-circle { opacity: 0; }
-        .ping-container.crosshair-active .ping-dot { transform: scale(0.5); }
-        .ping-container.crosshair-active .crosshair-wrapper { animation: rotate-animation 4s linear infinite; }
-        .ping-container.crosshair-active .crosshair-dot { opacity: 1; }
-        .ping-container.crosshair-active .dot-top { transform: translate(-50%, -20px); }
-        .ping-container.crosshair-active .dot-bottom { transform: translate(-50%, 20px); }
-        .ping-container.crosshair-active .dot-left { transform: translate(-20px, -50%); }
-        .ping-container.crosshair-active .dot-right { transform: translate(20px, -50%); }
-        .ping-container.punch-in-active .crosshair-line { transform: scaleX(1) scaleY(1); }
-        @keyframes ping-animation { 0% { transform: scale(0); opacity: 0.8; } 80% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
-        @keyframes rotate-animation { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .map-ping-container.crosshair-active .map-ping-circle { opacity: 0; }
+        .map-ping-container.crosshair-active .map-ping-dot { transform: scale(0.5); }
+        .map-ping-container.crosshair-active .crosshair-wrapper { animation: map-rotate-animation 4s linear infinite; }
+        .map-ping-container.crosshair-active .crosshair-dot { opacity: 1; }
+        .map-ping-container.crosshair-active .dot-top { transform: translate(-50%, -20px); }
+        .map-ping-container.crosshair-active .dot-bottom { transform: translate(-50%, 20px); }
+        .map-ping-container.crosshair-active .dot-left { transform: translate(-20px, -50%); }
+        .map-ping-container.crosshair-active .dot-right { transform: translate(20px, -50%); }
+        .map-ping-container.punch-in-active .crosshair-line { transform: scaleX(1) scaleY(1); }
+        @keyframes map-ping-animation { 0% { transform: scale(0); opacity: 0.8; } 80% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
+        @keyframes map-rotate-animation { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .custom-info-box { position: absolute; top: 50%; left: 50%; width: 0; height: 0; visibility: hidden; pointer-events: none; z-index: 1002; }
         .custom-info-box.visible { visibility: visible; pointer-events: all; }
@@ -2870,9 +2870,9 @@
 
             const customPingIcon = L.divIcon({
                 className: '',
-                html: `<div class="ping-container">
-                         <div class="ping-circle"></div>
-                         <div class="ping-dot"></div>
+                html: `<div class="map-ping-container">
+                         <div class="map-ping-circle"></div>
+                         <div class="map-ping-dot"></div>
                          <div class="crosshair-wrapper">
                             <div class="crosshair-dot dot-top"><div class="crosshair-line"></div></div>
                             <div class="crosshair-dot dot-right"><div class="crosshair-line"></div></div>
