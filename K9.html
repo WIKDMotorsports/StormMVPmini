@@ -222,9 +222,9 @@
         }
 
         .badge-flagship {
-            color: #4ade80;
-            border-color: rgba(74, 222, 128, 0.3);
-            background: rgba(74, 222, 128, 0.05);
+            color: #ff3131;
+            border-color: rgba(255, 49, 49, 0.3);
+            background: rgba(255, 49, 49, 0.05);
         }
 
         .nav {
@@ -680,7 +680,7 @@
         .glow-orb {
             position: fixed;
             width: 800px; height: 800px;
-            background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 49, 49, 0.08) 0%, transparent 70%);
             top: 50%; left: 50%;
             margin-left: -400px;
             margin-top: -400px;
@@ -1363,6 +1363,151 @@
             transform: translateX(0);
         }
 
+        /* -------------------------------------------------------------
+           BREEDS SECTION STYLES
+           ------------------------------------------------------------- */
+        .breeds-card {
+            width: 100%;
+            max-width: 100%; /* Override standard trainer card limit */
+        }
+
+        .breeds-card .profile-stage {
+            height: 380px; /* Taller stage for dogs */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* DOG ASSETS - Critical Fixes for Scaling */
+        .dog-asset {
+            height: 85%;
+            width: auto;
+            max-width: none !important; /* CRITICAL: Prevent squashing */
+            position: absolute;
+            bottom: 0;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease, left 0.5s cubic-bezier(0.16, 1, 0.3, 1), right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            margin: 0;
+            padding: 0;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        /* POSITIONING */
+        .pos-center {
+            left: 50%;
+            transform: translateX(-50%) scale(1.3);
+            bottom: -13%;
+            z-index: 10;
+            transform-origin: bottom center;
+        }
+
+        .pos-right {
+            right: -40%; left: auto; /* Increased spread */
+            transform: translateX(0%) scale(1.3);
+            bottom: -13%;
+            z-index: 5;
+            transform-origin: bottom right;
+        }
+
+        .pos-left {
+            left: -40%; right: auto; /* Increased spread */
+            transform: translateX(0%) scale(1.3);
+            bottom: -13%;
+            z-index: 5;
+            transform-origin: bottom left;
+        }
+
+        /* HOVER STATES */
+        .breeds-card:hover .pos-center,
+        .breeds-card.mobile-active .pos-center { transform: translateX(-50%) scale(1.35); }
+
+        .breeds-card:hover .pos-right,
+        .breeds-card.mobile-active .pos-right {
+            transform: translateX(0%) scale(1.35);
+            right: -45%;
+        }
+
+        .breeds-card:hover .pos-left,
+        .breeds-card.mobile-active .pos-left {
+            transform: translateX(0%) scale(1.35);
+            left: -45%;
+        }
+
+        /* CONTENT LAYOUT */
+        /* RESPONSIVE SPREAD ADJUSTMENTS */
+        /* Below 1500px: Increase spread to compensate for narrower container */
+        @media (max-width: 1500px) {
+            .pos-right { right: -50%; }
+            .pos-left { left: -50%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -55%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -55%; }
+        }
+
+        /* Below 1200px: Further increase spread */
+        @media (max-width: 1200px) {
+            .pos-right { right: -55%; }
+            .pos-left { left: -55%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -60%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -60%; }
+        }
+
+        /* Below 1050px: Maximum spread before mobile hide kicks in */
+        @media (max-width: 1050px) {
+            .pos-right { right: -65%; }
+            .pos-left { left: -65%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -70%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -70%; }
+        }
+
+        .breeds-card .card-content {
+            padding: 32px 40px;
+        }
+
+        .breeds-card .content-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .breeds-card .static-info {
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding-right: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .breeds-card .dynamic-info-area {
+            position: relative;
+            min-height: 220px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+             .breeds-card .content-layout {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .breeds-card .static-info {
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding-right: 0;
+                padding-bottom: 24px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pos-left, .pos-right {
+                display: none !important;
+            }
+            .breeds-card .profile-stage {
+                height: 320px;
+            }
+            .breeds-card .card-content {
+                padding: 24px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1609,6 +1754,123 @@
         </div>
     </section>
 
+    <!-- ================= INSERTED SECTION: BREEDS ================= -->
+    <section class="section" id="breeds">
+        <div class="container">
+            <!-- SINGLE FULL WIDTH CARD -->
+            <div class="trainer-card breeds-card anim-reveal">
+
+                <div class="profile-stage">
+                    <!-- BG_00003 as Texture -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00003.webp?raw=true" alt="" class="stage-texture">
+                    <div class="stage-bg"></div>
+                    <div class="stage-ui"></div>
+
+                    <!-- Line Isolation Group (Erasers) -->
+                    <div class="line-isolation-group">
+                        <div class="stage-line-bottom"></div>
+
+                        <!-- ERASERS (Visible only on desktop via CSS) -->
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00002.webp?raw=true" class="dog-asset instructor-eraser pos-left" alt="">
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00000.webp?raw=true" class="dog-asset instructor-eraser pos-right" alt="">
+                        <!-- Center Eraser -->
+                        <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00001.webp?raw=true" class="dog-asset instructor-eraser pos-center" alt="">
+                    </div>
+
+                    <div class="character-glow"></div>
+
+                    <!-- VISIBLE IMAGES -->
+                    <!-- Left: BG_00002 (Dutch) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00002.webp?raw=true" class="dog-asset instructor-img pos-left" alt="Dutch Shepherd">
+
+                    <!-- Right: BG_00000 (Malinois) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00000.webp?raw=true" class="dog-asset instructor-img pos-right" alt="Belgian Malinois">
+
+                    <!-- Center: BG_00001 (Black GSD) -->
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/Breeds/BG_00001.webp?raw=true" class="dog-asset instructor-img pos-center" alt="German Shepherd">
+
+                </div>
+
+                <!-- CONTENT AREA -->
+                <div class="card-content">
+                    <div class="content-layout">
+
+                        <!-- LEFT COLUMN: HEADER INFO -->
+                        <div class="static-info">
+                            <div class="trainer-info">
+                                <h3>Operational Breed Selection</h3>
+                                <div class="trainer-role">Malinois · Dutch · GSD</div>
+                                <span class="trainer-subtitle">
+                                    Specialized crosses available as specified
+                                </span>
+                            </div>
+
+                            <div class="interaction-bar">
+                                <div class="hint">Click to see Program Summary</div>
+                                <div class="nav-arrow">→</div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN: DYNAMIC LISTS -->
+                        <div class="dynamic-info-area">
+                            <div class="content-stack-grid">
+
+                                <!-- 0: Program Summary -->
+                                <div class="view-section view-0 active">
+                                    <span class="section-header-small">Program Summary</span>
+                                    <ul class="bio-list">
+                                        <li>Premium multi-generational breeding optimized for <strong>operational mission profiles</strong></li>
+                                        <li>Advanced pre-conditioning reduces training timelines and handler burden</li>
+                                        <li>Dual-capability foundation in <strong>detection and protection</strong> disciplines</li>
+                                        <li>Environmental adaptation and stress inoculation integrated into development</li>
+                                        <li><strong>95%+ evaluation pass rate</strong> with extended performance guarantee</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 1: Age & Availability -->
+                                <div class="view-section view-1">
+                                    <span class="section-header-small">Age & Availability</span>
+                                    <ul class="bio-list">
+                                        <li><strong>Adult Canines:</strong> 10–36 months, fully trained and evaluation-ready</li>
+                                        <li><strong>Puppies:</strong> 2–9 months, early-stage development aligned with standards</li>
+                                        <li><strong>Sex:</strong> Male and female canines available across all age ranges</li>
+                                        <li><strong>Reproductive:</strong> Provided intact or neutered as required</li>
+                                        <li>Deployment flexibility supports mission timelines</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 2: Core Capabilities -->
+                                <div class="view-section view-2">
+                                    <span class="section-header-small">Core Capabilities</span>
+                                    <ul class="bio-list">
+                                        <li>Sociability with handlers and operational environments</li>
+                                        <li><strong>Detection capabilities:</strong> explosives and contraband</li>
+                                        <li>Controlled bite work and protection protocols</li>
+                                        <li>Pursuit and apprehension (passive and low-light scenarios)</li>
+                                        <li>Confidence and stability under stress</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 3: Medical & Compliance -->
+                                <div class="view-section view-3">
+                                    <span class="section-header-small">Medical & Compliance</span>
+                                    <ul class="bio-list">
+                                        <li>Pre-delivery veterinary screening exceeding applicable standards</li>
+                                        <li><strong>Radiographic evaluation:</strong> hips, elbows, spine, thorax, abdomen</li>
+                                        <li>Parasite prevention and health documentation prepared for evaluation</li>
+                                        <li>Full warranty coverage with replacement provisions</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Key Features -->
     <section class="section" style="background: var(--color-bg-secondary);" id="features">
         <div class="container">
@@ -1692,7 +1954,7 @@
                         </div>
                         <div class="scenario-hero-content">
                             <h2 class="scenario-title">Border Security</h2>
-                            <p class="scenario-meta">Sector A // Ingress Control & Validation</p>
+                            <p class="scenario-meta">Ingress Control & Validation</p>
                             <p class="scenario-text">
                                 STORM PMC K9 units provide rapid, non-intrusive screening for high-volume border crossings. By detecting narcotics and explosives in moving vehicles, our teams ensure secure borders without impeding critical commerce and traffic flow.
                             </p>
@@ -1752,7 +2014,7 @@
                         </div>
                         <div class="scenario-hero-content">
                             <h2 class="scenario-title">Air Cargo</h2>
-                            <p class="scenario-meta">Sector B // Military & Commercial</p>
+                            <p class="scenario-meta">Military & Commercial</p>
                             <p class="scenario-text">
                                 Securing military supply chains requires rapid, accurate screening of palletized freight. STORM PMC K9s detect minute traces of explosives and illicit materials within complex cargo configurations, guaranteeing safe transport for mission-critical assets.
                             </p>
@@ -2339,19 +2601,32 @@
             const trainerCards = document.querySelectorAll('.trainer-card');
 
             trainerCards.forEach(card => {
-                const hint = card.querySelector('.hint');
+                // Support both standard cards (.hint) and breeds card (.hint-text)
+                const hint = card.querySelector('.hint') || card.querySelector('.hint-text');
                 const views = card.querySelectorAll('.view-section');
+                const isBreeds = card.classList.contains('breeds-card');
 
                 // State: 0=Summary, 1=Certs, 2=Comps, 3=Exp
                 let state = 0;
 
                 function updateHint(currentState) {
-                     switch(currentState) {
-                        case 0: hint.textContent = "Click to see Certifications"; break;
-                        case 1: hint.textContent = "Click to see Core Competencies"; break;
-                        case 2: hint.textContent = "Click to see Experience"; break;
-                        case 3: hint.textContent = "Click to see Professional Summary"; break;
-                    }
+                     if (!hint) return;
+
+                     if (isBreeds) {
+                        switch(currentState) {
+                            case 0: hint.textContent = "Click to see Age & Availability"; break;
+                            case 1: hint.textContent = "Click to see Core Capabilities"; break;
+                            case 2: hint.textContent = "Click to see Medical & Compliance"; break;
+                            case 3: hint.textContent = "Click to see Program Summary"; break;
+                        }
+                     } else {
+                        switch(currentState) {
+                            case 0: hint.textContent = "Click to see Certifications"; break;
+                            case 1: hint.textContent = "Click to see Core Competencies"; break;
+                            case 2: hint.textContent = "Click to see Experience"; break;
+                            case 3: hint.textContent = "Click to see Professional Summary"; break;
+                        }
+                     }
                 }
 
                 function updateView(newState) {
