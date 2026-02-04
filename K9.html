@@ -225,6 +225,8 @@
             color: var(--color-text-secondary);
             line-height: 1.6;
             max-width: 600px;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         .badge-flagship {
@@ -1659,6 +1661,14 @@
         .info-content span { opacity: 0; animation: fadeInLetter 0.5s forwards; }
         @keyframes fadeInLetter { to { opacity: 1; } }
 
+        /* -------------------------------------------------------------
+           SECTION SPACING ADJUSTMENTS
+           ------------------------------------------------------------- */
+        /* Reduce gap between Leadership, Breeds, and Map to match 24px horizontal card gap */
+        #leadership { padding-bottom: 12px !important; }
+        #breeds { padding-top: 12px !important; padding-bottom: 12px !important; }
+        #campus-map { padding-top: 12px !important; }
+
     </style>
 </head>
 <body>
@@ -1737,7 +1747,7 @@
         <div class="container">
             <div class="section-header anim-reveal" style="text-align: center;">
                 <span class="section-label">Command & Control</span>
-                <h2 class="section-title">Lead Master Trainers</h2>
+                <h2 class="section-title">Operational Command & Canine Force</h2>
             </div>
 
             <div class="leadership-focus">
@@ -2050,7 +2060,7 @@
     <!-- Key Features -->
     <section class="section" style="background: var(--color-bg-secondary);" id="features">
         <div class="container">
-            <div class="section-header anim-reveal">
+            <div class="section-header anim-reveal" style="text-align: center;">
                 <span class="section-label">Capabilities</span>
                 <h2 class="section-title">Engineered for the Impossible</h2>
                 <p class="section-subtitle">Every component of the STORM K9 system is designed to exceed expectations in the most demanding scenarios.</p>
