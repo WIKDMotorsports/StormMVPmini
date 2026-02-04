@@ -1432,6 +1432,31 @@
         }
 
         /* CONTENT LAYOUT */
+        /* RESPONSIVE SPREAD ADJUSTMENTS */
+        /* Below 1500px: Increase spread to compensate for narrower container */
+        @media (max-width: 1500px) {
+            .pos-right { right: -55%; }
+            .pos-left { left: -55%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -60%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -60%; }
+        }
+
+        /* Below 1200px: Further increase spread */
+        @media (max-width: 1200px) {
+            .pos-right { right: -65%; }
+            .pos-left { left: -65%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -70%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -70%; }
+        }
+
+        /* Below 1050px: Maximum spread before mobile hide kicks in */
+        @media (max-width: 1050px) {
+            .pos-right { right: -80%; }
+            .pos-left { left: -80%; }
+            .breeds-card:hover .pos-right, .breeds-card.mobile-active .pos-right { right: -85%; }
+            .breeds-card:hover .pos-left, .breeds-card.mobile-active .pos-left { left: -85%; }
+        }
+
         .breeds-card .card-content {
             padding: 32px 40px;
         }
