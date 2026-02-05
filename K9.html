@@ -1749,7 +1749,10 @@
         /* Reduce gap between Leadership, Breeds, and Map to match 24px horizontal card gap */
         #leadership { padding-bottom: 12px !important; }
         #breeds { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #campus-map { padding-top: 12px !important; }
+        #campus-map { padding-top: 12px !important; padding-bottom: 12px !important; }
+        #features { padding-top: 12px !important; padding-bottom: 12px !important; }
+        #live-interface { padding-top: 12px !important; padding-bottom: 12px !important; }
+        #industries { padding-top: 12px !important; padding-bottom: 12px !important; }
 
     </style>
 </head>
@@ -2210,7 +2213,7 @@
             </div>
 
             <!-- Content Wrapper -->
-            <div style="display: flex; flex-direction: column; gap: 4rem;">
+            <div style="display: flex; flex-direction: column; gap: 24px;">
                 
                 <!-- SUB-SECTION A: BORDER SECURITY -->
                 <div class="scenario-block anim-reveal">
@@ -2543,7 +2546,8 @@
             constructor(elementId, slideData, staggerDelay = 0) {
                 this.container = document.getElementById(elementId);
                 this.slideData = slideData;
-                this.featureItems = document.querySelectorAll('.feature-item'); // Grab list items
+                // Scope feature items lookup to the parent container to avoid global collisions
+                this.featureItems = this.container.parentNode.querySelectorAll('.feature-item');
                 this.activeIdx = 0;
                 this.isAnimating = false;
                 this.interval = 4000; // Speed up slightly to show off transition
