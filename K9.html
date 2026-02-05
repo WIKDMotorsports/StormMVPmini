@@ -1748,13 +1748,14 @@
         /* -------------------------------------------------------------
            SECTION SPACING ADJUSTMENTS
            ------------------------------------------------------------- */
-        /* Reduce gap between Leadership, Breeds, and Map to match 24px horizontal card gap */
-        #leadership { padding-bottom: 12px !important; }
-        #breeds { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #campus-map { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #features { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #live-interface { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #industries { padding-top: 12px !important; padding-bottom: 12px !important; }
+        /* Homogenized spacing to match Hero & Leadership top padding (Breathing Room) */
+        /* Reverting to standard .section padding (approx 3.5rem) or similar */
+        #leadership { padding-bottom: 3.5rem !important; }
+        #breeds { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #campus-map { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #features { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #live-interface { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #industries { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
 
     </style>
 </head>
@@ -2797,7 +2798,8 @@
                 });
             }
 
-            // 6. ORB ROAMING
+            // 6. ORB ROAMING (DISABLED)
+            /*
             const orb = document.querySelector('.glow-orb');
             if(orb) {
                 let time = 0;
@@ -2810,6 +2812,7 @@
                 }
                 roam();
             }
+            */
 
             // -----------------------------------------------------------------
             // ACCORDION LOGIC - REVERSE ANIMATION TECHNIQUE (NO SNAP)
