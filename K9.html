@@ -472,7 +472,7 @@
                 margin-right: auto;
             }
             .feature-list {
-                grid-template-columns: 1fr; /* Stack features on mobile */
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
             }
             .industry-grid { grid-template-columns: 1fr; }
             .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
@@ -489,6 +489,7 @@
             .product-title { font-size: 13vw; /* Responsive font sizing to prevent line breaking */ }
             /* Hover style removed to prevent sticky hover on tap */
             .ping-circle { top: -4px; right: -12px; transform: scale(0.8); }
+            .feature-list { grid-template-columns: 1fr; } /* Stack on mobile */
         }
 
         .industry-card {
@@ -506,7 +507,7 @@
             max-width: 100%;
             display: grid;
             grid-template-columns: 1fr 1.2fr; /* Text Area | Gallery Area */
-            gap: 60px;
+            gap: 40px 60px; /* Reduced vertical gap between top section and features */
             align-items: start;
         }
 
@@ -572,8 +573,9 @@
 
         /* Feature List within card */
         .feature-list {
+            grid-column: 1 / -1; /* Force full width span */
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 columns under the image */
+            grid-template-columns: repeat(4, 1fr); /* 4 columns for full width layout */
             gap: 16px 24px;
             width: 100%;
             background: rgba(0,0,0,0.2);
@@ -2377,22 +2379,22 @@
                             </div>
                         </div>
 
-                        <!-- Feature List (Under Image) -->
-                        <div class="feature-list" id="feature-list-container">
-                            <div class="feature-item">
-                                <span class="feature-icon">✓</span> Confined Space & Restricted Access
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">✓</span> Controlled Aggression & Protection Protocols
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">✓</span> Stress Inoculation (Gunfire / Flash-bang)
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">✓</span> 95%+ Evaluation Pass Rate
-                            </div>
-                        </div>
+                    </div>
 
+                    <!-- Feature List (Full Width) -->
+                    <div class="feature-list" id="feature-list-container">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Confined Space & Restricted Access
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Controlled Aggression & Protection Protocols
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Stress Inoculation (Gunfire / Flash-bang)
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> 95%+ Evaluation Pass Rate
+                        </div>
                     </div>
 
                 </div>
@@ -2546,8 +2548,8 @@
             constructor(elementId, slideData, staggerDelay = 0) {
                 this.container = document.getElementById(elementId);
                 this.slideData = slideData;
-                // Scope feature items lookup to the parent container to avoid global collisions
-                this.featureItems = this.container.parentNode.querySelectorAll('.feature-item');
+                // Scope feature items lookup to the parent container (card) to avoid global collisions and handle layout changes
+                this.featureItems = this.container.closest('.industry-card').querySelectorAll('.feature-item');
                 this.activeIdx = 0;
                 this.isAnimating = false;
                 this.interval = 4000; // Speed up slightly to show off transition
