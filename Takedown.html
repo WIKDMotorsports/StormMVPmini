@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlled Kinetic Takedown | StormPMC</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS (Main Styles) -->
+    <link rel="stylesheet" href="https://raw.githack.com/WIKDMotorsports/StormMVPmini/refs/heads/main/styles.css">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* ------------------------------------------------------------- 
+           THEME VARIABLES & CORE STYLES
+           ------------------------------------------------------------- */
+        :root {
+            --color-bg-primary: #050505;
+            --color-bg-card: rgba(255, 255, 255, 0.02);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(255, 255, 255, 0.15);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            
+            --accent-defense: #4ade80;
+            --accent-energy: #a78bfa;
+            --accent-kinetic: #fb923c; /* Orange for Kinetic */
+            
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --border-radius-lg: 16px;
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .section {
+            padding: 3.5rem 0;
+            position: relative;
+        }
+
+        /* Animation States */
+        .anim-reveal {
+            visibility: hidden;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        /* ------------------------------------------------------------- 
+           INDUSTRY GRID & CARD STYLES
+           ------------------------------------------------------------- */
+        .industry-grid {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .industry-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            /* Homogenized Padding: Equal 40px all around */
+            padding: 40px; 
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            
+            /* Full Width Layout Settings */
+            width: 100%;
+            max-width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* Text Area | Gallery Area */
+            gap: 60px;
+            align-items: start;
+        }
+
+        .industry-card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ------------------------------------------------------------- 
+           CONTENT STYLES
+           ------------------------------------------------------------- */
+        .industry-info { 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ensure the last element in any column has no bottom margin to preserve padding balance */
+        .industry-info > *:last-child,
+        .industry-right-col > *:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        .industry-right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .industry-label {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            align-self: flex-start;
+            margin-top: 0;
+        }
+
+        /* Using Kinetic Accent for this card */
+        .industry-label { color: var(--accent-kinetic); border-color: rgba(251, 146, 60, 0.2); }
+
+        .industry-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.1;
+            color: #fff;
+        }
+
+        .industry-desc {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 0; /* Removed margin to fix "chin" issue */
+            max-width: 95%;
+        }
+
+        /* Feature List within card */
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 columns under the image */
+            gap: 16px 24px;
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            padding: 20px; 
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3); /* Default Inactive Grey */
+            font-weight: 500;
+            transition: color 0.4s ease;
+        }
+
+        .feature-icon {
+            color: rgba(255, 255, 255, 0.3); /* Default Inactive Grey */
+            font-weight: bold;
+            transition: color 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Active State */
+        .feature-item.active {
+            color: #ffffff;
+        }
+
+        .feature-item.active .feature-icon {
+            color: var(--accent-kinetic);
+            transform: scale(1.2);
+        }
+
+        /* ------------------------------------------------------------- 
+           GALLERY MODULE STYLES
+           ------------------------------------------------------------- */
+        .gallery-module {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.1);
+            transition: opacity 1.5s ease, transform 3s ease;
+            z-index: 1;
+        }
+
+        .gallery-slide.active { opacity: 1; transform: scale(1); z-index: 2; }
+
+        .gallery-vignette {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .gallery-ui {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .gallery-coords { display: flex; flex-direction: column; }
+
+        .gallery-coords-label {
+            font-size: 9px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .gallery-app-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            min-height: 20px;
+            white-space: pre;
+        }
+
+        .gallery-progress { display: flex; gap: 6px; margin-bottom: 6px; }
+        .gallery-dot { height: 3px; width: 6px; background: rgba(255,255,255,0.2); border-radius: 2px; transition: all 0.5s ease; }
+        .gallery-dot.active { width: 24px; background: #fff; }
+
+        @media (max-width: 1024px) {
+            .industry-card { 
+                grid-template-columns: 1fr; 
+                gap: 32px;
+            }
+            .industry-info {
+                align-items: center;
+                text-align: center;
+            }
+            .industry-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .feature-list {
+                grid-template-columns: 1fr; /* Stack features on mobile */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .industry-card { padding: 24px; }
+            .industry-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Industry Grid Section -->
+    <section class="section" id="industries">
+        <div class="container">
+            
+            <div class="industry-grid">
+                
+                <!-- Single Full-Width Card -->
+                <div class="industry-card anim-reveal">
+                    
+                    <!-- Left Column: Text Information -->
+                    <div class="industry-info">
+                        <span class="industry-label">Kinetic Intervention Asset</span>
+                        
+                        <h3 class="industry-title">Controlled Kinetic Takedown</h3>
+
+                        <p class="industry-desc">
+                            A specialized capability focused on the physical neutralization of threats. 
+                            The "Takedown" is engineered as a <strong>mechanical function</strong>; assets engage and release strictly on command, ensuring managed escalation of force and liability control.
+                            <br><br>
+                            Conditioned for high-stress environments, these units operate seamlessly in <strong>confined spaces, restricted geometries, and vertical access routes</strong>, maintaining absolute handler control regardless of physical constraints.
+                        </p>
+                    </div>
+
+                    <!-- Right Column: Visuals & Features -->
+                    <div class="industry-right-col">
+                        
+                        <!-- Image Gallery -->
+                        <div id="gallery-deployment" class="gallery-module">
+                            <div class="gallery-vignette"></div>
+                            <div class="gallery-ui">
+                                <div class="gallery-coords">
+                                    <span class="gallery-coords-label">Performance Criteria</span>
+                                    <span class="gallery-app-text"></span>
+                                </div>
+                                <div class="gallery-progress"></div>
+                            </div>
+                        </div>
+
+                        <!-- Feature List (Under Image) -->
+                        <div class="feature-list" id="feature-list-container">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span> Confined Space & Restricted Access
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span> Controlled Aggression & Protection Protocols
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span> Stress Inoculation (Gunfire / Flash-bang)
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span> 95%+ Evaluation Pass Rate
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // -----------------------------------------------------------------
+        // GALLERY MODULE LOGIC
+        // -----------------------------------------------------------------
+        class GalleryModule {
+            constructor(elementId, slideData, staggerDelay = 0) {
+                this.container = document.getElementById(elementId);
+                this.slideData = slideData;
+                this.featureItems = document.querySelectorAll('.feature-item'); // Grab list items
+                this.activeIdx = 0;
+                this.isAnimating = false;
+                this.interval = 4000; // Speed up slightly to show off transition
+                this.typewriterTimeout = null;
+                if (this.container) {
+                    this.initStatic();
+                    setTimeout(() => this.startCycle(), staggerDelay);
+                }
+            }
+            initStatic() {
+                this.slideData.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `gallery-slide ${index === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${item.img}')`;
+                    slide.dataset.index = index;
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = "position:absolute; inset:0; background: rgba(0,0,0,0.1);";
+                    slide.appendChild(overlay);
+                    this.container.prepend(slide);
+
+                    const dot = document.createElement('div');
+                    dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
+                    this.container.querySelector('.gallery-progress').appendChild(dot);
+                });
+                
+                const textEl = this.container.querySelector('.gallery-app-text');
+                if (textEl) textEl.textContent = this.slideData[0].text;
+                
+                // Initialize features highlighting (0)
+                this.updateFeatures(0);
+            }
+            startCycle() {
+                this.cycleInterval = setInterval(() => this.nextSlide(), this.interval);
+            }
+            nextSlide() {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                this.activeIdx = (this.activeIdx + 1) % this.slideData.length;
+                
+                const slides = this.container.querySelectorAll('.gallery-slide');
+                const dots = this.container.querySelectorAll('.gallery-dot');
+                const textEl = this.container.querySelector('.gallery-app-text');
+                
+                slides.forEach(s => s.classList.remove('active'));
+                slides.forEach(s => { if(parseInt(s.dataset.index) === this.activeIdx) s.classList.add('active'); });
+                
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === this.activeIdx));
+                
+                if (textEl) this.runTypewriter(textEl, this.slideData[this.activeIdx].text);
+                
+                // Update Feature List Highlighting
+                this.updateFeatures(this.activeIdx);
+
+                setTimeout(() => { this.isAnimating = false; }, 1500);
+            }
+            updateFeatures(idx) {
+                // Remove active from all
+                this.featureItems.forEach(item => item.classList.remove('active'));
+                // Add active to current index
+                if(this.featureItems[idx]) {
+                    this.featureItems[idx].classList.add('active');
+                }
+            }
+            runTypewriter(element, targetText) {
+                if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
+                const currentText = element.textContent;
+                let i = currentText.length;
+                const del = () => {
+                    if (i > 0) {
+                        element.textContent = currentText.substring(0, i - 1);
+                        i--;
+                        this.typewriterTimeout = setTimeout(del, 30);
+                    } else {
+                        let j = 0;
+                        const type = () => {
+                            if (j < targetText.length) {
+                                element.textContent = targetText.substring(0, j + 1);
+                                j++;
+                                this.typewriterTimeout = setTimeout(type, 50);
+                            }
+                        };
+                        this.typewriterTimeout = setTimeout(type, 100);
+                    }
+                };
+                del();
+            }
+        }
+
+        // Mapped Order to match HTML List:
+        // 1. Confined Space -> Matches "Confined Space Operations"
+        // 2. Controlled Aggression -> Matches "Tactical Obedience"
+        // 3. Stress Inoculation -> Matches "Confidence Under Stress"
+        // 4. 95% Pass Rate -> Matches "Physical Interdiction"
+        const deploymentData = [
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown-Topdown.webp?raw=true", text: "Confined Space Operations" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown_4K-Camera%2018.webp?raw=true", text: "Tactical Obedience" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Flashbang_angle4-Camera%2020.webp?raw=true", text: "Confidence Under Stress" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown_4K-Camera.png?raw=true", text: "Physical Interdiction" }
+        ];
+
+        // Initialize Galleries and Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            new GalleryModule('gallery-deployment', deploymentData, 500);
+
+            // GSAP Scroll Reveal
+            gsap.registerPlugin(ScrollTrigger);
+
+            gsap.utils.toArray(".anim-reveal").forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 95%", 
+                        toggleActions: "play none none none"
+                    },
+                    autoAlpha: 1, 
+                    y: 0,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    duration: 0.6,
+                    ease: "power3.out"
+                });
+            });
+        });
+    </script>
+</body>
+</html>
