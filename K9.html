@@ -171,6 +171,7 @@
             --accent-defense: #4ade80;
             --accent-energy: #a78bfa;
             --accent-heavy: #fb923c;
+            --accent-kinetic: #fb923c;
             --accent-logistics: #38bdf8;
             --color-cyan: #00FFFF;
 
@@ -271,9 +272,9 @@
         }
 
         .industry-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 32px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
 
         /* --- MTRAC ACRONYM ANIMATION STYLES (INTEGRATED) --- */
@@ -458,6 +459,21 @@
         }
 
         @media (max-width: 1024px) {
+            .industry-card {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .industry-info {
+                align-items: center;
+                text-align: center;
+            }
+            .industry-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .feature-list {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+            }
             .industry-grid { grid-template-columns: 1fr; }
             .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
             .product-image { aspect-ratio: 16 / 9; }
@@ -468,21 +484,31 @@
         }
 
         @media (max-width: 600px) {
+            .industry-card { padding: 24px; }
+            .industry-title { font-size: 24px; }
             .product-title { font-size: 13vw; /* Responsive font sizing to prevent line breaking */ }
             /* Hover style removed to prevent sticky hover on tap */
             .ping-circle { top: -4px; right: -12px; transform: scale(0.8); }
+            .feature-list { grid-template-columns: 1fr; } /* Stack on mobile */
         }
 
         .industry-card {
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius-lg);
+            /* Homogenized Padding: Equal 40px all around */
             padding: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+
+            /* Full Width Layout Settings */
+            width: 100%;
+            max-width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* Text Area | Gallery Area */
+            gap: 40px 60px; /* Reduced vertical gap between top section and features */
+            align-items: start;
         }
 
         .industry-card:hover {
@@ -490,7 +516,25 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .industry-info { flex: 1; }
+        /* -------------------------------------------------------------
+           CONTENT STYLES
+           ------------------------------------------------------------- */
+        .industry-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ensure the last element in any column has no bottom margin to preserve padding balance */
+        .industry-info > *:last-child,
+        .industry-right-col > *:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        .industry-right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
         .industry-label {
             display: inline-block;
@@ -503,27 +547,67 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-bottom: 20px;
+            align-self: flex-start;
+            margin-top: 0;
+            /* Using Kinetic Accent for this card */
+            color: var(--accent-kinetic);
+            border-color: rgba(251, 146, 60, 0.2);
         }
-
-        .card-defense .industry-label { color: var(--accent-defense); border-color: rgba(74, 222, 128, 0.2); }
-        .card-energy .industry-label { color: var(--accent-energy); border-color: rgba(167, 139, 250, 0.2); }
-        .card-heavy .industry-label { color: var(--accent-heavy); border-color: rgba(251, 146, 60, 0.2); }
-        .card-logistics .industry-label { color: var(--accent-logistics); border-color: rgba(56, 189, 248, 0.2); }
 
         .industry-title {
             font-family: var(--font-display);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 16px;
-            line-height: 1.2;
+            margin-bottom: 24px;
+            line-height: 1.1;
             color: #fff;
         }
 
         .industry-desc {
-            font-size: 15px;
+            font-size: 16px;
             color: var(--color-text-secondary);
-            line-height: 1.6;
-            margin-bottom: 0;
+            line-height: 1.7;
+            margin-bottom: 0; /* Removed margin to fix "chin" issue */
+            max-width: 95%;
+        }
+
+        /* Feature List within card */
+        .feature-list {
+            grid-column: 1 / -1; /* Force full width span */
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns for full width layout */
+            gap: 16px 24px;
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3); /* Default Inactive Grey */
+            font-weight: 500;
+            transition: color 0.4s ease;
+        }
+
+        .feature-icon {
+            color: rgba(255, 255, 255, 0.3); /* Default Inactive Grey */
+            font-weight: bold;
+            transition: color 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Active State */
+        .feature-item.active {
+            color: #ffffff;
+        }
+
+        .feature-item.active .feature-icon {
+            color: var(--accent-kinetic);
+            transform: scale(1.2);
         }
 
         .gallery-module {
@@ -1664,10 +1748,14 @@
         /* -------------------------------------------------------------
            SECTION SPACING ADJUSTMENTS
            ------------------------------------------------------------- */
-        /* Reduce gap between Leadership, Breeds, and Map to match 24px horizontal card gap */
-        #leadership { padding-bottom: 12px !important; }
-        #breeds { padding-top: 12px !important; padding-bottom: 12px !important; }
-        #campus-map { padding-top: 12px !important; }
+        /* Homogenized spacing to match Hero & Leadership top padding (Breathing Room) */
+        /* Reverting to standard .section padding (approx 3.5rem) or similar */
+        #leadership { padding-bottom: 3.5rem !important; }
+        #breeds { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #campus-map { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #features { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #live-interface { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+        #industries { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
 
     </style>
 </head>
@@ -2128,7 +2216,7 @@
             </div>
 
             <!-- Content Wrapper -->
-            <div style="display: flex; flex-direction: column; gap: 4rem;">
+            <div style="display: flex; flex-direction: column; gap: 24px;">
                 
                 <!-- SUB-SECTION A: BORDER SECURITY -->
                 <div class="scenario-block anim-reveal">
@@ -2257,48 +2345,59 @@
     <!-- Industry Grid Section -->
     <section class="section" id="industries">
         <div class="container">
-            <div class="section-header anim-reveal">
-                <span class="section-label">Field Deployment</span>
-                <h2 class="section-title">Industry Solutions</h2>
-                <p class="section-subtitle">Storm assets are purpose-built to survive environments where traditional systems fail.</p>
-            </div>
-            <div class="industry-grid">
-                <!-- Module 01 -->
-                <div class="industry-card card-defense anim-reveal">
-                    <div class="industry-info">
-                        <span class="industry-label">Dedicated Sensing Asset</span>
-                        <h3 class="industry-title">Module 01: Single-Purpose</h3>
-                        <p class="industry-desc">Engineered for a singular mission: Odor Identification. By removing the requirement for physical apprehension, we maximize "Sensing Endurance." Optimized for high-volume screening operations.</p>
-                    </div>
-                    <div id="gallery-module-01" class="gallery-module">
-                        <div class="gallery-vignette"></div>
-                        <div class="gallery-ui">
-                            <div class="gallery-coords">
-                                <span class="gallery-coords-label">Application</span>
-                                <span class="gallery-app-text"></span>
-                            </div>
-                            <div class="gallery-progress"></div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Module 02 -->
-                <div class="industry-card card-energy anim-reveal">
+            <div class="industry-grid">
+
+                <!-- Single Full-Width Card -->
+                <div class="industry-card anim-reveal">
+
+                    <!-- Left Column: Text Information -->
                     <div class="industry-info">
-                        <span class="industry-label">Integrated Response Asset</span>
-                        <h3 class="industry-title">Module 02: Multi-Purpose</h3>
-                        <p class="industry-desc">A dual-modality asset providing both high-fidelity detection and physical interdiction. Designed for patrol and special operations where the asset must locate a threat and, on command, neutralize it.</p>
+                        <span class="industry-label">Kinetic Intervention Asset</span>
+
+                        <h3 class="industry-title">Controlled Kinetic Takedown</h3>
+
+                        <p class="industry-desc">
+                            A specialized capability focused on the physical neutralization of threats.
+                            The "Takedown" is engineered as a <strong>mechanical function</strong>; assets engage and release strictly on command, ensuring managed escalation of force and liability control.
+                            <br><br>
+                            Conditioned for high-stress environments, these units operate seamlessly in <strong>confined spaces, restricted geometries, and vertical access routes</strong>, maintaining absolute handler control regardless of physical constraints.
+                        </p>
                     </div>
-                    <div id="gallery-module-02" class="gallery-module">
-                        <div class="gallery-vignette"></div>
-                        <div class="gallery-ui">
-                            <div class="gallery-coords">
-                                <span class="gallery-coords-label">Application</span>
-                                <span class="gallery-app-text"></span>
+
+                    <!-- Right Column: Visuals & Features -->
+                    <div class="industry-right-col">
+
+                        <!-- Image Gallery -->
+                        <div id="gallery-deployment" class="gallery-module">
+                            <div class="gallery-vignette"></div>
+                            <div class="gallery-ui">
+                                <div class="gallery-coords">
+                                    <span class="gallery-coords-label">Performance Criteria</span>
+                                    <span class="gallery-app-text"></span>
+                                </div>
+                                <div class="gallery-progress"></div>
                             </div>
-                            <div class="gallery-progress"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Feature List (Full Width) -->
+                    <div class="feature-list" id="feature-list-container">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Confined Space & Restricted Access
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Controlled Aggression & Protection Protocols
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> Stress Inoculation (Gunfire / Flash-bang)
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span> 95%+ Evaluation Pass Rate
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -2450,9 +2549,11 @@
             constructor(elementId, slideData, staggerDelay = 0) {
                 this.container = document.getElementById(elementId);
                 this.slideData = slideData;
+                // Scope feature items lookup to the parent container (card) to avoid global collisions and handle layout changes
+                this.featureItems = this.container.closest('.industry-card').querySelectorAll('.feature-item');
                 this.activeIdx = 0;
                 this.isAnimating = false;
-                this.interval = 8000; 
+                this.interval = 4000; // Speed up slightly to show off transition
                 this.typewriterTimeout = null;
                 if (this.container) {
                     this.initStatic();
@@ -2474,8 +2575,12 @@
                     dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
                     this.container.querySelector('.gallery-progress').appendChild(dot);
                 });
+
                 const textEl = this.container.querySelector('.gallery-app-text');
                 if (textEl) textEl.textContent = this.slideData[0].text;
+
+                // Initialize features highlighting (0)
+                this.updateFeatures(0);
             }
             startCycle() {
                 this.cycleInterval = setInterval(() => this.nextSlide(), this.interval);
@@ -2484,14 +2589,30 @@
                 if (this.isAnimating) return;
                 this.isAnimating = true;
                 this.activeIdx = (this.activeIdx + 1) % this.slideData.length;
+
                 const slides = this.container.querySelectorAll('.gallery-slide');
                 const dots = this.container.querySelectorAll('.gallery-dot');
                 const textEl = this.container.querySelector('.gallery-app-text');
+
                 slides.forEach(s => s.classList.remove('active'));
                 slides.forEach(s => { if(parseInt(s.dataset.index) === this.activeIdx) s.classList.add('active'); });
+
                 dots.forEach((dot, i) => dot.classList.toggle('active', i === this.activeIdx));
+
                 if (textEl) this.runTypewriter(textEl, this.slideData[this.activeIdx].text);
+
+                // Update Feature List Highlighting
+                this.updateFeatures(this.activeIdx);
+
                 setTimeout(() => { this.isAnimating = false; }, 1500);
+            }
+            updateFeatures(idx) {
+                // Remove active from all
+                this.featureItems.forEach(item => item.classList.remove('active'));
+                // Add active to current index
+                if(this.featureItems[idx]) {
+                    this.featureItems[idx].classList.add('active');
+                }
             }
             runTypewriter(element, targetText) {
                 if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
@@ -2518,22 +2639,20 @@
             }
         }
 
-        const industryData = {
-            module01: [
-                { img: "https://placehold.co/800x450/222/555?text=K9+Head+Shoulders+Grey+Clay", text: "Odor Identification" },
-                { img: "https://placehold.co/800x450/222/555?text=Red+Detection+Cone", text: "Sensing Endurance" },
-                { img: "https://placehold.co/800x450/222/555?text=High+Volume+Screening", text: "Screening Ops" }
-            ],
-            module02: [
-                { img: "https://placehold.co/800x450/222/555?text=K9+Drive+Posture+Grey+Clay", text: "Physical Interdiction" },
-                { img: "https://placehold.co/800x450/222/555?text=Red+Harness+Accents", text: "Threat Neutralization" },
-                { img: "https://placehold.co/800x450/222/555?text=Patrol+Ops", text: "Special Operations" }
-            ]
-        };
+        // Mapped Order to match HTML List:
+        // 1. Confined Space -> Matches "Confined Space Operations"
+        // 2. Controlled Aggression -> Matches "Tactical Obedience"
+        // 3. Stress Inoculation -> Matches "Confidence Under Stress"
+        // 4. 95% Pass Rate -> Matches "Physical Interdiction"
+        const deploymentData = [
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown-Topdown.webp?raw=true", text: "Confined Space Operations" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown_4K-Camera%2018.webp?raw=true", text: "Tactical Obedience" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Flashbang_angle4-Camera%2020.webp?raw=true", text: "Confidence Under Stress" },
+            { img: "https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_Renders/Takedown/Druglab_Takedown_4K-Camera.png?raw=true", text: "Physical Interdiction" }
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            new GalleryModule('gallery-module-01', industryData.module01, 0);
-            new GalleryModule('gallery-module-02', industryData.module02, 2000);
+            new GalleryModule('gallery-deployment', deploymentData, 500);
 
             // -----------------------------------------------------------------
             // ANIMATION LOGIC (GSAP)
@@ -2679,7 +2798,8 @@
                 });
             }
 
-            // 6. ORB ROAMING
+            // 6. ORB ROAMING (DISABLED)
+            /*
             const orb = document.querySelector('.glow-orb');
             if(orb) {
                 let time = 0;
@@ -2692,6 +2812,7 @@
                 }
                 roam();
             }
+            */
 
             // -----------------------------------------------------------------
             // ACCORDION LOGIC - REVERSE ANIMATION TECHNIQUE (NO SNAP)
