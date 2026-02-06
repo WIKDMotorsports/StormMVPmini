@@ -259,6 +259,8 @@
         .product-image {
             position: relative;
             width: 100%;
+            height: auto !important; /* Override external fixed height */
+            display: block !important; /* Override external flex display */
             /* aspect-ratio removed to allow base image to define height */
             overflow: hidden;
             border-radius: 16px;
