@@ -814,32 +814,19 @@
             pointer-events: none;
             z-index: 0;
             /* The "Target" Gradient (Brighter/Larger definition) */
-            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.15) 0%, transparent 30%); /* Reduced size */
 
-            opacity: 0; /* Start hidden for entrance animation */
+            opacity: 0; /* Start hidden for GSAP entrance */
             transform: scale(0.95);
 
             transition: opacity 0.8s ease, transform 0.8s ease;
-
-            /* Entrance Animation: Fade in to "Normal" state */
-            animation: ctaGradientFadeIn 2s ease-out forwards 0.5s;
-        }
-
-        /* "Normal" State (Post-Animation Target) handled by Animation Keyframes */
-        /* But we need to define the Hover state relative to the computed value */
-
-        @keyframes ctaGradientFadeIn {
-            to {
-                opacity: 0.3; /* The "Normal" Dim State */
-                transform: scale(1);
-            }
         }
 
         /* Hover State: Override Opacity/Scale */
         .cta-section:hover .cta-gradient-bg,
         .cta-section.is-hovered .cta-gradient-bg {
             opacity: 1 !important; /* Force override of animation state */
-            transform: scale(1.1) !important;
+            transform: scale(1.05) !important; /* Reduced scale expansion */
         }
 
         .cta-stack {
@@ -2832,6 +2819,14 @@
                     duration: 0.8,
                     ease: "power4.out"
                 }, "-=0.5");
+
+                // Background Gradient (Fade In on Scroll)
+                ctaTl.to(".cta-gradient-bg", {
+                    opacity: 0.3,
+                    scale: 1,
+                    duration: 1.5,
+                    ease: "power2.out"
+                }, "-=1.0");
                 
                 // CTA Hover Interaction
                 const quoteBtn = document.getElementById('quote-btn');
