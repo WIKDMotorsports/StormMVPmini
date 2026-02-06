@@ -271,6 +271,8 @@
             width: 100%;
             height: auto;
             object-fit: cover;
+            /* Ensure consistent alignment anchor */
+            object-position: center;
         }
 
         .hero-img-base {
@@ -287,7 +289,8 @@
             transition: opacity 0.5s ease;
         }
 
-        .product-image:hover .hero-img-hover {
+        .product-image:hover .hero-img-hover,
+        .product-image.force-hover .hero-img-hover {
             opacity: 1;
         }
 
@@ -2988,6 +2991,21 @@
                     });
                 }
             });
+
+            // -----------------------------------------------------------------
+            // HERO IMAGE HOVER TRIGGER (CTA BUTTONS)
+            // -----------------------------------------------------------------
+            const ctaButtons = document.querySelector('.product-cta');
+            const heroImageContainer = document.querySelector('.product-image');
+
+            if(ctaButtons && heroImageContainer) {
+                ctaButtons.addEventListener('mouseenter', () => {
+                    heroImageContainer.classList.add('force-hover');
+                });
+                ctaButtons.addEventListener('mouseleave', () => {
+                    heroImageContainer.classList.remove('force-hover');
+                });
+            }
             
         });
     </script>
