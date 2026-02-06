@@ -1176,8 +1176,9 @@ body.menu-open {
     transition: background 0.5s ease;
 }
 
-.cta-section:hover {
-    background: radial-gradient(circle at center, rgba(255, 49, 49, 0.15) 0%, transparent 55%),
+.cta-section:hover,
+.cta-section.is-hovered {
+    background: radial-gradient(circle at center, rgba(255, 49, 49, 0.25) 0%, transparent 60%),
                 linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary));
 }
 

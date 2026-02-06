@@ -278,15 +278,21 @@
         .hero-img-base {
             position: relative;
             z-index: 1;
+            display: block;
+            width: 100%;
         }
 
         .hero-img-hover {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 2;
             opacity: 0;
             transition: opacity 0.5s ease;
+            object-fit: cover;
+            object-position: center;
         }
 
         .product-image:hover .hero-img-hover,
@@ -794,21 +800,7 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
-            /* Base background is in external styles or default */
-        }
-
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.2) 0%, var(--color-bg-primary) 100%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: -1;
-        }
-
-        .cta-section.is-hovered::before {
-            opacity: 1;
+            /* Base background and hover effects handled in global styles.css */
         }
 
         .cta-stack {
@@ -1837,7 +1829,7 @@
                     <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_hero_CTA/K9_Hero_hover.webp?raw=true" alt="Storm K9 Hero Hover" class="hero-img-hover">
                 </div>
                 <div class="product-info">
-                    <span class="section-label badge-flagship anim-hero-text">OPERATIONAL BIOLOGICAL ASSET</span>
+                    <span class="section-label badge-flagship anim-hero-text" id="heroLabel">OPERATIONAL BIOLOGICAL ASSET</span>
                     
                     <h1 class="product-title anim-hero-text">STORM K9</h1>
 
@@ -2993,18 +2985,43 @@
             });
 
             // -----------------------------------------------------------------
-            // HERO IMAGE HOVER TRIGGER (CTA BUTTONS)
+            // HERO IMAGE & LABEL INTERACTION
             // -----------------------------------------------------------------
             const ctaButtons = document.querySelector('.product-cta');
             const heroImageContainer = document.querySelector('.product-image');
+            const heroLabel = document.getElementById('heroLabel');
 
-            if(ctaButtons && heroImageContainer) {
-                ctaButtons.addEventListener('mouseenter', () => {
+            const baseLabel = "OPERATIONAL BIOLOGICAL ASSET";
+            const hoverLabel = "ACTIVE THREAT RESPONSE";
+
+            function setHeroActive(active) {
+                if(active) {
                     heroImageContainer.classList.add('force-hover');
-                });
-                ctaButtons.addEventListener('mouseleave', () => {
+                    if(heroLabel) {
+                        heroLabel.textContent = hoverLabel;
+                        heroLabel.style.backgroundColor = "rgba(255, 49, 49, 0.15)";
+                        heroLabel.style.borderColor = "rgba(255, 49, 49, 0.6)";
+                    }
+                } else {
                     heroImageContainer.classList.remove('force-hover');
-                });
+                    if(heroLabel) {
+                        heroLabel.textContent = baseLabel;
+                        heroLabel.style.backgroundColor = "";
+                        heroLabel.style.borderColor = "";
+                    }
+                }
+            }
+
+            // Button Triggers
+            if(ctaButtons && heroImageContainer) {
+                ctaButtons.addEventListener('mouseenter', () => setHeroActive(true));
+                ctaButtons.addEventListener('mouseleave', () => setHeroActive(false));
+            }
+
+            // Image Triggers
+            if(heroImageContainer) {
+                heroImageContainer.addEventListener('mouseenter', () => setHeroActive(true));
+                heroImageContainer.addEventListener('mouseleave', () => setHeroActive(false));
             }
             
         });
