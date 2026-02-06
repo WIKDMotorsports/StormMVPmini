@@ -259,16 +259,46 @@
         .product-image {
             position: relative;
             width: 100%;
-            aspect-ratio: 4 / 3; 
+            height: 500px !important; /* Fixed height to force vertical fill */
+            display: block !important;
             overflow: hidden;
             border-radius: 16px;
             background: #111;
         }
 
         .product-image img {
+            /* General reset for images in this container */
+            display: block;
+            width: 100%;
+            height: 100%; /* Fill container height */
+            object-fit: cover; /* Clip horizontally if needed */
+            object-position: center; /* Center alignment */
+        }
+
+        .hero-img-base {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%; /* Explicit fill */
+        }
+
+        .hero-img-hover {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; object-position: center; display: block;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .product-image:hover .hero-img-hover,
+        .product-image.force-hover .hero-img-hover {
+            opacity: 1;
         }
 
         .industry-grid {
@@ -299,11 +329,6 @@
 
             flex-wrap: nowrap;        
             cursor: pointer; /* Changed to pointer to indicate clickable */
-            
-            /* RETURN ANIMATION (Mouse Out) */
-            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
-                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
-                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
             
             /* Disable user select to prevent highlighting text on multiple clicks */
             user-select: none;
@@ -339,25 +364,13 @@
         /* --- EXPANSION STATES --- */
         .product-title.is-expanded,
         .product-title.force-hover {
-            font-size: 22px; 
-            line-height: 1.2; 
-            letter-spacing: 0px; 
-            column-gap: 8px; 
-            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            /* Shrinking removed */
         }
 
         /* Desktop Only Hover (Strictly non-tablet/mobile) */
         @media (hover: hover) and (min-width: 1025px) {
             .product-title:hover {
-                font-size: 22px; 
-                line-height: 1.2; 
-                letter-spacing: 0px; 
-                column-gap: 8px; 
-                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                /* Shrinking removed */
             }
             .product-title:hover .initial {
                 color: var(--accent-defense);
@@ -784,7 +797,41 @@
         /* ------------------------------------------------------------- 
            NEW CTA SECTION STYLES
            ------------------------------------------------------------- */
+        .cta-section {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            /* Base Linear Gradient Only (Dark Background) */
+            background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)) !important;
+        }
+
+        /* Dedicated Gradient Layer for Smooth Animation */
+        .cta-gradient-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            /* The "Target" Gradient (Brighter/Larger definition) */
+            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.15) 0%, transparent 30%); /* Reduced size */
+
+            opacity: 0; /* Start hidden for GSAP entrance */
+            transform: scale(0.95);
+
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        /* Hover State: Override Opacity/Scale */
+        .cta-section:hover .cta-gradient-bg,
+        .cta-section.is-hovered .cta-gradient-bg {
+            opacity: 1 !important; /* Force override of animation state */
+            transform: scale(1.05) !important; /* Reduced scale expansion */
+        }
+
         .cta-stack {
+            position: relative;
+            z-index: 2; /* Ensure content sits above gradient */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -840,7 +887,7 @@
 
         /* Bloom on hover */
         .cta-section.is-hovered .cta-image-wrapper img {
-            filter: drop-shadow(0 0 120px rgba(74, 222, 128, 0.25));
+            filter: drop-shadow(0 0 120px rgba(255, 49, 49, 0.4));
         }
 
         @media (max-width: 600px) {
@@ -1806,11 +1853,11 @@
         <div class="container">
             <div class="product-hero-grid">
                 <div class="product-image">
-                    <!-- Placeholder used to represent Grey Clay Render as no image URL provided -->
-                    <img src="https://placehold.co/800x600/111/444?text=Storm+K9+Grey+Clay" alt="Storm K9 Grey Clay Render" id="heroImage">
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_hero_CTA/K9_Hero_No_Hover.webp?raw=true" alt="Storm K9 Hero" class="hero-img-base" id="heroImage">
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_hero_CTA/K9_Hero_hover.webp?raw=true" alt="Storm K9 Hero Hover" class="hero-img-hover">
                 </div>
                 <div class="product-info">
-                    <span class="section-label badge-flagship anim-hero-text">OPERATIONAL BIOLOGICAL ASSET</span>
+                    <span class="section-label badge-flagship anim-hero-text" id="heroLabel">OPERATIONAL BIOLOGICAL ASSET</span>
                     
                     <h1 class="product-title anim-hero-text">STORM K9</h1>
 
@@ -2456,10 +2503,11 @@
 
     <!-- UPDATED CTA Section -->
     <section class="section cta-section" id="deploy">
+        <div class="cta-gradient-bg"></div>
         <div class="container">
             <div class="cta-stack">
                 <div class="cta-image-wrapper">
-                    <img src="https://placehold.co/600x400/111/444?text=Storm+K9+Render" alt="Storm K9 Asset Render">
+                    <img src="https://github.com/WIKDMotorsports/StormMVPmini/blob/main/Optimized%20Images/K9_hero_CTA/K9_CTA.webp?raw=true" alt="Storm K9 CTA">
                 </div>
                 <div class="cta-content anim-reveal">
                     <h2 class="cta-title">Configure Your Capability.</h2>
@@ -2771,6 +2819,14 @@
                     duration: 0.8,
                     ease: "power4.out"
                 }, "-=0.5");
+
+                // Background Gradient (Fade In on Scroll)
+                ctaTl.to(".cta-gradient-bg", {
+                    opacity: 0.3,
+                    scale: 1,
+                    duration: 1.5,
+                    ease: "power2.out"
+                }, "-=1.0");
                 
                 // CTA Hover Interaction
                 const quoteBtn = document.getElementById('quote-btn');
@@ -2964,6 +3020,45 @@
                     });
                 }
             });
+
+            // -----------------------------------------------------------------
+            // HERO IMAGE & LABEL INTERACTION
+            // -----------------------------------------------------------------
+            const ctaButtons = document.querySelector('.product-cta');
+            const heroImageContainer = document.querySelector('.product-image');
+            const heroLabel = document.getElementById('heroLabel');
+
+            const baseLabel = "OPERATIONAL BIOLOGICAL ASSET";
+            const hoverLabel = "ACTIVE THREAT RESPONSE";
+
+            function setHeroActive(active) {
+                if(active) {
+                    heroImageContainer.classList.add('force-hover');
+                    if(heroLabel) {
+                        // Label text remains static as requested
+                        heroLabel.style.backgroundColor = "rgba(255, 49, 49, 0.15)";
+                        heroLabel.style.borderColor = "rgba(255, 49, 49, 0.6)";
+                    }
+                } else {
+                    heroImageContainer.classList.remove('force-hover');
+                    if(heroLabel) {
+                        heroLabel.style.backgroundColor = "";
+                        heroLabel.style.borderColor = "";
+                    }
+                }
+            }
+
+            // Button Triggers
+            if(ctaButtons && heroImageContainer) {
+                ctaButtons.addEventListener('mouseenter', () => setHeroActive(true));
+                ctaButtons.addEventListener('mouseleave', () => setHeroActive(false));
+            }
+
+            // Image Triggers
+            if(heroImageContainer) {
+                heroImageContainer.addEventListener('mouseenter', () => setHeroActive(true));
+                heroImageContainer.addEventListener('mouseleave', () => setHeroActive(false));
+            }
             
         });
     </script>
