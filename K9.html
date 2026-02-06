@@ -801,20 +801,50 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
-            /* Override global styles for refined gradient */
-            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.05) 0%, transparent 40%),
-                        linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)) !important;
-            transition: background 0.5s ease;
+            /* Base Linear Gradient Only (Dark Background) */
+            background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)) !important;
         }
 
-        .cta-section:hover,
-        .cta-section.is-hovered {
-            /* Slightly brighter and larger, but not extreme */
-            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.12) 0%, transparent 45%),
-                        linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg-primary)) !important;
+        /* Dedicated Gradient Layer for Smooth Animation */
+        .cta-gradient-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            /* The "Target" Gradient (Brighter/Larger definition) */
+            background: radial-gradient(circle at center, rgba(255, 49, 49, 0.15) 0%, transparent 50%);
+
+            opacity: 0; /* Start hidden for entrance animation */
+            transform: scale(0.95);
+
+            transition: opacity 0.8s ease, transform 0.8s ease;
+
+            /* Entrance Animation: Fade in to "Normal" state */
+            animation: ctaGradientFadeIn 2s ease-out forwards 0.5s;
+        }
+
+        /* "Normal" State (Post-Animation Target) handled by Animation Keyframes */
+        /* But we need to define the Hover state relative to the computed value */
+
+        @keyframes ctaGradientFadeIn {
+            to {
+                opacity: 0.3; /* The "Normal" Dim State */
+                transform: scale(1);
+            }
+        }
+
+        /* Hover State: Override Opacity/Scale */
+        .cta-section:hover .cta-gradient-bg,
+        .cta-section.is-hovered .cta-gradient-bg {
+            opacity: 1 !important; /* Force override of animation state */
+            transform: scale(1.1) !important;
         }
 
         .cta-stack {
+            position: relative;
+            z-index: 2; /* Ensure content sits above gradient */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -2486,6 +2516,7 @@
 
     <!-- UPDATED CTA Section -->
     <section class="section cta-section" id="deploy">
+        <div class="cta-gradient-bg"></div>
         <div class="container">
             <div class="cta-stack">
                 <div class="cta-image-wrapper">
