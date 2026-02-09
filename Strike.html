@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRIKE Acronym Module</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ------------------------------------------------------------- 
+           CORE VARIABLES
+           ------------------------------------------------------------- */
+        :root {
+            --color-bg-primary: #050505;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --accent-defense: #ef4444; /* RED ACCENT */
+            --ping-color: #ff0000;     /* RED PING */
+            
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        /* ------------------------------------------------------------- 
+           RESET & LAYOUT FOR DEMO
+           ------------------------------------------------------------- */
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 10%;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.5;
+        }
+
+        /* ------------------------------------------------------------- 
+           ACRONYM MODULE CSS
+           ------------------------------------------------------------- */
+        
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 80px; 
+            font-weight: 700;
+            line-height: 1.1; 
+            margin: 0;
+            letter-spacing: -2px;
+            
+            /* FIXED DIMENSIONS & LAYOUT LOCK */
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: flex-start;
+            
+            overflow: visible; 
+            position: relative;
+            flex-wrap: nowrap;        
+            cursor: pointer;
+            
+            /* RETURN ANIMATION (Mouse Out / Contract) */
+            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+            
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .word-block {
+            display: inline-flex;
+            align-items: baseline;
+            margin-right: 2px;
+            position: relative;
+        }
+
+        .initial {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .reveal {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            
+            /* BASE TRANSITION (Mouse Out / Collapse) */
+            transition: max-width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                        opacity 0.2s linear,
+                        margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- EXPANSION STATES (Triggered by class or hover) --- */
+        
+        /* 1. Class-based Trigger (JS) */
+        .product-title.is-expanded {
+            font-size: 22px; 
+            line-height: 1.2; 
+            letter-spacing: 0px; 
+            column-gap: 8px; 
+            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .product-title.is-expanded .initial {
+            color: var(--accent-defense);
+        }
+
+        .product-title.is-expanded .reveal {
+            max-width: 200px; 
+            opacity: 1;
+            margin-right: 6px; 
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                        opacity 0.4s ease 0.2s,
+                        margin-right 0.4s ease 0.2s;
+        }
+
+        /* 2. Desktop Hover Trigger (Strictly non-touch) */
+        @media (hover: hover) and (min-width: 1025px) {
+            .product-title:hover {
+                font-size: 22px; 
+                line-height: 1.2; 
+                letter-spacing: 0px; 
+                column-gap: 8px; 
+                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .product-title:hover .initial {
+                color: var(--accent-defense);
+            }
+            .product-title:hover .reveal {
+                max-width: 200px; 
+                opacity: 1;
+                margin-right: 6px; 
+                transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                            opacity 0.4s ease 0.2s,
+                            margin-right 0.4s ease 0.2s;
+            }
+            /* Hide Ping on Hover */
+            .product-title:hover .ping-circle {
+                transform: scale(0) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: transform 0.2s ease 0s,
+                            opacity 0.2s ease 0s,
+                            visibility 0s linear 0.2s;
+            }
+        }
+
+        /* Remove margin from last word block */
+        .word-block:last-child .reveal {
+            margin-right: 0;
+        }
+
+        /* --- TRIANGLE PING COMPONENT (Exact Match to "Nano" Style) --- */
+        .ping-circle {
+            position: absolute;
+            top: -2px;     
+            right: -16px; /* Moved slightly left from -22px */
+            
+            /* Sizing from reference */
+            width: 30px;   
+            height: 26px;
+            
+            /* Remove default styles */
+            border: none;
+            box-shadow: none;
+            background: none;
+            
+            color: var(--ping-color);
+            z-index: 10;
+            pointer-events: none;
+            
+            opacity: 1;
+            visibility: visible;
+            
+            /* The 'return' transition creates the POP effect via the overshoot bezier */
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s, 
+                        opacity 0.3s ease 0.8s,
+                        visibility 0.3s ease 0.8s,
+                        top 0.3s ease, right 0.3s ease;
+        }
+
+        /* SVG Internal Styling */
+        .ping-circle svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            /* Shadow from reference */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* Pulse Animation (Hollow Triangle) */
+        .ping-circle::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            z-index: 0;
+            background: currentColor;
+            /* Exact clip-path for hollow triangle ring */
+            clip-path: polygon(
+                50% 0%, 0% 100%, 100% 100%, 50% 0%, 
+                50% 2px, 98% 98%, 2% 98%, 50% 2px
+            );
+            opacity: 0;
+            transform-origin: 50% 62%;
+            animation: pulse-ring-triangle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring-triangle {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.0); opacity: 0; }
+        }
+
+        /* Utility class to keep ping hidden on strictly the first load */
+        .ping-hidden-initially {
+            opacity: 0 !important;
+            transform: scale(0) !important;
+            visibility: hidden !important;
+            transition: none !important; /* No transition on load */
+        }
+
+        /* Hide Ping on Expanded (Class based) */
+        .product-title.is-expanded .ping-circle {
+            transform: scale(0) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            /* Instant hide when expanding */
+            transition: transform 0.2s ease 0s,
+                        opacity 0.2s ease 0s,
+                        visibility 0s linear 0.2s;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 1024px) {
+            .product-title { 
+                font-size: 56px; 
+                height: auto; 
+                min-height: 90px; 
+                flex-wrap: wrap; 
+                justify-content: flex-start;
+            }
+            .ping-circle { 
+                top: -1px; 
+                right: -10px; 
+                transform: scale(0.9); 
+            }
+        }
+
+        @media (max-width: 600px) {
+            .product-title { 
+                font-size: 13vw; 
+            }
+            .ping-circle { 
+                top: -4px; 
+                right: -12px; 
+                transform: scale(0.8); 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- EXTRACTED MODULE: STRIKE -->
+        <h1 class="product-title">
+            <span class="word-block"><span class="initial">S</span><span class="reveal">trategic</span></span>
+            <span class="word-block"><span class="initial">T</span><span class="reveal">hreat</span></span>
+            <span class="word-block"><span class="initial">R</span><span class="reveal">esponse</span></span>
+            <span class="word-block"><span class="initial">I</span><span class="reveal">ncident</span></span>
+            <span class="word-block"><span class="initial">K</span><span class="reveal">9</span></span>
+            <span class="word-block">
+                <span class="initial">E</span>
+                <span class="reveal">mployment</span>
+                
+                <!-- EXACT TRIANGLE PING -->
+                <div class="ping-circle ping-hidden-initially">
+                    <svg width="30" height="26" viewBox="0 0 30 26" fill="none">
+                        <!-- Outer Border -->
+                        <path d="M15 2 L27 24 L3 24 Z" fill="rgba(20,20,20,0.4)" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linejoin="round"/>
+                        <!-- Inner Red Triangle -->
+                        <path d="M15 13 L19 19 L11 19 Z" fill="#ff0000" />
+                    </svg>
+                </div>
+            </span>
+        </h1>
+    </div>
+
+    <div class="instruction">Tap or Hover to Reveal</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productTitle = document.querySelector('.product-title');
+            const ping = document.querySelector('.ping-circle');
+            let contractionTimeout;
+
+            if (productTitle) {
+                // Helper to remove initial hidden class
+                const removeInitialHidden = () => {
+                    if(ping && ping.classList.contains('ping-hidden-initially')) {
+                        ping.classList.remove('ping-hidden-initially');
+                    }
+                };
+
+                // 1. Click Handler (Toggle)
+                productTitle.addEventListener('click', function() {
+                    removeInitialHidden();
+                    this.classList.add('is-expanded');
+
+                    if (contractionTimeout) clearTimeout(contractionTimeout);
+
+                    // Auto-contract after 5 seconds
+                    contractionTimeout = setTimeout(() => {
+                        this.classList.remove('is-expanded');
+                    }, 5000);
+                });
+
+                // 2. Auto-Play Demo on Load
+                setTimeout(() => {
+                    // Only trigger if user hasn't already hovered/clicked
+                    if (!productTitle.classList.contains('is-expanded') && !productTitle.matches(':hover')) {
+                        removeInitialHidden();
+                        
+                        productTitle.classList.add('is-expanded');
+                        
+                        // Set the timeout
+                        contractionTimeout = setTimeout(() => {
+                            productTitle.classList.remove('is-expanded');
+                        }, 2500);
+                    }
+                }, 1000); // 1s delay before starting demo
+            }
+        });
+    </script>
+</body>
+</html>
