@@ -509,8 +509,8 @@
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius-lg);
-            /* Homogenized Padding: Equal 40px all around */
-            padding: 40px;
+            /* Homogenized Padding: Equal 24px all around */
+            padding: 24px;
             position: relative;
             overflow: hidden;
             transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -520,7 +520,7 @@
             max-width: 100%;
             display: grid;
             grid-template-columns: 1fr 1.2fr; /* Text Area | Gallery Area */
-            gap: 40px 60px; /* Reduced vertical gap between top section and features */
+            gap: 24px; /* Reduced vertical gap between top section and features */
             align-items: start;
         }
 
@@ -559,7 +559,7 @@
             font-weight: 600;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             align-self: flex-start;
             margin-top: 0;
             /* Using Kinetic Accent for this card */
@@ -589,7 +589,7 @@
             grid-column: 1 / -1; /* Force full width span */
             display: grid;
             grid-template-columns: repeat(4, 1fr); /* 4 columns for full width layout */
-            gap: 16px 24px;
+            gap: 24px;
             width: 100%;
             background: rgba(0,0,0,0.2);
             padding: 20px;
@@ -1378,7 +1378,7 @@
 
         /* --- CARD CONTENT LAYOUT --- */
         .card-content {
-            padding: 24px 28px 24px 28px;
+            padding: 24px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -1407,7 +1407,7 @@
         .trainer-subtitle {
             font-size: 0.75rem;
             color: var(--color-text-muted);
-            margin-bottom: 16px;
+            margin-bottom: 24px;
             display: block;
         }
 
@@ -1465,7 +1465,7 @@
         /* Footer / Hint Area */
         .interaction-bar {
             margin-top: auto;
-            padding-top: 18px;
+            padding-top: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1793,16 +1793,25 @@
         @keyframes fadeInLetter { to { opacity: 1; } }
 
         /* -------------------------------------------------------------
-           SECTION SPACING ADJUSTMENTS
+           BENTO GROUPING SPACING ADJUSTMENTS
            ------------------------------------------------------------- */
-        /* Homogenized spacing to match Hero & Leadership top padding (Breathing Room) */
-        /* Reverting to standard .section padding (approx 3.5rem) or similar */
-        #leadership { padding-bottom: 3.5rem !important; }
-        #breeds { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #campus-map { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #features { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #live-interface { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #industries { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+
+        /* --- BENTO 1: THE OPERATIONAL TEAM --- */
+        #leadership { padding-bottom: 0 !important; }
+        /* Keep header margin fix */
+        #leadership .section-header { margin-bottom: 1.5rem !important; }
+
+        #breeds { padding-top: 24px !important; padding-bottom: 0 !important; }
+        #campus-map { padding-top: 24px !important; padding-bottom: 3.5rem !important; }
+
+        /* --- BENTO 2: CAPABILITIES SHOWCASE --- */
+        #features { padding-bottom: 0 !important; }
+        #live-interface { padding-top: 24px !important; padding-bottom: 0 !important; }
+        #industries { padding-top: 24px !important; padding-bottom: 3.5rem !important; }
+
+        /* --- BENTO 3: TECHNICAL DOCUMENTATION --- */
+        #specifications { padding-bottom: 0 !important; }
+        #ecosystem { padding-top: 24px !important; padding-bottom: 3.5rem !important; }
 
     </style>
 </head>
