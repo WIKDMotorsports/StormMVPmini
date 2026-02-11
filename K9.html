@@ -1798,11 +1798,16 @@
         /* Homogenized spacing to match Hero & Leadership top padding (Breathing Room) */
         /* Reverting to standard .section padding (approx 3.5rem) or similar */
         #leadership { padding-bottom: 3.5rem !important; }
+        /* Fix: Override section header margin for leadership to match grid gap (24px) */
+        #leadership .section-header { margin-bottom: 1.5rem !important; }
+
         #breeds { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
         #campus-map { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
         #features { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #live-interface { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-        #industries { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+
+        /* Fix: Remove bottom padding from live-interface and reduce top padding on industries to homogenize bento spacing (24px total gap) */
+        #live-interface { padding-top: 3.5rem !important; padding-bottom: 0 !important; }
+        #industries { padding-top: 24px !important; padding-bottom: 3.5rem !important; }
 
     </style>
 </head>
