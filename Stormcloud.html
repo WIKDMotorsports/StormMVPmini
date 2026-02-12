@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="STORMCloud Platform & Dashboard - The central intelligence layer for the STORM ecosystem. Unified command, continuous awareness, and total asset accountability.">
+    <meta name="robots" content="index, follow">
+    <title>STORMCloud Platform & Dashboard | StormPMC</title>
+    <link rel="canonical" href="https://stormpmc.com/STORMCloud.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="https://stormpmc.com/STORMCloud.html">
+    <meta property="og:title" content="STORMCloud Platform & Dashboard | StormPMC">
+    <meta property="og:description" content="The central intelligence layer for the STORM ecosystem. Automated logic, multi-zone connectivity, and total asset accountability.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050505'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='%23ffffff' font-family='Arial, sans-serif' font-weight='bold'>S</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://animatedicons.co" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- External Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" defer></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js" defer></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="components/header.css">
+    <link rel="stylesheet" href="components/footer.css">
+
+    <style>
+        /* ------------------------------------------------------------- 
+           THE FINAL SCROLLBAR FIX
+           ------------------------------------------------------------- */
+        html {
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
+            height: 100% !important;
+            width: 100% !important;
+            overscroll-behavior: none;
+        }
+
+        body {
+            position: static !important;
+            overflow-y: visible !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #wrapper, .wrapper, .main-content, #smooth-wrapper, #smooth-content, .page-container {
+            height: auto !important;
+            overflow: visible !important;
+            position: static !important;
+        }
+
+        /* ------------------------------------------------------------- 
+           ANIMATION SMOOTHNESS FIX
+           ------------------------------------------------------------- */
+        /* Only allow transitions on properties GSAP doesn't touch */
+        .industry-card, .specs-group, .card, .btn {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease !important;
+        }
+
+        /* CSS animations for immediate visibility (no GSAP dependency) */
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: translateY(30px); filter: blur(0); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        @keyframes heroImageReveal {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes highlightReveal {
+            from { opacity: 0; transform: translateY(20px); filter: blur(0); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        
+        /* Hero elements visible immediately via CSS */
+        .anim-hero-text {
+            animation: heroFadeIn 0.6s ease-out both;
+        }
+        .anim-hero-text:nth-child(1) { animation-delay: 0.1s; }
+        .anim-hero-text:nth-child(2) { animation-delay: 0.15s; }
+        .anim-hero-text:nth-child(3) { animation-delay: 0.2s; }
+        .anim-hero-text:nth-child(4) { animation-delay: 0.25s; }
+        .anim-hero-text:nth-child(5) { animation-delay: 0.3s; }
+        
+        .product-image {
+            animation: heroImageReveal 0.8s ease-out 0.1s both;
+        }
+        
+        .anim-highlight {
+            animation: highlightReveal 0.5s ease-out both;
+        }
+        .anim-highlight:nth-child(1) { animation-delay: 0.4s; }
+        .anim-highlight:nth-child(2) { animation-delay: 0.45s; }
+        .anim-highlight:nth-child(3) { animation-delay: 0.5s; }
+        
+        /* Scroll-reveal elements start hidden (GSAP handles these) */
+        .anim-reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+        
+        /* Background elements - visible by default */
+        .grid-overlay {
+            opacity: 1;
+        }
+
+        /* ------------------------------------------------------------- 
+           BREADCRUMBS
+           ------------------------------------------------------------- */
+        .breadcrumbs {
+            padding: 100px 0 0px 0;
+            background: transparent;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .breadcrumbs .container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        
+        .breadcrumb-link:hover {
+            color: var(--color-accent);
+        }
+        
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .breadcrumb-current {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        /* ------------------------------------------------------------- 
+           ICON DUPLICATION FIX (CRITICAL)
+           ------------------------------------------------------------- */
+        /* If the script runs twice, it appends a second SVG. We hide it. */
+        animated-icons svg + svg {
+            display: none !important;
+        }
+        
+        /* Hard constrain the container to only allow 1 icon */
+        .card-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            
+            width: 50px !important;
+            height: 50px !important;
+            min-height: 50px !important;
+            
+            overflow: hidden !important; /* Cuts off any duplicates that persist */
+            margin: 0 auto 1.25rem auto !important;
+        }
+
+        .card-icon animated-icons { 
+            display: block; 
+            margin: 0 auto;
+            flex-shrink: 0; /* Prevents squashing if multiples try to fit */
+        }
+
+        /* ------------------------------------------------------------- 
+           FEATURES GRID & CARD LAYOUT NORMALIZATION
+           ------------------------------------------------------------- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        #features .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem 2rem !important; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            position: relative;
+        }
+
+        #features .card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        #features .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        #features .card-text {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        /* UPDATED: Changed breakpoint from 768px to 600px to keep tablet at 2 columns */
+        @media (max-width: 600px) {
+            .features-grid { grid-template-columns: 1fr; }
+            #features .card { padding: 2rem !important; }
+        }
+
+        /* ------------------------------------------------------------- 
+           STORMCloud SPECIFIC VARIABLES (extend base styles.css)
+           ------------------------------------------------------------- */
+        :root {
+            --accent-defense: #4ade80;
+            --accent-energy: #a78bfa;
+            --accent-heavy: #fb923c;
+            --accent-logistics: #38bdf8;
+        }
+
+        .section {
+            padding: 3.5rem 0 !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem !important;
+        }
+
+        .section-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-software {
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .product-hero {
+            margin-top: 10px; 
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+            overflow: visible !important;
+        }
+
+        .product-hero-grid {
+            display: grid;
+            /* UPDATED: Changed from 1fr 1fr to minmax(0, 1fr) to prevent content expansion from shifting layout */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .product-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9; 
+            overflow: hidden;
+            border-radius: 16px;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .product-image img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; object-position: center; display: block;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        /* --- STANDARD TITLE STYLES (NO EFFECTS) --- */
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 60px; 
+            font-weight: 700;
+            line-height: 1.1; 
+            margin: 0 0 24px 0;
+            letter-spacing: -1px;
+            color: #fff;
+            position: relative;
+        }
+
+        @media (max-width: 1024px) {
+            .industry-grid { grid-template-columns: 1fr; }
+            .product-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .product-title { font-size: 48px; }
+        }
+
+        @media (max-width: 600px) {
+            .product-title { font-size: 36px; }
+        }
+
+        .industry-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .industry-card:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .industry-info { flex: 1; }
+
+        .industry-label {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .card-monitor .industry-label { color: var(--color-text-primary); border-color: rgba(255, 255, 255, 0.2); }
+
+        .industry-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .industry-desc {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .gallery-module {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+        
+        /* Specific override for dashboard screenshots to ensure they fit/cover appropriately */
+        .gallery-slide.screenshot {
+            background-size: cover; /* or contain, depending on preference. Cover fills the box. */
+            background-repeat: no-repeat;
+            cursor: zoom-in; /* Indicate zoom capability */
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-slide.screenshot:hover {
+            transform: scale(1.02);
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.7;
+        }
+
+        /* --- SPECS ACCORDION STYLES (Added for Completeness) --- */
+        .specs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .specs-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .specs-group summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 1.25rem 1.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #fff;
+            user-select: none;
+        }
+
+        .specs-group summary::-webkit-details-marker { display: none; }
+
+        .specs-group .summary-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .specs-group[open] .summary-icon { transform: rotate(180deg); color: rgba(255, 255, 255, 0.8); }
+
+        .specs-content {
+            padding: 1rem 2rem 2rem 2rem;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .expansion-grid-spec { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 24px 40px; 
+        }
+
+        @media (max-width: 600px) {
+            .expansion-grid-spec { grid-template-columns: 1fr; gap: 16px; }
+        }
+
+        .expansion-header { 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; 
+            border-bottom: 1px solid var(--color-border); padding-bottom: 8px; display: block; 
+            grid-column: 1 / -1;
+        }
+        
+        .expansion-header.green { color: #4ade80; border-bottom-color: rgba(74, 222, 128, 0.2); }
+        .expansion-header.magenta { color: #FF00FF; border-bottom-color: rgba(255, 0, 255, 0.2); }
+        .expansion-header.white { color: #ffffff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+
+        .expansion-item { margin-bottom: 0; }
+        .expansion-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #fff; }
+        .expansion-name span { font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; font-weight: 400; text-transform: uppercase; white-space: nowrap; }
+        
+        .expansion-name span.badge-green { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); }
+        .expansion-name span.badge-magenta { color: #FF00FF; border-color: rgba(255, 0, 255, 0.3); }
+        .expansion-name span.badge-cyan { color: var(--color-cyan); border-color: rgba(0, 255, 255, 0.3); }
+        
+        .expansion-desc { font-size: 14px; color: rgba(255, 255, 255, 0.5); line-height: 1.6; }
+
+        /* --- LIGHTBOX STYLES --- */
+        #lightbox {
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #lightbox.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        #lightbox-img {
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            border-radius: 4px;
+            object-fit: contain;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev { left: 30px; }
+        .lightbox-next { right: 30px; }
+
+        .lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+            line-height: 1;
+            z-index: 10000;
+        }
+
+        .lightbox-close:hover { 
+            color: white; 
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .lightbox-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
+            .lightbox-close { top: 15px; right: 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <style>
+    /* =========================================
+       FIREFOX PERFORMANCE OVERRIDES
+       - Removes heavy blur/filters that cause lag
+       ========================================= */
+    @-moz-document url-prefix() {
+        /* Disable backdrop-filter for Nav */
+        .nav,
+        .nav.scrolled,
+        .nav-dropdown-content {
+            backdrop-filter: none !important;
+            background: rgba(5, 5, 5, 0.98) !important;
+        }
+
+        /* Disable large glow orbs/gradients filters */
+        .glow-orb, 
+        .glow-orb-left {
+            display: none !important;
+            filter: none !important;
+        }
+    
+        /* Reduce shadow complexity */
+        body { 
+            text-shadow: none !important; 
+        }
+
+        /* Optimize Lottie containers */
+        animated-icons {
+            will-change: auto !important;
+        }
+        
+        /* Reduce grid overlay complexity */
+        .grid-overlay {
+            opacity: 0.03 !important;
+            mask-image: none !important;
+            -webkit-mask-image: none !important;
+        }
+        
+        /* Simplify Reveal Animations - EXCLUDING acronym text */
+        /* Instead of Blur+Translate, use only Opacity+Translate for reveal elements */
+        .anim-highlight,
+        .anim-reveal {
+            filter: none !important;
+            transition: opacity 0.4s ease, transform 0.4s ease !important;
+        }
+
+        /* Simplify Product Hero animations */
+        @keyframes fadeUpReveal {
+            from { opacity: 0; transform: translateY(30px); filter: none; }
+            to { opacity: 1; transform: translateY(0); filter: none; }
+        }
+
+        @keyframes fadeInSide {
+             from { opacity: 0; transform: translateY(20px); filter: none; }
+             to { opacity: 1; transform: translateY(0); filter: none; }
+        }
+        
+        /* Force hardware acceleration on main container only */
+        .product-hero {
+            will-change: transform;
+        }
+    }
+    
+    /* Global scroll improvements */
+    html {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border) var(--color-bg-primary);
+    }
+    
+    /* Ensure no layout thrashing from Lottie */
+    animated-icons {
+        display: block;
+        transform: translateZ(0); 
+    }
+    </style>
+    <script>
+        (function() {
+
+            function nukeScrollLocks() {
+                document.documentElement.style.cssText = "overflow-y: scroll !important; height: 100% !important;";
+                document.body.style.cssText = "overflow: visible !important; height: auto !important; position: static !important;";
+            }
+            nukeScrollLocks();
+            let attempts = 0;
+            const interval = setInterval(() => {
+                nukeScrollLocks();
+                attempts++;
+                if(attempts > 5) clearInterval(interval);
+            }, 100);
+        })();
+    </script>
+
+    <div class="grid-overlay" id="parallaxGrid"></div>
+
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Lightbox Element -->
+    <div id="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <button class="lightbox-nav lightbox-prev">&#10094;</button>
+        <img id="lightbox-img" src="" alt="Zoomed Screenshot">
+        <button class="lightbox-nav lightbox-next">&#10095;</button>
+    </div>
+
+    <!-- Content -->
+    <main>
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <div class="container">
+            <a href="index.html" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <a href="products.html" class="breadcrumb-link">Products</a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">STORMCloud</span>
+        </div>
+    </nav>
+
+    <!-- Product Hero -->
+    <section class="product-hero" id="overview">
+        <div class="container">
+            <div class="product-hero-grid">
+                <div class="product-image">
+                    <img src="Optimized Images/Dashboard/Asset_Device_Track_Monitor_View_Edited.webp" alt="STORMCloud Platform Dashboard View" id="heroImage" loading="eager" fetchpriority="high" width="1125" height="1080">
+                </div>
+                <div class="product-info">
+                    <span class="section-label badge-software anim-hero-text">Intelligence Layer</span>
+                    
+                    <!-- Static Title (No Effects) -->
+                    <h1 class="product-title anim-hero-text">
+                        STORMCloud Platform & Dashboard
+                    </h1>
+
+                    <p class="product-tagline anim-hero-text">Unified Command. Continuous Awareness.</p>
+                    <p class="product-description anim-hero-text">The central intelligence layer for the STORM ecosystem. Automated logic, multi-zone connectivity, and total asset accountability in a single operational picture.</p>
+                    <div class="product-cta anim-hero-text">
+                        <a href="contact.html" class="btn btn-primary">Request Demo</a>
+                        <a href="contact.html" class="btn btn-secondary">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 1: The Operational Logic -->
+    <section class="section" style="background: var(--color-bg-secondary);" id="logic">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Architecture</span>
+                <h2 class="section-title">The Operational Logic</h2>
+                <p class="section-subtitle">STORMCloud is the intelligence layer that connects the infrastructure, managing data flow across three zones of movement.</p>
+            </div>
+            <div class="features-grid">
+                <!-- Zone 1 -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Warehouse&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Zone 1: Warehousing</h3>
+                    <p class="card-text" style="text-align: center;"><strong>Indoors / Local</strong><br>Utilizes Short-range BLE and Wi-Fi for precise local detection within facilities.</p>
+                </div>
+                <!-- Zone 2 -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Car&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Zone 2: Transport</h3>
+                    <p class="card-text" style="text-align: center;"><strong>Ground Transport</strong><br>Switches to Cellular networks with automatic Satellite backup for seamless transit tracking.</p>
+                </div>
+                <!-- Zone 3 -->
+                <div class="card anim-reveal">
+                    <div class="card-icon">
+                        <animated-icons src="https://animatedicons.co/get-icon?name=Transportation%20Boat&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43" trigger="loop" attributes='{"variationThumbColour":"#FFFFFF","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFF","group-2":"#FFFFFF","background":"#191919"}}' height="48" width="48"></animated-icons>
+                    </div>
+                    <h3 class="card-title" style="text-align: center;">Zone 3: Remote</h3>
+                    <p class="card-text" style="text-align: center;"><strong>Air & Water</strong><br>Relies exclusively on Satellite communication when beyond terrestrial range.</p>
+                </div>
+            </div>
+            <p class="section-subtitle anim-reveal" style="text-align:center; margin-top:2rem; font-size: 0.9rem; opacity: 0.7;">Data from all zones is fed into the central Military Cloud and supported by the StormPMC server node for 24/7 monitoring.</p>
+        </div>
+    </section>
+
+    <!-- Sections 2-5: The Monitors -->
+    <section class="section" id="monitors">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Interface</span>
+                <h2 class="section-title">Operational Monitors</h2>
+                <p class="section-subtitle">Purpose-built views for every aspect of your operation. Click images to enlarge.</p>
+            </div>
+            <div class="industry-grid">
+                
+                <!-- Section 2: Asset Device Track Monitor -->
+                <div class="industry-card card-monitor anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Visualization</span>
+                        <h3 class="industry-title">Historical Path & Data</h3>
+                        <p class="industry-desc">The Asset Device Track Monitor allows operators to visualize the history of asset movement. Use "Animate" controls to replay travel paths, visualize speed, and isolate critical windows of time with precise playback controls.</p>
+                    </div>
+                    <div class="gallery-module">
+                        <div class="gallery-slide screenshot active" style="background-image: url('Optimized Images/Dashboard/Asset_Device_Track_Monitor_View_Edited.webp');"></div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Asset Tracker Monitor -->
+                <div class="industry-card card-monitor anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Identification</span>
+                        <h3 class="industry-title">Real-Time Asset Status</h3>
+                        <p class="industry-desc">Direct view of specific assets and location status. Quickly search and filter lists (e.g., AssetTracker8), select Geofences to view assets relative to boundaries, and instantly correlate list data with physical map positions.</p>
+                    </div>
+                    <div class="gallery-module">
+                        <div class="gallery-slide screenshot active" style="background-image: url('Optimized Images/Dashboard/Asset_Tracker_Monitor_View_Edited.webp');"></div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Device Monitor -->
+                <div class="industry-card card-monitor anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Health Check</span>
+                        <h3 class="industry-title">Fleet-Wide Device Health</h3>
+                        <p class="industry-desc">A tabular view of the entire hardware fleet. Monitor "VPN State" and "Last Heartbeat" timestamps to identify offline units. Verify "Last Transaction" times and view critical identifiers like VR Serial and Hostname.</p>
+                    </div>
+                    <div class="gallery-module">
+                        <div class="gallery-slide screenshot active" style="background-image: url('Optimized Images/Dashboard/Device_Monitor_View_Edited.webp');"></div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Yard Monitor -->
+                <div class="industry-card card-monitor anim-reveal">
+                    <div class="industry-info">
+                        <span class="industry-label">Facility Management</span>
+                        <h3 class="industry-title">Yard Monitor</h3>
+                        <p class="industry-desc">Aggregates data for specific controlled environments. View precise Geofence boundaries, review "Recent Asset Movement" logs, and monitor "Active Alerts" and total device counts for a quick facility health assessment.</p>
+                    </div>
+                    <div class="gallery-module">
+                        <div class="gallery-slide screenshot active" style="background-image: url('Optimized Images/Dashboard/Yard_Monitor_View_Edited.webp');"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Platform Specifications -->
+    <section class="section" id="specifications">
+        <div class="container">
+            <div class="section-header anim-reveal" style="text-align: center;">
+                <span class="section-label">Technical Data</span>
+                <h2 class="section-title">Platform Specifications</h2>
+                <p class="section-subtitle">Enterprise-grade security, accessibility, and architectural standards.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group anim-reveal" open>
+                    <summary>Security & Compliance<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Data Protection</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Transmission Security <span>Encrypted</span></h3><p class="expansion-desc">End-to-end encryption for all data flowing between devices, gateways, and the cloud.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Access Control <span>Role-Based</span></h3><p class="expansion-desc">Granular permission settings allow admins to restrict views and capabilities by user role.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Audit Trails <span>Logged</span></h3><p class="expansion-desc">Comprehensive logging of user actions and system events for accountability.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Hosting <span>Military Cloud</span></h3><p class="expansion-desc">Hosted on secure, redundant server nodes designed for high-availability defense applications.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group anim-reveal">
+                    <summary>Accessibility & Integration<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header">Connectivity</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Browser Support <span>Universal</span></h3><p class="expansion-desc">Fully responsive web interface compatible with Chrome, Firefox, Edge, and Safari.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Mobile Access <span>Responsive</span></h3><p class="expansion-desc">Optimized for touch interaction on tablets and smartphones for field operations.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Data Export <span>CSV / PDF</span></h3><p class="expansion-desc">Export historical tracking data and logs for offline analysis and reporting.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">API Availability <span>RESTful</span></h3><p class="expansion-desc">Standardized API endpoints for integration with existing logistics and ERP systems.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Ecosystem / Works With -->
+    <section class="section" id="ecosystem">
+        <div class="container">
+            <div class="section-header anim-reveal">
+                <span class="section-label">Ecosystem</span>
+                <h2 class="section-title">Supported Hardware</h2>
+                <p class="section-subtitle">STORMCloud natively integrates with the entire suite of Storm tracking devices.</p>
+            </div>
+            <div class="specs-grid">
+                <details class="specs-group anim-reveal" open>
+                    <summary>Asset Trackers<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header green">Tracking Devices</span>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC <span class="badge-green">Flagship</span></h3><p class="expansion-desc">Military Tracking Remote Access Command. The primary ruggedized tracker for the ecosystem.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC Lite <span class="badge-cyan">Coming Soon</span></h3><p class="expansion-desc">Compact tracker designed for lighter assets and rapid deployment.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">MTRAC Micro <span class="badge-cyan">Coming Soon</span></h3><p class="expansion-desc">Ultra-compact BLE tag for granular inventory and personnel tracking.</p></div>
+                    </div></div>
+                </details>
+                <details class="specs-group anim-reveal">
+                    <summary>Infrastructure<div class="summary-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div></summary>
+                    <div class="specs-content"><div class="expansion-grid-spec">
+                        <span class="expansion-header magenta">Gateways & Nodes</span>
+                        <div class="expansion-item"><h3 class="expansion-name">Vehicle Gateway <span class="badge-magenta">Mobile</span></h3><p class="expansion-desc">Cellular/SatCom backhaul node mounted on convoy vehicles for moving mesh networks.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">Warehouse Gateway <span class="badge-magenta">Fixed</span></h3><p class="expansion-desc">High-capacity node for monitoring static facilities and supply depots.</p></div>
+                        <div class="expansion-item"><h3 class="expansion-name">StormPMC Server <span class="badge-magenta">Core</span></h3><p class="expansion-desc">The physical server node supporting 24/7 monitoring and data processing.</p></div>
+                    </div></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section" id="deploy">
+        <div class="container">
+            <div class="cta-content anim-reveal">
+                <h2 class="cta-title">Ready to Deploy STORMCloud?</h2>
+                <p class="cta-text">Take command of your operations today. Contact us for licensing, integration support, or a live environment demo.</p>
+                <div class="cta-buttons">
+                    <a href="contact.html" class="btn btn-primary">Request Demo</a>
+                    <a href="products.html" class="btn btn-secondary">View Hardware</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script>
+        // -----------------------------------------------------------------
+        // FAIL-SAFE: REMOVE INLINE BODY STYLES
+        // This runs after page load to strip any styles added by external scripts
+        // -----------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+             const body = document.body;
+             const html = document.documentElement;
+             
+             // Strip inline styles that might lock scroll
+             if(body.style.overflow) body.style.overflow = '';
+             if(body.style.height) body.style.height = '';
+             if(html.style.overflow) html.style.overflow = '';
+             if(html.style.height) html.style.height = '';
+             
+             console.log("Scroll locks cleared.");
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // -----------------------------------------------------------------
+            // GSAP ANIMATIONS (only scroll effects - hero handled by CSS)
+            // -----------------------------------------------------------------
+            function initGSAPAnimations() {
+                if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                    // GSAP not loaded - CSS animations handle hero, reveal elements stay hidden
+                    // Add fallback class for reveal elements
+                    document.querySelectorAll('.anim-reveal').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                    });
+                    return;
+                }
+                
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // SCROLL REVEAL for .anim-reveal elements
+                gsap.utils.toArray(".anim-reveal").forEach(el => {
+                    gsap.to(el, {
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 90%", 
+                            toggleActions: "play none none none"
+                        },
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.6,
+                        ease: "power3.out"
+                    });
+                });
+            }
+            
+            // Wait for deferred GSAP to load
+            requestAnimationFrame(initGSAPAnimations);
+
+            // -----------------------------------------------------------------
+            // CARD HOVER: Trigger animated-icons on parent card hover
+            // -----------------------------------------------------------------
+            document.querySelectorAll('#features .card').forEach(card => {
+                const icon = card.querySelector('animated-icons');
+                if (!icon) return;
+                
+                card.addEventListener('mouseenter', () => {
+                    if (icon.shadowRoot) {
+                        const innerContainer = icon.shadowRoot.querySelector('div');
+                        if (innerContainer) {
+                            innerContainer.dispatchEvent(new MouseEvent('mouseenter'));
+                        }
+                    } else {
+                         icon.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    if (icon.shadowRoot) {
+                        const innerContainer = icon.shadowRoot.querySelector('div');
+                        if (innerContainer) {
+                            innerContainer.dispatchEvent(new MouseEvent('mouseleave'));
+                        }
+                    } else {
+                         icon.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+                    }
+                });
+            });
+            
+            // -----------------------------------------------------------------
+            // ACCORDION LOGIC - REVERSE ANIMATION TECHNIQUE (NO SNAP)
+            // -----------------------------------------------------------------
+            function initAccordions() {
+                if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+                
+                const detailGroups = document.querySelectorAll('details.specs-group');
+                
+                detailGroups.forEach((detail, index) => {
+                    const summary = detail.querySelector('summary');
+                    const content = detail.querySelector('.specs-content');
+                    
+                    summary.addEventListener('click', (e) => {
+                        e.preventDefault(); 
+                        
+                        const isOpen = detail.hasAttribute('open');
+                        const tl = gsap.timeline({
+                            defaults: { duration: 0.35, ease: "power3.inOut" },
+                            onComplete: () => ScrollTrigger.refresh()
+                        });
+
+                        if (isOpen) {
+                            // --- CLOSING ---
+                            tl.to(content, {
+                                height: 0,
+                                paddingTop: 0,
+                                paddingBottom: 0,
+                                opacity: 0,
+                                onComplete: () => {
+                                    detail.removeAttribute('open');
+                                    gsap.set(content, { clearProps: "all" }); 
+                                }
+                            });
+                        } else {
+                            // --- OPENING ---
+                            detail.setAttribute('open', '');
+                            tl.from(content, { 
+                                height: 0, 
+                                paddingTop: 0, 
+                                paddingBottom: 0, 
+                                opacity: 0,
+                                clearProps: "all"
+                            });
+                        }
+                    });
+                });
+            }
+            
+            requestAnimationFrame(initAccordions);
+
+            // -----------------------------------------------------------------
+            // LIGHTBOX LOGIC
+            // -----------------------------------------------------------------
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const screenshots = document.querySelectorAll('.gallery-slide.screenshot');
+            let currentIndex = 0;
+            const imageUrls = [];
+
+            // Extract URLs
+            screenshots.forEach((slide, index) => {
+                // Parse url from background-image style: url("path") or url('path')
+                const style = slide.style.backgroundImage;
+                if(style) {
+                    const url = style.slice(4, -1).replace(/["']/g, "");
+                    imageUrls.push(url);
+
+                    // Click event
+                    slide.addEventListener('click', () => openLightbox(index));
+                }
+            });
+
+            function openLightbox(index) {
+                currentIndex = index;
+                updateLightboxImage();
+                lightbox.classList.add('visible');
+                document.body.style.overflow = 'hidden'; 
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('visible');
+                document.body.style.overflow = ''; 
+            }
+
+            function updateLightboxImage() {
+                if (imageUrls.length > 0) {
+                    lightboxImg.src = imageUrls[currentIndex];
+                }
+            }
+
+            function nextImage(e) {
+                if(e) e.stopPropagation();
+                if(imageUrls.length === 0) return;
+                currentIndex = (currentIndex + 1) % imageUrls.length;
+                updateLightboxImage();
+            }
+
+            function prevImage(e) {
+                if(e) e.stopPropagation();
+                if(imageUrls.length === 0) return;
+                currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+                updateLightboxImage();
+            }
+
+            // Controls
+            document.querySelector('.lightbox-next').addEventListener('click', nextImage);
+            document.querySelector('.lightbox-prev').addEventListener('click', prevImage);
+            document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+
+            // Click outside to close
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            // Keyboard Nav
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('visible')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+            });
+        });
+    </script>
+
+    <!-- Shared Component Loader -->
+    <script src="components/components.js"></script>
+</body>
+</html>
