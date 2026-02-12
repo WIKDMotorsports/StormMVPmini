@@ -307,13 +307,13 @@
             width: 100%;
         }
 
-        /* --- MTRAC ACRONYM ANIMATION STYLES (INTEGRATED) --- */
+        /* --- STRIKE ACRONYM ANIMATION STYLES --- */
         .product-title {
             font-family: var(--font-display);
             font-size: 80px; 
             font-weight: 700;
             line-height: 1.1; 
-            margin: 0 0 24px 0;
+            margin: 0;
             letter-spacing: -2px;
             
             /* FIXED DIMENSIONS & LAYOUT LOCK */
@@ -322,15 +322,18 @@
             display: flex;
             align-items: center;
             align-content: center;
+            justify-content: flex-start;
             
-            /* MODIFIED: Changed to visible to allow Ping Superscript */
             overflow: visible; 
             position: relative;
-
             flex-wrap: nowrap;        
-            cursor: pointer; /* Changed to pointer to indicate clickable */
+            cursor: pointer;
+
+            /* RETURN ANIMATION (Mouse Out / Contract) */
+            transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+                        line-height 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
             
-            /* Disable user select to prevent highlighting text on multiple clicks */
             user-select: none;
             -webkit-user-select: none;
         }
@@ -339,7 +342,7 @@
             display: inline-flex;
             align-items: baseline;
             margin-right: 2px;
-            position: relative; /* Anchor for Ping */
+            position: relative;
         }
 
         .initial {
@@ -361,19 +364,45 @@
                         margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* --- EXPANSION STATES --- */
-        .product-title.is-expanded,
-        .product-title.force-hover {
-            /* Shrinking removed */
+        /* --- EXPANSION STATES (Triggered by class or hover) --- */
+
+        /* 1. Class-based Trigger (JS) */
+        .product-title.is-expanded {
+            font-size: 22px;
+            line-height: 1.2;
+            letter-spacing: 0px;
+            column-gap: 8px;
+            transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Desktop Only Hover (Strictly non-tablet/mobile) */
+        .product-title.is-expanded .initial {
+            color: var(--accent-red);
+        }
+
+        .product-title.is-expanded .reveal {
+            max-width: 200px;
+            opacity: 1;
+            margin-right: 6px;
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
+                        opacity 0.4s ease 0.2s,
+                        margin-right 0.4s ease 0.2s;
+        }
+
+        /* 2. Desktop Hover Trigger (Strictly non-touch) */
         @media (hover: hover) and (min-width: 1025px) {
             .product-title:hover {
-                /* Shrinking removed */
+                font-size: 22px;
+                line-height: 1.2;
+                letter-spacing: 0px;
+                column-gap: 8px;
+                transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                            line-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             }
             .product-title:hover .initial {
-                color: var(--accent-defense);
+                color: var(--accent-red);
             }
             .product-title:hover .reveal {
                 max-width: 200px; 
@@ -383,6 +412,7 @@
                             opacity 0.4s ease 0.2s,
                             margin-right 0.4s ease 0.2s;
             }
+            /* Hide Ping on Hover */
             .product-title:hover .ping-circle {
                 transform: scale(0) !important;
                 opacity: 0 !important;
@@ -393,82 +423,88 @@
             }
         }
 
-        /* Class-Based Expansion (For Mobile/Click) */
-        .product-title.is-expanded .initial {
-            color: var(--accent-defense);
-        }
-
-        .product-title.is-expanded .reveal {
-            max-width: 200px; 
-            opacity: 1;
-            margin-right: 6px; 
-            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s,
-                        opacity 0.4s ease 0.2s,
-                        margin-right 0.4s ease 0.2s;
-        }
-        
         /* Remove margin from last word block */
         .word-block:last-child .reveal {
             margin-right: 0;
         }
 
-        /* --- CIRCULAR PING COMPONENT --- */
+        /* --- TRIANGLE PING COMPONENT (Exact Match to "Nano" Style) --- */
         .ping-circle {
             position: absolute;
-            top: 6px;    
-            right: -8px; 
-            transform: scale(1);
-            width: 24px;  
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(20, 20, 20, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-            color: var(--ping-color);
+            top: -2px;
+            right: -16px; /* Moved slightly left from -22px */
+
+            /* Sizing from reference */
+            width: 30px;
+            height: 26px;
+
+            /* Remove default styles */
+            border: none;
+            box-shadow: none;
+            background: none;
+
+            color: var(--accent-red);
             z-index: 10;
             pointer-events: none;
+
             opacity: 1;
             visibility: visible;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s, 
+
+            /* The 'return' transition creates the POP effect via the overshoot bezier */
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s,
                         opacity 0.3s ease 0.8s,
                         visibility 0.3s ease 0.8s,
                         top 0.3s ease, right 0.3s ease;
         }
 
-        /* Class-Based Hide (For Mobile/Click) */
+        /* SVG Internal Styling */
+        .ping-circle svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            /* Shadow from reference */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* Pulse Animation (Hollow Triangle) */
+        .ping-circle::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            z-index: 0;
+            background: currentColor;
+            /* Exact clip-path for hollow triangle ring */
+            clip-path: polygon(
+                50% 0%, 0% 100%, 100% 100%, 50% 0%,
+                50% 2px, 98% 98%, 2% 98%, 50% 2px
+            );
+            opacity: 0;
+            transform-origin: 50% 62%;
+            animation: pulse-ring-triangle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring-triangle {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(2.0); opacity: 0; }
+        }
+
+        /* Utility class to keep ping hidden on strictly the first load */
+        .ping-hidden-initially {
+            opacity: 0 !important;
+            transform: scale(0) !important;
+            visibility: hidden !important;
+            transition: none !important; /* No transition on load */
+        }
+
+        /* Hide Ping on Expanded (Class based) */
         .product-title.is-expanded .ping-circle {
             transform: scale(0) !important;
             opacity: 0 !important;
             visibility: hidden !important;
+            /* Instant hide when expanding */
             transition: transform 0.2s ease 0s,
                         opacity 0.2s ease 0s,
                         visibility 0s linear 0.2s;
-        }
-
-        .ping-circle::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px; height: 8px; 
-            background: currentColor;
-            border-radius: 50%;
-            box-shadow: 0 0 10px currentColor;
-        }
-
-        .ping-circle::after {
-            content: '';
-            position: absolute;
-            top: -4px; left: -4px; right: -4px; bottom: -4px;
-            border-radius: 50%;
-            border: 1px solid currentColor;
-            opacity: 0;
-            animation: pulse-ring-circle 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-
-        @keyframes pulse-ring-circle {
-            0% { transform: scale(0.8); opacity: 0.6; }
-            100% { transform: scale(2.2); opacity: 0; }
         }
 
         @media (max-width: 1024px) {
@@ -492,7 +528,13 @@
             .product-image { aspect-ratio: 16 / 9; }
 
             /* Re-enable wrap on smaller screens, ensure min-height prevents layout shift */
-            .product-title { font-size: 56px; height: auto; min-height: 90px; flex-wrap: wrap; }
+            .product-title {
+                font-size: 56px;
+                height: auto;
+                min-height: 90px;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
             .ping-circle { top: -1px; right: -10px; transform: scale(0.9); }
         }
 
@@ -1868,13 +1910,32 @@
                 <div class="product-info">
                     <span class="section-label badge-flagship anim-hero-text" id="heroLabel">OPERATIONAL BIOLOGICAL ASSET</span>
                     
-                    <h1 class="product-title anim-hero-text">STORM K9</h1>
+                    <h1 class="product-title anim-hero-text">
+                        <span class="word-block"><span class="initial">S</span><span class="reveal">trategic</span></span>
+                        <span class="word-block"><span class="initial">T</span><span class="reveal">hreat</span></span>
+                        <span class="word-block"><span class="initial">R</span><span class="reveal">esponse</span></span>
+                        <span class="word-block"><span class="initial">I</span><span class="reveal">ncident</span></span>
+                        <span class="word-block"><span class="initial">K</span><span class="reveal">9</span></span>
+                        <span class="word-block">
+                            <span class="initial">E</span>
+                            <span class="reveal">mployment</span>
+
+                            <!-- EXACT TRIANGLE PING -->
+                            <div class="ping-circle ping-hidden-initially">
+                                <svg width="30" height="26" viewBox="0 0 30 26" fill="none">
+                                    <!-- Outer Border -->
+                                    <path d="M15 2 L27 24 L3 24 Z" fill="rgba(20,20,20,0.4)" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linejoin="round"/>
+                                    <!-- Inner Red Triangle -->
+                                    <path d="M15 13 L19 19 L11 19 Z" fill="currentColor" />
+                                </svg>
+                            </div>
+                        </span>
+                    </h1>
 
                     <p class="product-tagline anim-hero-text">High-fidelity detection and controlled kinetic intervention.</p>
                     <p class="product-description anim-hero-text">A tier-one biological response system engineered for definitive threat verification. Storm K9 assets provide molecular-level detection and physical suspect control, validated for deployment in high-consequence operational theaters.</p>
                     <div class="product-cta anim-hero-text">
                         <a href="contact.html" class="btn btn-primary">Request Program Overview</a>
-                        <a href="campus.html" class="btn btn-secondary">View Training Campus</a>
                     </div>
                     <div class="product-highlights">
                         <div class="highlight-item anim-highlight"><div class="highlight-value">Biological</div><div class="highlight-label">Modality</div></div>
@@ -2524,7 +2585,6 @@
                     
                     <div class="cta-buttons">
                         <a href="contact.html" class="btn btn-primary" id="quote-btn">Contact Operations</a>
-                        <a href="program-brief.pdf" class="btn btn-secondary">Download Program Brief</a>
                     </div>
                 </div>
             </div>
@@ -3067,6 +3127,50 @@
             if(heroImageContainer) {
                 heroImageContainer.addEventListener('mouseenter', () => setHeroActive(true));
                 heroImageContainer.addEventListener('mouseleave', () => setHeroActive(false));
+            }
+
+            // -----------------------------------------------------------------
+            // STRIKE ACRONYM INTERACTION LOGIC
+            // -----------------------------------------------------------------
+            const productTitle = document.querySelector('.product-title');
+            const ping = document.querySelector('.ping-circle');
+            let contractionTimeout;
+
+            if (productTitle) {
+                // Helper to remove initial hidden class
+                const removeInitialHidden = () => {
+                    if(ping && ping.classList.contains('ping-hidden-initially')) {
+                        ping.classList.remove('ping-hidden-initially');
+                    }
+                };
+
+                // 1. Click Handler (Toggle)
+                productTitle.addEventListener('click', function() {
+                    removeInitialHidden();
+                    this.classList.add('is-expanded');
+
+                    if (contractionTimeout) clearTimeout(contractionTimeout);
+
+                    // Auto-contract after 5 seconds
+                    contractionTimeout = setTimeout(() => {
+                        this.classList.remove('is-expanded');
+                    }, 5000);
+                });
+
+                // 2. Auto-Play Demo on Load
+                setTimeout(() => {
+                    // Only trigger if user hasn't already hovered/clicked
+                    if (!productTitle.classList.contains('is-expanded') && !productTitle.matches(':hover')) {
+                        removeInitialHidden();
+
+                        productTitle.classList.add('is-expanded');
+
+                        // Set the timeout
+                        contractionTimeout = setTimeout(() => {
+                            productTitle.classList.remove('is-expanded');
+                        }, 2500);
+                    }
+                }, 1000); // 1s delay before starting demo
             }
             
         });
