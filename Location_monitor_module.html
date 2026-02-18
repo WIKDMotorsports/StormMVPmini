@@ -31,7 +31,7 @@
             --font-primary: 'Inter', sans-serif;
             --font-display: 'Space Grotesk', sans-serif;
             --font-mono: 'Fira Code', monospace;
-            --transition-normal: 0.3s ease;
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --border-radius-lg: 12px;
             --border-radius-md: 8px;
             --border-radius-sm: 4px;
@@ -50,7 +50,7 @@
         }
 
         .component-wrapper {
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
         }
 
@@ -105,15 +105,16 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--border-radius-md);
             overflow: hidden;
-            height: 550px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
         }
 
-        /* Sidebar */
         .sidebar {
-            background: rgba(15, 15, 20, 0.95);
+            background: rgba(10, 10, 15, 0.98);
             border-right: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         .sidebar-header {
@@ -122,10 +123,10 @@
         }
 
         .search-bar {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--border-radius-sm);
-            padding: 8px 12px;
+            padding: 10px 12px;
             color: #fff;
             font-size: 12px;
             width: 100%;
@@ -136,10 +137,12 @@
         .asset-list {
             flex: 1;
             overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-border) transparent;
         }
 
         .asset-item {
-            padding: 16px;
+            padding: 14px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             cursor: pointer;
             transition: all 0.2s;
@@ -147,7 +150,7 @@
         }
 
         .asset-item:hover { background: rgba(255, 255, 255, 0.02); }
-        .asset-item.active { background: rgba(56, 189, 248, 0.04); }
+        .asset-item.active { background: rgba(56, 189, 248, 0.05); }
 
         .asset-header {
             display: flex;
@@ -163,69 +166,117 @@
         }
 
         .status-badge {
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            transition: color 0.3s ease;
         }
 
-        .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .status-dot { width: 5px; height: 5px; border-radius: 50%; transition: background 0.3s ease; }
 
-        /* Notification */
         .notification-pill {
             margin-top: 8px;
-            padding: 6px 8px;
+            padding: 8px 10px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9px;
             background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.25);
             color: var(--color-danger);
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
+            font-family: var(--font-mono);
+            line-height: 1.3;
         }
 
         .notification-pill.visible { display: block; }
 
-        /* Map */
         .map-wrapper {
             position: relative;
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         #map { flex: 1; background: #0f0f13; }
 
-        /* Overlay Controls */
         .map-overlay {
             position: absolute;
             top: 16px;
             right: 16px;
             z-index: 1000;
-            background: rgba(10, 10, 12, 0.9);
-            padding: 12px;
+            background: rgba(10, 10, 12, 0.92);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 4px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            width: 140px;
+            transition: var(--transition-normal);
+            overflow: hidden;
+            max-height: 34px; 
         }
+
+        .map-overlay.expanded {
+            max-height: 160px;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .overlay-header:hover { background: rgba(255, 255, 255, 0.03); }
+
+        .overlay-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .expand-icon {
+            width: 12px;
+            height: 12px;
+            fill: var(--color-text-muted);
+            transition: var(--transition-normal);
+        }
+
+        .map-overlay.expanded .expand-icon { transform: rotate(180deg); fill: var(--color-accent); }
+
+        .overlay-content {
+            padding: 0 12px 12px 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        .map-overlay.expanded .overlay-content { opacity: 1; pointer-events: auto; }
 
         .layer-toggle {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--color-text-secondary);
             margin-bottom: 8px;
             cursor: pointer;
+            user-select: none;
         }
 
         .layer-toggle:last-child { margin-bottom: 0; }
         .layer-toggle input { accent-color: var(--color-accent); }
 
-        /* Timeline Footer */
         .timeline-container {
-            background: rgba(15, 15, 20, 0.95);
+            background: rgba(10, 10, 15, 0.98);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 16px 24px;
             z-index: 1001;
@@ -234,11 +285,36 @@
         .timeline-header {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
+            align-items: center;
+            font-size: 10px;
             font-family: var(--font-mono);
             color: var(--color-text-muted);
             margin-bottom: 8px;
         }
+
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .play-btn {
+            background: none;
+            border: 1px solid var(--color-accent-border);
+            color: var(--color-accent);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .play-btn:hover { background: var(--color-accent-dim); border-color: var(--color-accent); transform: scale(1.1); }
+        .play-btn svg { width: 10px; height: 10px; fill: currentColor; }
 
         .timeline-slider {
             -webkit-appearance: none;
@@ -252,28 +328,32 @@
 
         .timeline-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: var(--color-accent);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--color-accent);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
             cursor: pointer;
+            transition: transform 0.1s ease;
         }
+        
+        .timeline-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
         .coord-box {
             position: absolute;
-            bottom: 90px;
+            bottom: 85px;
             left: 16px;
             z-index: 1000;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 10px;
             font-family: var(--font-mono);
             color: var(--color-accent);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            pointer-events: none;
         }
 
-        /* Marker Styles */
         .custom-pin { background: transparent; }
         .pin-inner {
             width: 12px; height: 12px;
@@ -281,6 +361,7 @@
             border: 2px solid #fff;
             border-radius: 50%;
             box-shadow: 0 0 10px var(--color-accent);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         .pin-inner.breached {
             background: var(--color-danger);
@@ -289,11 +370,12 @@
         }
         .pin-label {
             position: absolute;
-            top: -20px; left: 50%; transform: translateX(-50%);
+            top: -22px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
-            padding: 2px 6px; border-radius: 3px;
-            font-size: 9px; color: #fff; font-family: var(--font-mono);
+            padding: 2px 8px; border-radius: 3px;
+            font-size: 10px; color: #fff; font-family: var(--font-mono);
             white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         @keyframes pulse-danger {
@@ -302,10 +384,17 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-            .interface-container { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+            .interface-container { 
+                grid-template-columns: 1fr; 
+                grid-template-rows: auto 1fr; 
+                aspect-ratio: auto;
+                height: auto;
+                min-height: 600px;
+            }
+            .sidebar { max-height: 250px; }
         }
     </style>
 </head>
@@ -315,46 +404,59 @@
         <div class="monitor-card">
             <div class="header-group">
                 <div>
-                    <span class="monitor-label">Geospatial Monitor</span>
-                    <h3 class="monitor-title">Operational Asset Intelligence</h3>
-                    <p class="monitor-desc">Real-time telemetry, historical replay, and geofence enforcement.</p>
+                    <span class="monitor-label">Geospatial Intelligence</span>
+                    <h3 class="monitor-title">Operational Asset Monitor</h3>
+                    <p class="monitor-desc">Telemetry monitoring with automated perimeter enforcement and historical replay.</p>
                 </div>
             </div>
 
             <div class="interface-container">
                 <div class="sidebar">
                     <div class="sidebar-header">
-                        <input type="text" class="search-bar" placeholder="Search assets...">
+                        <input type="text" class="search-bar" placeholder="Filter assets...">
                     </div>
                     <div class="asset-list" id="asset-list">
-                        <!-- JS Rendered -->
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
 
                 <div class="map-wrapper">
                     <div id="map"></div>
                     
-                    <div class="map-overlay">
-                        <div style="font-size:9px; font-weight:700; color:#fff; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Layer Control</div>
-                        <label class="layer-toggle">
-                            <input type="checkbox" checked id="toggle-assets"> Assets
-                        </label>
-                        <label class="layer-toggle">
-                            <input type="checkbox" checked id="toggle-geofence"> Restricted Zones
-                        </label>
-                        <label class="layer-toggle">
-                            <input type="checkbox" checked id="toggle-history"> History Path
-                        </label>
+                    <div class="map-overlay" id="map-controls">
+                        <div class="overlay-header" id="overlay-toggle">
+                            <span class="overlay-title">Controls</span>
+                            <svg class="expand-icon" viewBox="0 0 24 24">
+                                <path d="M7 10l5 5 5-5H7z"/>
+                            </svg>
+                        </div>
+                        <div class="overlay-content">
+                            <label class="layer-toggle">
+                                <input type="checkbox" checked id="toggle-assets"> Assets
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" checked id="toggle-geofence"> Geofences
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" checked id="toggle-history"> Track History
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="coord-box" id="coords">32.8998° N, 97.0403° W</div>
+                    <div class="coord-box" id="coords">--.----° N, --.----° W</div>
 
                     <div class="timeline-container">
                         <div class="timeline-header">
-                            <span id="timeline-time">TIMESTAMP: 08:00:00</span>
-                            <span style="color:var(--color-accent)">REPLAY ACTIVE</span>
+                            <div class="playback-controls">
+                                <button class="play-btn" id="play-pause-btn" title="Toggle Playback">
+                                    <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <svg id="pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                </button>
+                                <span id="timeline-time">TIME: 12:30:00 PM</span>
+                            </div>
+                            <span id="replay-status" style="color:var(--color-accent)">REAL-TIME FIX</span>
                         </div>
-                        <input type="range" class="timeline-slider" id="timeline" min="0" max="100" value="0">
+                        <input type="range" class="timeline-slider" id="timeline" min="0" max="100" value="100">
                     </div>
                 </div>
             </div>
@@ -367,7 +469,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const map = L.map('map', {
-                center: [32.8960, -97.0400],
+                center: [32.8940, -97.0350],
                 zoom: 14,
                 zoomControl: false,
                 attributionControl: false
@@ -375,163 +477,222 @@
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
-            // 1. Data Definitions
-            const assets = [
-                { id: 'AssetTracker8', status: 'Online', loc: 'Terminal D', lat: 32.9025, lng: -97.0450, color: 'var(--color-success)' },
-                { id: 'AssetTracker1', status: 'Online', loc: 'Cargo Bay 3', lat: 32.8870, lng: -97.0510, color: 'var(--color-success)' },
-                { id: 'AssetTracker3', status: 'Idle', loc: 'Gate A12', lat: 32.9080, lng: -97.0390, color: 'var(--color-warning)' },
-                { id: 'AssetTracker5', status: 'Online', loc: 'Hangar 4', lat: 32.9150, lng: -97.0400, color: 'var(--color-success)' }
-            ];
+            let selectedAssetId = 'AssetTracker6';
+            let isPlaying = false;
+            let playbackInterval = null;
 
-            // 2. Historical Asset Tracker 6 Path
-            // Starts inside the restricted zone and moves out
-            const historyPath = [
-                [32.8920, -97.0280], [32.8930, -97.0285], [32.8940, -97.0290], // Deep inside
-                [32.8955, -97.0310], [32.8965, -97.0330], // Crossing line
-                [32.8980, -97.0360], [32.9000, -97.0400], [32.9020, -97.0430]  // Safe zone
+            // 1. Asset Definitions with complex paths and "Stop" waypoints (duplicated coords)
+            const assets = [
+                { 
+                    id: 'AssetTracker8', status: 'Online', loc: 'Terminal D', color: 'var(--color-success)',
+                    path: [
+                        [32.9025, -97.0450], [32.9025, -97.0450], [32.9025, -97.0450], // Initial Pause
+                        [32.9028, -97.0452], [32.9030, -97.0448], [32.9030, -97.0448], // Pause at corner
+                        [32.9026, -97.0445], [32.9024, -97.0449], [32.9024, -97.0449], // Pause at gate
+                        [32.9025, -97.0451], [32.9027, -97.0453], [32.9027, -97.0453], 
+                        [32.9025, -97.0450], [32.9025, -97.0450] // Stays localized
+                    ]
+                },
+                { 
+                    id: 'AssetTracker1', status: 'Online', loc: 'Cargo Bay 3', color: 'var(--color-success)',
+                    path: [
+                        [32.8750, -97.0400], [32.8750, -97.0400], // Start wait
+                        [32.8800, -97.0450], [32.8800, -97.0450], // Wait at intersection
+                        [32.8840, -97.0480], [32.8870, -97.0510], [32.8870, -97.0510] // Final stop
+                    ]
+                },
+                { 
+                    id: 'AssetTracker3', status: 'Idle', loc: 'Gate A12', color: 'var(--color-warning)',
+                    path: [
+                        [32.9150, -97.0300], [32.9120, -97.0350], [32.9120, -97.0350], // Service pause
+                        [32.9100, -97.0370], [32.9080, -97.0390], [32.9080, -97.0390]
+                    ]
+                },
+                { 
+                    id: 'AssetTracker5', status: 'Online', loc: 'Hangar 4', color: 'var(--color-success)',
+                    path: [
+                        [32.9250, -97.0450], [32.9220, -97.0430], [32.9220, -97.0430], // Taxi pause
+                        [32.9180, -97.0410], [32.9150, -97.0400], [32.9150, -97.0400]
+                    ]
+                },
+                { 
+                    id: 'AssetTracker6', status: 'Monitored', loc: 'SE Sector', color: 'var(--color-success)',
+                    isBreachDemo: true,
+                    path: [
+                        [32.8930, -97.0300], [32.8930, -97.0300], // Long start pause
+                        [32.8950, -97.0280], [32.8950, -97.0280], // Inspection pause
+                        [32.8910, -97.0275], [32.8935, -97.0310], [32.8935, -97.0310], // Zig-zag pause
+                        [32.8905, -97.0280], [32.8905, -97.0280], // Breach-point pause
+                        [32.8890, -97.0255], [32.8870, -97.0220], [32.8835, -97.0150]
+                    ]
+                }
             ];
 
             const geofenceCoords = [
-                [32.8960, -97.0350], [32.8960, -97.0250],
-                [32.8900, -97.0250], [32.8900, -97.0350]
+                [32.8960, -97.0340], [32.8960, -97.0260],
+                [32.8900, -97.0260], [32.8900, -97.0340]
             ];
 
-            // 3. Layer Management
             const assetGroup = L.layerGroup().addTo(map);
             const historyGroup = L.layerGroup().addTo(map);
             const geofence = L.polygon(geofenceCoords, {
-                color: 'var(--color-danger)',
-                fillColor: 'var(--color-danger)',
+                color: 'var(--color-success)', 
+                fillColor: 'var(--color-success)',
                 fillOpacity: 0.1,
-                weight: 1.5,
-                dashArray: '5, 10'
+                weight: 2,
+                dashArray: '8, 8'
             }).addTo(map);
 
-            // Restricted Zone UI logic
-            const checkGeofence = (latlng) => {
-                const polygon = geofence;
-                let inside = false;
-                const x = latlng[0], y = latlng[1];
-                for (let i = 0, j = geofenceCoords.length - 1; i < geofenceCoords.length; j = i++) {
-                    const xi = geofenceCoords[i][0], yi = geofenceCoords[i][1];
-                    const xj = geofenceCoords[j][0], yj = geofenceCoords[j][1];
-                    const intersect = ((yi > y) !== (yi > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                    // Leaflet has a cleaner way if we had a polygon object, but manual check works too.
-                }
-                // Simpler Leaflet internal way:
-                return polygon.getBounds().contains(latlng);
+            const updateCoordDisplay = (lat, lng) => {
+                const coordBox = document.getElementById('coords');
+                coordBox.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° W`;
             };
 
-            // 4. Markers & Sidebar
             const markers = {};
             const renderSidebar = () => {
                 const list = document.getElementById('asset-list');
                 list.innerHTML = '';
-                
-                // Static Assets
                 assets.forEach(a => {
                     const item = createAssetItem(a);
                     list.appendChild(item);
-                    markers[a.id] = L.marker([a.lat, a.lng], {
+                    markers[a.id] = L.marker(a.path[0], {
                         icon: L.divIcon({
                             className: 'custom-pin',
-                            html: `<div class="pin-inner"></div><div class="pin-label">${a.id}</div>`,
+                            html: `<div class="pin-inner" id="pin-${a.id}"></div><div class="pin-label">${a.id}</div>`,
                             iconSize: [20, 20], iconAnchor: [10, 10]
                         })
                     }).addTo(assetGroup);
+                    L.polyline(a.path, { color: 'var(--color-accent)', weight: 1, opacity: 0.15, dashArray: '4,4' }).addTo(historyGroup);
                 });
-
-                // History Asset (Tracker 6)
-                const t6Item = createAssetItem({
-                    id: 'AssetTracker6', status: 'Moving', loc: 'Runway Approach', color: 'var(--color-accent)'
-                }, true);
-                list.appendChild(t6Item);
-                
-                markers['AssetTracker6'] = L.marker(historyPath[0], {
-                    icon: L.divIcon({
-                        className: 'custom-pin',
-                        html: `<div class="pin-inner history-pin" id="pin-t6"></div><div class="pin-label">AssetTracker6</div>`,
-                        iconSize: [20, 20], iconAnchor: [10, 10]
-                    })
-                }).addTo(historyGroup);
+                document.getElementById(`sidebar-${selectedAssetId}`).classList.add('active');
             };
 
-            const createAssetItem = (a, isHistory = false) => {
+            const createAssetItem = (a) => {
                 const div = document.createElement('div');
                 div.className = 'asset-item';
                 div.id = `sidebar-${a.id}`;
                 div.innerHTML = `
-                    <div class="asset-header">
-                        <span class="asset-id">${a.id}</span>
-                        <div class="status-badge" style="color:${a.color}">
-                            <div class="status-dot" style="background:${a.color}"></div>
-                            ${a.status}
-                        </div>
+                    <div class="asset-header"><span class="asset-id">${a.id}</span>
+                        <div class="status-badge" id="badge-${a.id}" style="color:${a.color}"><div class="status-dot" id="dot-${a.id}" style="background:${a.color}"></div><span id="text-${a.id}">${a.status}</span></div>
                     </div>
-                    <div style="font-size:11px; color:var(--color-text-secondary)">Current: ${a.loc}</div>
-                    ${isHistory ? `<div class="notification-pill" id="notify-t6">
-                        <strong>GEO-FENCE BREACH</strong><br>Entered: 08:00:12 · Left: 08:14:45
-                    </div>` : ''}
+                    <div style="font-size:10px; color:var(--color-text-tertiary)">Current Fix: ${a.loc}</div>
+                    ${a.isBreachDemo ? `<div class="notification-pill" id="notify-${a.id}"><strong>GEOFENCE EXIT DETECTED</strong><br>Perimeter Crossed: 12:02:15 PM<br>Location: SE Sector Boundary</div>` : ''}
                 `;
                 div.onclick = () => {
-                    map.flyTo(markers[a.id].getLatLng(), 16);
+                    selectedAssetId = a.id;
+                    const marker = markers[a.id];
+                    const pos = marker.getLatLng();
+                    map.flyTo(pos, 15);
                     document.querySelectorAll('.asset-item').forEach(el => el.classList.remove('active'));
                     div.classList.add('active');
+                    updateCoordDisplay(pos.lat, pos.lng);
                 };
                 return div;
             };
 
-            // 5. Timeline Logic
-            const slider = document.getElementById('timeline');
-            const historyLine = L.polyline(historyPath, { color: 'var(--color-accent)', weight: 1, opacity: 0.3, dashArray: '5,5' }).addTo(historyGroup);
-
-            const updateTimeline = (val) => {
-                const progress = val / 100;
-                const totalPoints = historyPath.length - 1;
+            const interpolatePath = (path, progress) => {
+                const totalPoints = path.length - 1;
                 const pointIndex = Math.floor(progress * totalPoints);
                 const nextIndex = Math.min(pointIndex + 1, totalPoints);
                 const ratio = (progress * totalPoints) - pointIndex;
-
-                const lat = historyPath[pointIndex][0] + (historyPath[nextIndex][0] - historyPath[pointIndex][0]) * ratio;
-                const lng = historyPath[pointIndex][1] + (historyPath[nextIndex][1] - historyPath[pointIndex][1]) * ratio;
-                
-                const currentPos = [lat, lng];
-                markers['AssetTracker6'].setLatLng(currentPos);
-
-                // Update UI based on Geofence Breach
-                const isInside = geofence.getBounds().contains(currentPos);
-                const notify = document.getElementById('notify-t6');
-                const pin = document.getElementById('pin-t6');
-                
-                if (isInside) {
-                    notify.classList.add('visible');
-                    if (pin) pin.classList.add('breached');
-                } else {
-                    notify.classList.remove('visible');
-                    if (pin) pin.classList.remove('breached');
-                }
-
-                // Update Timestamp display
-                const hours = Math.floor(8 + (val / 10));
-                const mins = Math.floor((val % 10) * 6);
-                document.getElementById('timeline-time').textContent = `TIMESTAMP: ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:00`;
+                if (pointIndex >= totalPoints) return path[totalPoints];
+                const lat = path[pointIndex][0] + (path[nextIndex][0] - path[pointIndex][0]) * ratio;
+                const lng = path[pointIndex][1] + (path[nextIndex][1] - path[pointIndex][1]) * ratio;
+                return [lat, lng];
             };
 
-            slider.addEventListener('input', (e) => updateTimeline(e.target.value));
+            const slider = document.getElementById('timeline');
+            const updateTimeline = (val) => {
+                const progress = val / 100;
+                assets.forEach(a => {
+                    const currentPos = interpolatePath(a.path, progress);
+                    markers[a.id].setLatLng(currentPos);
+                    if (a.isBreachDemo) {
+                        const isInside = geofence.getBounds().contains(currentPos);
+                        const notify = document.getElementById(`notify-${a.id}`);
+                        const pin = document.getElementById(`pin-${a.id}`);
+                        const badgeText = document.getElementById(`text-${a.id}`);
+                        const badgeColor = document.getElementById(`badge-${a.id}`);
+                        const badgeDot = document.getElementById(`dot-${a.id}`);
+                        if (!isInside) {
+                            notify.classList.add('visible');
+                            if (pin) pin.classList.add('breached');
+                            badgeText.textContent = "GEOFENCE EXIT";
+                            badgeColor.style.color = 'var(--color-danger)';
+                            badgeDot.style.background = 'var(--color-danger)';
+                        } else {
+                            notify.classList.remove('visible');
+                            if (pin) pin.classList.remove('breached');
+                            badgeText.textContent = "INSIDE GEOFENCE";
+                            badgeColor.style.color = 'var(--color-success)';
+                            badgeDot.style.background = 'var(--color-success)';
+                        }
+                    }
+                    if (a.id === selectedAssetId) updateCoordDisplay(currentPos[0], currentPos[1]);
+                });
 
-            // 6. Layer Toggles
+                const startMins = 11 * 60 + 30;
+                const currentMinsTotal = startMins + parseInt(val * 0.6); 
+                const h = Math.floor(currentMinsTotal / 60);
+                const m = Math.floor(currentMinsTotal % 60);
+                const displayH = h > 12 ? h - 12 : h;
+                document.getElementById('timeline-time').textContent = `TIME: ${displayH}:${m.toString().padStart(2, '0')}:00 ${h >= 12 ? 'PM' : 'AM'}`;
+                
+                const statusLabel = document.getElementById('replay-status');
+                if (val == 100) {
+                    statusLabel.textContent = "REAL-TIME FIX";
+                    statusLabel.style.color = "var(--color-accent)";
+                } else {
+                    statusLabel.textContent = "REPLAY ENGINE ACTIVE";
+                    statusLabel.style.color = "var(--color-warning)";
+                }
+            };
+
+            const togglePlayback = () => {
+                isPlaying = !isPlaying;
+                const playIcon = document.getElementById('play-icon');
+                const pauseIcon = document.getElementById('pause-icon');
+                const btn = document.getElementById('play-pause-btn');
+
+                if (isPlaying) {
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                    btn.style.borderColor = 'var(--color-accent)';
+                    if (parseInt(slider.value) >= 100) slider.value = 0;
+                    playbackInterval = setInterval(() => {
+                        let val = parseInt(slider.value);
+                        val += 1;
+                        if (val > 100) val = 0; 
+                        slider.value = val;
+                        updateTimeline(val);
+                    }, 150); 
+                } else {
+                    playIcon.style.display = 'block';
+                    pauseIcon.style.display = 'none';
+                    btn.style.borderColor = 'var(--color-accent-border)';
+                    clearInterval(playbackInterval);
+                }
+            };
+
+            const overlay = document.getElementById('map-controls');
+            const toggleBtn = document.getElementById('overlay-toggle');
+            
+            toggleBtn.addEventListener('click', () => {
+                overlay.classList.toggle('expanded');
+            });
+
+            document.getElementById('play-pause-btn').addEventListener('click', togglePlayback);
+            slider.addEventListener('input', (e) => {
+                if (isPlaying) togglePlayback(); 
+                updateTimeline(e.target.value);
+            });
+
             document.getElementById('toggle-assets').addEventListener('change', e => e.target.checked ? map.addLayer(assetGroup) : map.removeLayer(assetGroup));
             document.getElementById('toggle-geofence').addEventListener('change', e => e.target.checked ? map.addLayer(geofence) : map.removeLayer(geofence));
             document.getElementById('toggle-history').addEventListener('change', e => e.target.checked ? map.addLayer(historyGroup) : map.removeLayer(historyGroup));
 
-            // Initial Render
             renderSidebar();
-            updateTimeline(0);
-
-            map.on('move', () => {
-                const c = map.getCenter();
-                document.getElementById('coords').textContent = `${c.lat.toFixed(4)}° N, ${c.lng.toFixed(4)}° W`;
-            });
+            updateTimeline(slider.value);
         });
     </script>
 </body>
