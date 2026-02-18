@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Location Monitor Component</title>
+    <title>Unified Asset Monitor</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -14,27 +14,33 @@
     <style>
         :root {
             --color-bg-primary: #050505;
-            --color-bg-secondary: #0a0a0a;
             --color-bg-card: rgba(255, 255, 255, 0.02);
             --color-border: rgba(255, 255, 255, 0.08);
-            --color-border-hover: rgba(255, 255, 255, 0.15);
             --color-text-primary: #ffffff;
             --color-text-secondary: rgba(255, 255, 255, 0.6);
             --color-text-tertiary: rgba(255, 255, 255, 0.4);
             --color-text-muted: rgba(255, 255, 255, 0.3);
-            --color-accent: #38bdf8;
-            --color-accent-dim: rgba(56, 189, 248, 0.1);
-            --color-accent-border: rgba(56, 189, 248, 0.25);
+            
+            /* Dynamic Theme Colors */
+            --theme-hue: 200; /* Default Blue */
+            --color-accent: hsl(var(--theme-hue), 90%, 60%); 
+            --color-accent-dim: hsl(var(--theme-hue), 90%, 60%, 0.1);
+            --color-accent-border: hsl(var(--theme-hue), 90%, 60%, 0.2);
+
             --color-danger: #ef4444;
             --color-success: #4ade80;
             --color-warning: #fbbf24;
             --font-primary: 'Inter', sans-serif;
             --font-display: 'Space Grotesk', sans-serif;
             --font-mono: 'Fira Code', monospace;
-            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --border-radius-lg: 12px;
             --border-radius-md: 8px;
             --border-radius-sm: 4px;
+        }
+
+        /* Mode-Specific Overrides via Body Class */
+        body.mode-yard {
+            --theme-hue: 260; /* Purple */
         }
 
         body {
@@ -43,6 +49,13 @@
             font-family: var(--font-primary);
             margin: 0; padding: 40px;
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            overflow: hidden; /* Prevent scroll on zoom */
+        }
+
+        /* Transitions */
+        .monitor-label, .status-badge, .pin-inner, .timeline-slider::-webkit-slider-thumb, 
+        .zone-badge, .asset-item.active, .coord-data {
+            transition: all 0.4s ease-in-out;
         }
 
         .component-wrapper { max-width: 1100px; width: 100%; }
@@ -54,568 +67,689 @@
             padding: 32px;
             display: flex; flex-direction: column; gap: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            transition: opacity 0.8s ease, transform 0.8s ease; /* Added for page transition */
+            min-height: 700px;
         }
+
+        /* Unified Header */
+        .header-group { display: flex; justify-content: space-between; align-items: flex-start; min-height: 80px; }
         
-        .monitor-card.fading-out {
-            opacity: 0;
-            transform: scale(1.02);
-        }
-
-        .header-group { display: flex; justify-content: space-between; align-items: flex-start; }
-
         .monitor-label {
-            display: inline-block; padding: 4px 10px; background: rgba(56, 189, 248, 0.06);
-            border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 4px; font-size: 10px;
-            font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-accent);
+            display: inline-block; padding: 4px 10px; 
+            background: var(--color-accent-dim);
+            border: 1px solid var(--color-accent-border); 
+            border-radius: 4px; font-size: 10px;
+            font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; 
+            color: var(--color-accent);
             margin-bottom: 8px;
         }
 
         .monitor-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin: 0 0 8px 0; }
-        .monitor-desc { font-size: 14px; color: var(--color-text-secondary); margin: 0; max-width: 800px; }
+        .monitor-desc { font-size: 14px; color: var(--color-text-secondary); margin: 0; max-width: 600px; height: 40px; /* Fixed height to prevent jump */ }
 
+        .action-btn {
+            font-size: 10px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;
+            padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 4px;
+            background: rgba(255,255,255,0.02);
+            opacity: 0; pointer-events: none; transform: translateX(10px);
+        }
+        .action-btn.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+        .action-btn:hover { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-dim); }
+
+        /* Interface Layout */
         .interface-container {
             display: grid; grid-template-columns: 300px 1fr; background: #0c0c14;
             border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--border-radius-md);
             overflow: hidden; width: 100%; aspect-ratio: 16 / 9;
         }
 
+        /* Sidebar */
         .sidebar {
             background: rgba(10, 10, 15, 0.98); border-right: 1px solid rgba(255, 255, 255, 0.06);
             display: flex; flex-direction: column; min-height: 0;
+            position: relative; z-index: 10;
         }
 
-        .sidebar-header { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+        .sidebar-header {
+            padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); height: 60px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Swappable Sidebar Content */
         .search-bar {
             background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--border-radius-sm); padding: 10px 12px; color: #fff; font-size: 11px;
-            width: 100%; box-sizing: border-box; outline: none;
+            width: 100%; box-sizing: border-box; outline: none; font-family: var(--font-primary);
+            display: none; /* Hidden by default */
         }
+        .zone-badge {
+            font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 1px;
+            color: #fff; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 4px;
+            width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            display: none; /* Hidden by default */
+        }
+        
+        /* Visibility Toggles */
+        body.mode-fleet .search-bar { display: block; }
+        body.mode-yard .zone-badge { display: block; }
 
         .asset-list { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
-        .asset-item { padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); cursor: pointer; transition: all 0.2s; }
+        .asset-item { 
+            padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); cursor: pointer; transition: all 0.2s; 
+            display: block; /* Default display */
+        }
         .asset-item:hover { background: rgba(255, 255, 255, 0.02); }
-        .asset-item.active { background: rgba(56, 189, 248, 0.05); }
+        .asset-item.active { background: var(--color-accent-dim); border-left: 2px solid var(--color-accent); }
+        .asset-item.hidden { display: none; } /* Used for filtering without destroying DOM */
 
         .asset-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
         .asset-id { font-family: var(--font-display); font-weight: 600; font-size: 12px; }
-        .status-badge { font-size: 7.5px; text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        .status-dot { width: 4px; height: 4px; border-radius: 50%; }
+        .status-badge { font-size: 7.5px; text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; color: var(--color-accent); }
+        .status-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 
-        .notification-pill {
-            margin-top: 8px; padding: 6px 10px; border-radius: 4px; font-size: 8.5px;
-            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25);
-            color: var(--color-danger); display: none; animation: slideIn 0.3s ease; font-family: var(--font-mono); line-height: 1.3;
-            cursor: zoom-in;
+        /* Analytics */
+        .sidebar-analytics {
+            padding: 20px 16px; background: rgba(0, 0, 0, 0.3); border-top: 1px solid rgba(255, 255, 255, 0.08);
+            min-height: 120px; box-sizing: border-box;
         }
-        .notification-pill:hover { background: rgba(239, 68, 68, 0.15); border-color: var(--color-danger); }
-        .notification-pill.visible { display: block; }
-
-        .sidebar-analytics { padding: 20px 16px; background: rgba(0, 0, 0, 0.3); border-top: 1px solid rgba(255, 255, 255, 0.08); }
         .analytics-title { font-size: 9px; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: block; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .stat-box { display: flex; flex-direction: column; gap: 4px; }
         .stat-label { font-size: 8px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
+        .stat-value { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-secondary); font-weight: 500; transition: color 0.3s; }
         .stat-box-full { grid-column: 1 / -1; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px; margin-top: 4px; }
+        .stat-value.alert { color: var(--color-danger); }
 
+        /* Map Area */
         .map-wrapper { position: relative; display: flex; flex-direction: column; min-height: 0; }
-        #map { flex: 1; background: #0f0f13; }
-
-        .map-overlay {
-            position: absolute; top: 16px; right: 16px; z-index: 1000;
-            background: rgba(10, 10, 12, 0.92); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px; backdrop-filter: blur(12px); width: 140px; transition: var(--transition-normal); overflow: hidden; max-height: 34px; 
-        }
-        .map-overlay.expanded { max-height: 160px; }
-        .overlay-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; cursor: pointer; }
-        .overlay-header:hover { background: rgba(255, 255, 255, 0.03); }
-        .overlay-title { font-size: 9px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        .expand-icon { width: 12px; height: 12px; fill: var(--color-text-muted); transition: var(--transition-normal); }
-        .map-overlay.expanded .expand-icon { transform: rotate(180deg); fill: var(--color-accent); }
-        .overlay-content { padding: 0 12px 12px 12px; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
-        .map-overlay.expanded .overlay-content { opacity: 1; pointer-events: auto; }
-        .layer-toggle { display: flex; align-items: center; gap: 10px; font-size: 10px; color: var(--color-text-secondary); margin-bottom: 8px; cursor: pointer; }
-        .layer-toggle input { accent-color: var(--color-accent); }
+        .map-element { flex: 1; background: #0f0f13; }
 
         .coord-box {
             position: absolute; bottom: 70px; left: 16px; z-index: 1000; background: rgba(0,0,0,0.85);
-            padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); border: 1px solid rgba(255,255,255,0.1);
             pointer-events: none; backdrop-filter: blur(8px); min-width: 140px;
         }
-        #coords { font-size: 8.5px; color: var(--color-accent); letter-spacing: 0.5px; }
-        #mode-label { font-size: 7px; color: var(--color-text-tertiary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .speed-label { color: var(--color-warning); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 6px; padding-top: 6px; font-size: 8px; letter-spacing: 1px; font-weight: 500; }
+        .mode-label { font-size: 7px; color: var(--color-text-tertiary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .coord-data { font-size: 8.5px; color: var(--color-accent); letter-spacing: 0.5px; }
+        .sub-label { color: var(--color-text-secondary); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 6px; padding-top: 6px; font-size: 8px; letter-spacing: 1px; font-weight: 500; }
+        .sub-label.alert { color: var(--color-danger); }
+        .sub-label.success { color: var(--color-success); }
 
-        /* Unified Tightened Timeline */
-        .timeline-container { 
-            background: rgba(10, 10, 15, 0.98); 
-            border-top: 1px solid rgba(255, 255, 255, 0.08); 
-            padding: 12px 20px; 
-            z-index: 1001; 
+        /* Timeline */
+        .timeline-container {
+            background: rgba(10, 10, 15, 0.98); border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 20px; z-index: 1001; position: relative;
         }
-        
-        .timeline-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            font-size: 9px; 
-            font-family: var(--font-mono); 
-            color: var(--color-text-muted); 
-            margin-bottom: 6px; 
+        .timeline-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 9px; font-family: var(--font-mono); color: var(--color-text-muted); margin-bottom: 6px;
         }
-
-        .timeline-main-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .timeline-main-row { display: flex; align-items: center; gap: 12px; position: relative; }
         .play-btn {
-            background: none; border: none; color: var(--color-accent);
-            width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: all 0.2s; padding: 0;
+            background: none; border: none; color: var(--color-accent); width: 16px; height: 16px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 5;
         }
         .play-btn:hover { color: #fff; transform: scale(1.1); }
-        .play-btn svg { width: 14px; height: 14px; fill: currentColor; }
-
-        .timeline-track-wrapper { 
-            position: relative; 
-            flex: 1;
-            height: 16px; 
-            display: flex;
-            align-items: center;
-        }
-        
-        .critical-window-highlight { 
-            position: absolute; height: 4px; background: rgba(239, 68, 68, 0.4); 
-            top: 50%; transform: translateY(-50%); border-radius: 2px; z-index: 1; display: none; cursor: pointer; 
-        }
-        
         .timeline-slider {
             -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.1);
-            border-radius: 2px; outline: none; position: relative; z-index: 2; cursor: pointer;
+            border-radius: 2px; outline: none; position: relative; z-index: 4; cursor: pointer; flex: 1;
+        }
+        .timeline-slider.zoomed {
+            background: rgba(251, 191, 36, 0.2); /* Warning/Amber bg */
+        }
+        .timeline-slider.zoomed::-webkit-slider-thumb {
+            background: var(--color-warning);
+            box-shadow: 0 0 10px var(--color-warning);
         }
         .timeline-slider::-webkit-slider-thumb {
             -webkit-appearance: none; width: 12px; height: 12px; background: var(--color-accent);
-            border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); cursor: pointer;
+            border-radius: 50%; box-shadow: 0 0 10px var(--color-accent); cursor: pointer; transition: all 0.3s;
+        }
+        
+        /* Timeline Alert Bar */
+        .timeline-alert-bar {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            height: 4px;
+            background: var(--color-danger);
+            box-shadow: 0 0 8px var(--color-danger);
+            z-index: 3;
+            pointer-events: none;
+            /* Positioned via JS logic (left: 77%, width: 23%) */
+            left: 77%; width: 23%;
+            border-radius: 0 2px 2px 0;
+            opacity: 0.6;
+            display: none; /* Hidden by default, shown via JS on specific asset */
+        }
+        .timeline-alert-bar.visible { display: block; }
+        /* When zoomed, the alert bar needs to shift visual position because the scale changed */
+        .timeline-slider.zoomed ~ .timeline-alert-bar.visible {
+            left: 50%; width: 50%; /* Approximating the zoom shift */
         }
 
-        .custom-pin { background: transparent; cursor: pointer !important; }
-        .pin-inner { width: 10px; height: 10px; background: var(--color-accent); border: 1.5px solid #fff; border-radius: 50%; box-shadow: 0 0 8px var(--color-accent); transition: background 0.3s ease; }
-        .pin-inner.breached { background: var(--color-danger); box-shadow: 0 0 12px var(--color-danger); animation: pulse-danger 1s infinite; }
-        .origin-marker {
-            width: 14px; height: 14px; border: 1.5px solid var(--color-success); border-radius: 50%; background: rgba(74, 222, 128, 0.2);
-            display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: var(--color-success); font-family: var(--font-mono);
-        }
+        /* Markers */
+        .custom-pin { background: transparent; transition: opacity 0.3s; }
+        .pin-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 0 6px currentColor; }
+        .pin-inner { width: 10px; height: 10px; background: var(--color-accent); border: 1.5px solid #fff; border-radius: 50%; box-shadow: 0 0 8px var(--color-accent); }
+        .pin-inner.breached { background: var(--color-danger); box-shadow: 0 0 12px var(--color-danger); animation: pulse 1s infinite; }
         .pin-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 2px 6px; border-radius: 2px; font-size: 8.5px; color: #fff; font-family: var(--font-mono); white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); }
-
-        /* Leaflet Tooltip overrides for Dark Mode */
-        .leaflet-tooltip {
-            background: rgba(10, 10, 12, 0.95) !important;
-            border: 1px solid var(--color-border) !important;
-            color: #fff !important;
-            font-family: var(--font-primary) !important;
-            font-size: 10px !important;
-            border-radius: 4px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
-            padding: 4px 8px !important;
+        
+        /* Infrastructure Marker */
+        .infra-marker {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6;
         }
-        .leaflet-tooltip-top:before { border-top-color: rgba(10, 10, 12, 0.95) !important; }
+        .infra-icon {
+            width: 16px; height: 16px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(255,255,255,0.5);
+        }
+        .infra-label {
+            font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.5px;
+        }
 
-        @keyframes pulse-danger { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+        .notification-pill {
+            margin-top: 8px; padding: 6px 10px; border-radius: 4px; font-size: 8.5px;
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25);
+            color: var(--color-danger); display: none; animation: slideIn 0.3s ease; font-family: var(--font-mono);
+            cursor: pointer;
+        }
+        .notification-pill:hover { background: rgba(239, 68, 68, 0.2); }
+        .notification-pill.visible { display: block; }
+        
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @media (max-width: 768px) { .interface-container { grid-template-columns: 1fr; grid-template-rows: auto 1fr; aspect-ratio: auto; min-height: 800px; } .sidebar { max-height: 450px; } }
+        /* Leaflet Tweaks */
+        .leaflet-tooltip {
+            background: rgba(10, 10, 12, 0.95) !important; border: 1px solid var(--color-border) !important;
+            color: #fff !important; font-family: var(--font-primary) !important; font-size: 10px !important;
+            border-radius: 4px !important; padding: 4px 8px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+        }
+        .leaflet-tooltip-top:before { border-top-color: rgba(10, 10, 12, 0.95) !important; }
+        
+        @media (max-width: 768px) { .interface-container { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 800px; } .sidebar { max-height: 450px; } }
     </style>
 </head>
-<body>
+<body class="mode-fleet"> <!-- Default Mode Class -->
 
     <div class="component-wrapper">
         <div class="monitor-card">
+            
+            <!-- Unified Header: Text updated via JS, layout is static -->
             <div class="header-group">
                 <div>
-                    <span class="monitor-label">Forensic Analysis</span>
-                    <h3 class="monitor-title">Telemetry & Incident Reconstruction</h3>
-                    <p class="monitor-desc">
-                        Full-fleet historical oversight (04:30 – 12:30). Monitor MTRAC flight vectors and triggered geofence incidents.
-                    </p>
+                    <span id="ui-label" class="monitor-label">Forensic Analysis</span>
+                    <h3 id="ui-title" class="monitor-title">Telemetry & Incident Reconstruction</h3>
+                    <p id="ui-desc" class="monitor-desc">Full-fleet historical oversight. Monitor MTRAC flight vectors and triggered geofence incidents.</p>
+                </div>
+                <div id="btn-back" class="action-btn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Return to Fleet View
                 </div>
             </div>
 
+            <!-- Unified Interface -->
             <div class="interface-container">
                 <div class="sidebar">
-                    <div class="sidebar-header">
+                    <div class="sidebar-header" id="sidebar-header-container">
+                        <!-- Static elements toggled by CSS -->
                         <input type="text" class="search-bar" placeholder="Search operational log...">
+                        <div class="zone-badge">ZONE: SE-4 CONTROL</div>
                     </div>
-                    <div class="asset-list" id="asset-list"></div>
+                    
+                    <div class="asset-list" id="asset-list">
+                        <!-- Items injected via JS once, then toggled -->
+                    </div>
+                    
+                    <!-- Fixed Grid Analytics -->
                     <div class="sidebar-analytics">
-                        <span class="analytics-title">Log Analytics</span>
-                        <div class="stat-grid" id="analytics-panel">
-                            <div class="stat-box"><span class="stat-label">Distance</span><span class="stat-value" id="stat-dist">--.-- MI</span></div>
-                            <div class="stat-box"><span class="stat-label">Dwell Events</span><span class="stat-value" id="stat-stops">--</span></div>
-                            <div class="stat-box stat-box-full"><span class="stat-label">Origin</span><span class="stat-value" id="stat-origin">AWAITING SELECTION</span></div>
+                        <span id="stats-title" class="analytics-title">Log Analytics</span>
+                        <div class="stat-grid" id="stats-grid">
+                            <!-- Slot 1 -->
+                            <div class="stat-box">
+                                <span id="slot-1-label" class="stat-label">Distance</span>
+                                <span id="slot-1-value" class="stat-value">--.-- MI</span>
+                            </div>
+                            <!-- Slot 2 -->
+                            <div class="stat-box">
+                                <span id="slot-2-label" class="stat-label">Dwell Events</span>
+                                <span id="slot-2-value" class="stat-value">--</span>
+                            </div>
+                            <!-- Slot 3 (Full width) -->
+                            <div class="stat-box stat-box-full">
+                                <span id="slot-3-label" class="stat-label">Origin</span>
+                                <span id="slot-3-value" class="stat-value">AWAITING SELECTION</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="map-wrapper">
-                    <div id="map"></div>
-                    <div class="map-overlay" id="map-controls">
-                        <div class="overlay-header" id="overlay-toggle"><span class="overlay-title">Analysis Mode</span><svg class="expand-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg></div>
-                        <div class="overlay-content">
-                            <label class="layer-toggle"><input type="checkbox" checked id="toggle-assets"> Assets</label>
-                            <label class="layer-toggle"><input type="checkbox" checked id="toggle-geofence"> Geofences</label>
-                            <label class="layer-toggle"><input type="checkbox" checked id="toggle-history"> Path Vectors</label>
-                        </div>
-                    </div>
+                    <div id="map" class="map-element" style="width: 100%; height: 100%;"></div>
+                    
+                    <!-- Unified HUD -->
                     <div class="coord-box">
-                        <div id="mode-label">FLEET VIEW</div>
-                        <div id="coords">--.----° N, --.----° W</div>
-                        <div class="speed-label" id="speed-meter">VELOCITY: --.- MPH</div>
+                        <div id="hud-mode" class="mode-label">FLEET VIEW</div>
+                        <div id="hud-coords" class="coord-data">--.----° N, --.----° W</div>
+                        <div id="hud-sub" class="sub-label">VELOCITY: --.- MPH</div>
                     </div>
+
+                    <!-- Unified Timeline -->
                     <div class="timeline-container">
                         <div class="timeline-header">
-                            <span id="timeline-time">LOG TIME: 12:30:00 PM</span>
-                            <span id="replay-status" style="color:var(--color-accent)">LIVE DATA LINK</span>
+                            <span id="time-log">LOG TIME: 12:30:00 PM</span>
+                            <span id="time-status" style="color:var(--color-accent)">LIVE DATA LINK</span>
                         </div>
                         <div class="timeline-main-row">
-                            <button class="play-btn" id="play-pause-btn" title="Forensic Playback">
-                                <svg id="play-icon" viewBox="0 0 24 24" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
-                                <svg id="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            <button class="play-btn" id="btn-play">
+                                <svg id="icon-play" viewBox="0 0 24 24" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+                                <svg id="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                             </button>
-                            <div class="timeline-track-wrapper">
-                                <div class="critical-window-highlight" id="incident-bar" title="Click to zoom to incident"></div>
-                                <input type="range" class="timeline-slider" id="timeline" min="0" max="1000" value="1000">
-                            </div>
+                            <div class="timeline-alert-bar" id="timeline-alert-bar"></div>
+                            <input type="range" class="timeline-slider" id="timeline" min="0" max="1000" value="1000">
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const map = L.map('map', { center: [32.894, -97.035], zoom: 13, zoomControl: false, attributionControl: false });
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-
-            let selectedAssetId = null;
-            let isPlaying = true; // Auto-play on load
-            let isIncidentMode = false;
-            let animationFrameId = null;
-            let playbackInterval = null; // Defined here to prevent ReferenceError
-            let liveLoopStart = Date.now();
-
-            const slider = document.getElementById('timeline');
-
-            const getDistance = (p1, p2) => {
-                const R = 3958.8;
-                const dLat = (p2[0] - p1[0]) * Math.PI / 180;
-                const dLon = (p2[1] - p1[1]) * Math.PI / 180;
-                const a = Math.sin(dLat / 2) ** 2 + Math.cos(p1[0] * Math.PI / 180) * Math.cos(p2[0] * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            };
-
-            const assets = [
-                { 
-                    id: 'MTRAC-15', status: 'Online', loc: 'Region: North Texas', color: 'var(--color-success)', 
-                    originName: 'LAX Terminal 4 (04:30 AM)', loopDuration: 75000,
-                    path: [[33.94, -118.41], [33.43, -112.01], [33.43, -112.01], [30.19, -97.66], [30.19, -97.66], [32.89, -97.03]],
-                    liveLoop: [[32.89, -97.03], [32.892, -97.033], [32.894, -97.035], [32.896, -97.032], [32.893, -97.029], [32.89, -97.03]]
-                },
-                { 
-                    id: 'MTRAC-12', status: 'Online', loc: 'Approach: DFW', color: 'var(--color-success)', 
-                    originName: 'Houston IAH (04:30 AM)', loopDuration: 68000,
-                    path: [[29.99, -95.34], [30.50, -95.80], [31.20, -96.30], [31.90, -96.70], [32.50, -96.90], [32.90, -97.04]],
-                    liveLoop: [[32.90, -97.04], [32.903, -97.042], [32.906, -97.045], [32.904, -97.048], [32.901, -97.046], [32.90, -97.04]]
-                },
-                { 
-                    id: 'MTRAC Lite-8', status: 'Online', loc: 'Terminal D', color: 'var(--color-success)', 
-                    originName: 'Gate D14', loopDuration: 90000,
-                    path: [[32.902, -97.045], [32.902, -97.045], [32.903, -97.045], [32.902, -97.044], [32.902, -97.045]],
-                    liveLoop: [[32.902, -97.045], [32.9022, -97.0452], [32.9024, -97.0448], [32.9021, -97.0447], [32.902, -97.045]]
-                },
-                { 
-                    id: 'MTRAC-6', status: 'Online', loc: 'Perimeter Ops', color: 'var(--color-success)', isBreachDemo: true, 
-                    originName: 'Hangar Ops South', loopDuration: 55000,
-                    path: [[32.893, -97.03], [32.893, -97.03], [32.895, -97.028], [32.891, -97.027], [32.893, -97.031], [32.893, -97.031], [32.89, -97.028], [32.889, -97.025], [32.887, -97.022], [32.883, -97.015]],
-                    liveLoop: [[32.883, -97.015], [32.880, -97.010], [32.875, -97.005], [32.880, -97.010], [32.883, -97.015]]
-                },
-                { 
-                    id: 'MTRAC-5', status: 'Online', loc: 'Hangar 4', color: 'var(--color-success)', 
-                    originName: 'Maintenance Bay', loopDuration: 62000,
-                    path: [[32.92, -97.045], [32.915, -97.043], [32.912, -97.041], [32.91, -97.04]],
-                    liveLoop: [[32.91, -97.04], [32.912, -97.042], [32.91, -97.04]]
-                },
-                { 
-                    id: 'MTRAC Micro-3', status: 'Idle', loc: 'Gate A12', color: 'var(--color-warning)', 
-                    originName: 'Gate A12 (Fixed)', loopDuration: 120000,
-                    path: [[32.908, -97.039], [32.908, -97.039]],
-                    liveLoop: [[32.908, -97.039], [32.90805, -97.03905], [32.908, -97.039]] // Micro jitter
-                },
-                { 
-                    id: 'MTRAC-1', status: 'Online', loc: 'Cargo Bay 3', color: 'var(--color-success)', 
-                    originName: 'Logistics Center', loopDuration: 45000,
-                    path: [[32.87, -97.04], [32.88, -97.04], [32.88, -97.05]],
-                    liveLoop: [[32.88, -97.05], [32.882, -97.052], [32.88, -97.05]]
-                }
+            // --- DATA ---
+            const allAssets = [
+                { id: 'MTRAC-15', status: 'Online', loc: 'Region: North Texas', originName: 'LAX Terminal 4 (04:30 AM)', loopDuration: 75000, path: [[33.94, -118.41], [33.43, -112.01], [33.43, -112.01], [30.19, -97.66], [30.19, -97.66], [32.89, -97.03]], liveLoop: [[32.89, -97.03], [32.892, -97.033], [32.894, -97.035], [32.896, -97.032], [32.893, -97.029], [32.89, -97.03]] },
+                { id: 'MTRAC-12', status: 'Online', loc: 'Approach: DFW', originName: 'Houston IAH (04:30 AM)', loopDuration: 68000, path: [[29.99, -95.34], [30.50, -95.80], [31.20, -96.30], [31.90, -96.70], [32.50, -96.90], [32.90, -97.04]], liveLoop: [[32.90, -97.04], [32.903, -97.042], [32.906, -97.045], [32.904, -97.048], [32.901, -97.046], [32.90, -97.04]] },
+                { id: 'MTRAC Lite-8', status: 'Online', loc: 'Terminal D', originName: 'Gate D14', loopDuration: 90000, path: [[32.902, -97.045], [32.902, -97.045], [32.903, -97.045], [32.902, -97.044], [32.902, -97.045]], liveLoop: [[32.902, -97.045], [32.9022, -97.0452], [32.9024, -97.0448], [32.9021, -97.0447], [32.902, -97.045]] },
+                { id: 'MTRAC-6', status: 'Online', loc: 'Perimeter Ops', isBreachDemo: true, originName: 'Hangar Ops South', loopDuration: 55000, path: [[32.893, -97.03], [32.893, -97.03], [32.895, -97.028], [32.891, -97.027], [32.893, -97.031], [32.893, -97.031], [32.89, -97.028], [32.889, -97.025], [32.887, -97.022], [32.883, -97.015]], liveLoop: [[32.883, -97.015], [32.880, -97.010], [32.875, -97.005], [32.880, -97.010], [32.883, -97.015]] },
+                { id: 'MTRAC-5', status: 'Online', loc: 'Hangar 4', originName: 'Maintenance Bay', loopDuration: 62000, path: [[32.92, -97.045], [32.915, -97.043], [32.912, -97.041], [32.91, -97.04]], liveLoop: [[32.91, -97.04], [32.912, -97.042], [32.91, -97.04]] },
+                { id: 'MTRAC Micro-3', status: 'Idle', loc: 'Gate A12', originName: 'Gate A12 (Fixed)', loopDuration: 120000, path: [[32.908, -97.039], [32.908, -97.039]], liveLoop: [[32.908, -97.039], [32.90805, -97.03905], [32.908, -97.039]] },
+                { id: 'MTRAC-1', status: 'Online', loc: 'Cargo Bay 3', originName: 'Logistics Center', loopDuration: 45000, path: [[32.87, -97.04], [32.88, -97.04], [32.88, -97.05]], liveLoop: [[32.88, -97.05], [32.882, -97.052], [32.88, -97.05]] }
             ];
 
-            assets.forEach(a => {
-                let dist = 0, stops = 0;
-                for(let i=0; i < a.path.length-1; i++){
-                    const d = getDistance(a.path[i], a.path[i+1]);
-                    dist += d; if (d < 0.0001) stops++;
-                }
-                a.calculatedDist = dist.toFixed(2); a.calculatedStops = stops; a.num = a.id.match(/\d+/)[0];
-            });
+            // Static Infrastructure Nodes for Yard Mode
+            const infraNodes = [
+                { loc: [32.8935, -97.031], label: "FUEL DEPOT" },
+                { loc: [32.8955, -97.028], label: "SERVER A" },
+                { loc: [32.8910, -97.027], label: "GATE N-1" },
+                { loc: [32.8940, -97.033], label: "MAINTENANCE" },
+                { loc: [32.8905, -97.030], label: "CARGO LINK" },
+            ];
 
-            const geofenceCoords = [[32.896, -97.034], [32.896, -97.026], [32.89, -97.026], [32.89, -97.034]];
-            const assetGroup = L.layerGroup().addTo(map), historyGroup = L.layerGroup().addTo(map), originGroup = L.layerGroup().addTo(map);
-            const geofence = L.polygon(geofenceCoords, { color: 'var(--color-success)', fillColor: 'var(--color-success)', fillOpacity: 0.08, weight: 2, dashArray: '8, 8' }).addTo(map);
+            // Filter sets
+            const yardAssetIds = ['MTRAC-6', 'MTRAC-5', 'MTRAC Lite-8', 'MTRAC Micro-3'];
             
-            // Add interaction to Geofence
-            geofence.on('mouseover', () => {
-                map.getContainer().style.cursor = 'pointer';
-                geofence.setStyle({ fillOpacity: 0.2 });
-            });
-            geofence.on('mouseout', () => {
-                map.getContainer().style.cursor = '';
-                geofence.setStyle({ fillOpacity: 0.08 });
-            });
-            geofence.on('click', () => {
-                map.flyTo(geofence.getBounds().getCenter(), 16, { duration: 1 });
-                // Visual transition effect
-                const card = document.querySelector('.monitor-card');
-                card.style.opacity = '0';
-                card.style.transform = 'scale(1.02)';
-                
-                setTimeout(() => {
-                    window.location.href = 'yard_depot_monitor.html';
-                }, 800);
-            });
-            geofence.bindTooltip("Hangar Ops South - Enter Facility View", { sticky: true, direction: 'top', className: 'geofence-tooltip' });
+            // --- STATE ---
+            let appMode = 'fleet';
+            let isPlaying = true;
+            let loopStart = Date.now();
+            let activeLiveSession = false; // NEW: State to track live session continuity
+            let selectedAssetId = null;
+            let timelineZoom = false; // NEW: Zoom state for timeline
+            let markers = {}; 
+            let infraMarkers = []; 
+            let trails = {}; 
 
-            const markers = {}, originMarkers = {};
+            // --- MAP INIT ---
+            const map = L.map('map', { center: [32.894, -97.035], zoom: 13, zoomControl: false, attributionControl: false });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+            
+            // Layers
+            const historyLayer = L.layerGroup().addTo(map);
+            const assetLayer = L.layerGroup().addTo(map);
+            const infraLayer = L.layerGroup().addTo(map);
+            const subZoneLayer = L.layerGroup().addTo(map); 
+            
+            // Geofences
+            const mainGeofencePoints = [[32.896, -97.034], [32.896, -97.026], [32.89, -97.026], [32.89, -97.034]];
+            const mainGeofence = L.polygon(mainGeofencePoints,
+                { color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.08, weight: 2, dashArray: '8, 8' }).addTo(map);
+            
+            const yardGeofence = L.polygon([[32.896, -97.034], [32.896, -97.026], [32.890, -97.026], [32.890, -97.034]],
+                { color: '#a78bfa', weight: 2, fillColor: '#a78bfa', fillOpacity: 0.1, dashArray: '5, 10' });
 
-            const selectAsset = (assetId, flyToAsset = true) => {
-                const asset = assets.find(a => a.id === assetId);
-                if (!asset) return;
-                selectedAssetId = assetId; isIncidentMode = false;
-                document.querySelectorAll('.asset-item').forEach(el => el.classList.remove('active'));
-                const sidebarItem = document.getElementById(`sidebar-${assetId}`);
-                if (sidebarItem) sidebarItem.classList.add('active');
+            // Sub-Geofences
+            const subZones = [
+                L.polygon([[32.8945, -97.034], [32.8945, -97.030], [32.8930, -97.030], [32.8930, -97.034]], 
+                    { color: '#38bdf8', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' }), 
+                L.polygon([[32.8960, -97.029], [32.8960, -97.027], [32.8950, -97.027], [32.8950, -97.029]], 
+                    { color: '#fbbf24', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' }), 
+                L.polygon([[32.8915, -97.031], [32.8915, -97.026], [32.8900, -97.026], [32.8900, -97.031]], 
+                    { color: '#ef4444', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' })
+            ];
 
-                if (flyToAsset) {
-                    const pos = markers[assetId].getLatLng();
-                    const currentVal = parseInt(slider.value);
-                    const zoom = (assetId.includes('15') || assetId.includes('12')) && currentVal < 900 ? 5 : 13;
-                    map.flyTo(pos, zoom);
+            mainGeofence.bindTooltip("Hangar Ops South - Enter Facility View", { sticky: true, direction: 'top' });
+            
+            // --- HELPER: Point in Polygon (Ray Casting) ---
+            function isPointInPoly(pt, poly) {
+                var x = pt[0], y = pt[1];
+                var inside = false;
+                for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+                    var xi = poly[i][0], yi = poly[i][1];
+                    var xj = poly[j][0], yj = poly[j][1];
+                    var intersect = ((yi > y) != (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
                 }
+                return inside;
+            }
 
-                originGroup.clearLayers();
-                if (originMarkers[assetId]) originMarkers[assetId].addTo(originGroup);
-
-                const incidentBar = document.getElementById('incident-bar');
-                if (asset.isBreachDemo) {
-                    incidentBar.style.display = 'block';
-                    incidentBar.style.left = '69.2%'; incidentBar.style.width = '30.8%';
-                } else {
-                    incidentBar.style.display = 'none';
-                }
-                updateTimeline(slider.value);
-            };
-
-            const renderSidebar = () => {
-                const list = document.getElementById('asset-list');
-                list.innerHTML = '';
-                assets.forEach(a => {
-                    const item = createAssetItem(a);
-                    list.appendChild(item);
-                    markers[a.id] = L.marker(a.path[0], { 
-                        icon: L.divIcon({ className: 'custom-pin', html: `<div class="pin-inner" id="pin-${a.id}"></div><div class="pin-label">${a.id}</div>`, iconSize: [20, 20], iconAnchor: [10, 10] }) 
-                    }).addTo(assetGroup);
-                    markers[a.id].on('click', () => selectAsset(a.id));
-                    originMarkers[a.id] = L.marker(a.path[0], { 
-                        icon: L.divIcon({ className: 'custom-pin', html: `<div class="origin-marker">${a.num}</div>`, iconSize: [14, 14], iconAnchor: [7, 7] }) 
-                    });
-                    L.polyline(a.path, { color: 'var(--color-accent)', weight: 1, opacity: 0.1, dashArray: '4,4' }).addTo(historyGroup);
-                });
-            };
-
-            const triggerIncidentMode = () => {
-                if (selectedAssetId !== 'MTRAC-6') selectAsset('MTRAC-6', false);
-                isIncidentMode = true;
-                slider.value = 692;
-                map.flyTo([32.893, -97.028], 15, { duration: 1.5 });
-                updateTimeline(692);
-            };
-
-            const createAssetItem = (a) => {
-                const div = document.createElement('div');
-                div.className = 'asset-item';
-                div.id = `sidebar-${a.id}`;
-                div.innerHTML = `<div class="asset-header"><span class="asset-id">${a.id}</span><div class="status-badge" id="badge-${a.id}" style="color:${a.color}"><div class="status-dot" id="dot-${a.id}" style="background:${a.color}"></div><span id="text-${a.id}">${a.status}</span></div></div><div style="font-size:9px; color:var(--color-text-tertiary)">LOG: ${a.loc}</div>${a.isBreachDemo ? `<div class="notification-pill" id="notify-${a.id}"><strong>GEOFENCE EXIT DETECTED</strong><br>Analyze Breach Window (10:02 – 12:30)</div>` : ''}`;
-                div.onclick = (e) => {
-                    if (e.target.closest('.notification-pill')) { triggerIncidentMode(); return; }
+            // --- INIT DOM ---
+            const listContainer = document.getElementById('asset-list');
+            allAssets.forEach(a => {
+                const item = document.createElement('div');
+                item.className = 'asset-item';
+                item.dataset.id = a.id; 
+                item.innerHTML = `
+                    <div class="asset-header">
+                        <span class="asset-id">${a.id}</span>
+                        <div class="status-badge">
+                            <div class="status-dot"></div><span>${a.status}</span>
+                        </div>
+                    </div>
+                    <div style="font-size:9px; color:var(--color-text-tertiary)">${a.loc}</div>
+                    ${a.isBreachDemo ? `<div class="notification-pill" id="notify-${a.id}"><strong>GEOFENCE EXIT</strong><br>12:02 PM</div>` : ''}
+                `;
+                item.onclick = (e) => {
+                    if(e.target.closest('.notification-pill')) {
+                        // --- ZOOM & ALERT LOGIC ---
+                        isPlaying = false;
+                        timelineZoom = true; 
+                        document.getElementById('timeline').classList.add('zoomed');
+                        
+                        // Select MTRAC-6 explicitly
+                        selectAsset(a.id);
+                        
+                        // Set slider to middle (50%) to represent the breach moment in zoom mode
+                        document.getElementById('timeline').value = 500; 
+                        updateSystem(500); 
+                        return;
+                    }
+                    // If clicking normal list item, reset zoom
+                    timelineZoom = false;
+                    document.getElementById('timeline').classList.remove('zoomed');
                     selectAsset(a.id);
                 };
-                return div;
+                listContainer.appendChild(item);
+            });
+
+            // Create Infrastructure Markers
+            infraNodes.forEach(node => {
+                const iconHTML = `
+                    <div class="infra-marker">
+                        <div class="infra-icon">+</div>
+                        <div class="infra-label">${node.label}</div>
+                    </div>
+                `;
+                const m = L.marker(node.loc, {
+                    icon: L.divIcon({ className: 'custom-pin', html: iconHTML, iconSize: [40, 40] })
+                });
+                infraMarkers.push(m);
+            });
+
+            const selectAsset = (id) => {
+                selectedAssetId = id;
+                document.querySelectorAll('.asset-item').forEach(el => el.classList.remove('active'));
+                const target = document.querySelector(`.asset-item[data-id="${id}"]`);
+                if(target) target.classList.add('active');
+
+                // Alert Bar Visiblity
+                const alertBar = document.getElementById('timeline-alert-bar');
+                const asset = allAssets.find(a => a.id === id);
+                if (asset && asset.isBreachDemo) {
+                    alertBar.classList.add('visible');
+                } else {
+                    alertBar.classList.remove('visible');
+                }
+                
+                // If we switched assets manually, make sure system updates
+                updateSystem(document.getElementById('timeline').value);
+            }
+
+            // --- CONTROLLERS ---
+            const setMode = (mode) => {
+                appMode = mode;
+                document.body.className = mode === 'yard' ? 'mode-yard' : 'mode-fleet';
+
+                // Reset zoom when changing main modes
+                timelineZoom = false;
+                document.getElementById('timeline').classList.remove('zoomed');
+
+                if (mode === 'yard') {
+                    document.getElementById('ui-label').textContent = "Facility Monitor";
+                    document.getElementById('ui-title').textContent = "Hangar Ops South: Depot SE-4";
+                    document.getElementById('ui-desc').textContent = "Real-time facility boundaries, asset allocation tracking, and perimeter security logs.";
+                    document.getElementById('btn-back').classList.add('visible');
+                    
+                    document.getElementById('stats-title').textContent = "Sector Status";
+                    document.getElementById('slot-1-label').textContent = "Active Devices";
+                    document.getElementById('slot-1-value').textContent = "12";
+                    document.getElementById('slot-2-label').textContent = "Alerts";
+                    document.getElementById('slot-2-value').textContent = "0";
+                    document.getElementById('slot-2-value').className = "stat-value"; 
+                    document.getElementById('slot-3-label').textContent = "Monitored Assets";
+                    document.getElementById('slot-3-value').textContent = "4";
+
+                    document.getElementById('hud-mode').textContent = "PERIMETER STATUS";
+                    document.getElementById('hud-sub').textContent = "SECURE";
+                    document.getElementById('hud-sub').className = "sub-label success";
+
+                    map.flyTo([32.8930, -97.0300], 16, { duration: 1.5 });
+                    mainGeofence.removeFrom(map);
+                    yardGeofence.addTo(map);
+                    
+                    infraMarkers.forEach(m => m.addTo(infraLayer));
+                    subZones.forEach(z => z.addTo(subZoneLayer));
+
+                } else {
+                    document.getElementById('ui-label').textContent = "Forensic Analysis";
+                    document.getElementById('ui-title').textContent = "Telemetry & Incident Reconstruction";
+                    document.getElementById('ui-desc').textContent = "Full-fleet historical oversight. Monitor MTRAC flight vectors and triggered geofence incidents.";
+                    document.getElementById('btn-back').classList.remove('visible');
+
+                    document.getElementById('stats-title').textContent = "Log Analytics";
+                    document.getElementById('slot-1-label').textContent = "Distance";
+                    document.getElementById('slot-1-value').textContent = "--.-- MI";
+                    document.getElementById('slot-2-label').textContent = "Dwell Events";
+                    document.getElementById('slot-2-value').textContent = "--";
+                    document.getElementById('slot-3-label').textContent = "Origin";
+                    document.getElementById('slot-3-value').textContent = "AWAITING SELECTION";
+
+                    document.getElementById('hud-mode').textContent = "FLEET VIEW";
+                    document.getElementById('hud-sub').textContent = "VELOCITY: --.- MPH";
+                    document.getElementById('hud-sub').className = "sub-label";
+
+                    map.flyTo([32.894, -97.035], 13, { duration: 1.5 });
+                    yardGeofence.removeFrom(map);
+                    mainGeofence.addTo(map);
+
+                    infraLayer.clearLayers();
+                    subZoneLayer.clearLayers();
+                }
+
+                document.querySelectorAll('.asset-item').forEach(item => {
+                    const id = item.dataset.id;
+                    const shouldShow = mode === 'fleet' || yardAssetIds.includes(id);
+                    item.classList.toggle('hidden', !shouldShow);
+                });
+
+                if(selectedAssetId && mode === 'fleet') selectAsset(selectedAssetId);
             };
+
 
             const interpolate = (path, ratio) => {
                 const totalPoints = path.length - 1;
-                const pointIndex = Math.floor(ratio * totalPoints);
-                const nextIndex = Math.min(pointIndex + 1, totalPoints);
-                const innerRatio = (ratio * totalPoints) - pointIndex;
-                const p1 = path[pointIndex], p2 = path[nextIndex];
-                return [p1[0] + (p2[0] - p1[0]) * innerRatio, p1[1] + (p2[1] - p1[1]) * innerRatio];
+                const idx = Math.floor(ratio * totalPoints);
+                const next = Math.min(idx + 1, totalPoints);
+                const subRatio = (ratio * totalPoints) - idx;
+                const p1 = path[idx], p2 = path[next];
+                return [p1[0] + (p2[0] - p1[0]) * subRatio, p1[1] + (p2[1] - p1[1]) * subRatio];
             };
 
-            const updateTimeline = (val) => {
-                const progress = val / 1000;
-                const isLive = val == 1000;
-                
-                assets.forEach(a => {
-                    let currentPos;
-                    let speed;
-                    
-                    if (isLive && isPlaying) {
-                        const loopElapsed = (Date.now() - liveLoopStart) / a.loopDuration; 
-                        const loopRatio = loopElapsed % 1;
-                        currentPos = interpolate(a.liveLoop, loopRatio);
-                        
-                        if (a.id === 'MTRAC Micro-3') {
-                            speed = "0.0"; 
-                        } else if (a.id.includes('15') || a.id.includes('12')) {
-                            speed = (12 + Math.sin(loopElapsed * Math.PI)*3).toFixed(1);
-                        } else if (a.id.includes('Lite')) {
-                            speed = (3 + Math.sin(loopElapsed * Math.PI)).toFixed(1);
-                        } else {
-                            speed = (7 + Math.sin(loopElapsed * Math.PI)*2).toFixed(1);
-                        }
+            const updateSystem = (val) => {
+                const isLive = val >= 1000;
+                const rawProgress = val / 1000;
+                let breachDetected = false;
+
+                // Sync Live Animation Start for Smoothness
+                if (isLive && isPlaying) {
+                    if (!activeLiveSession) {
+                        loopStart = Date.now();
+                        activeLiveSession = true;
+                    }
+                } else {
+                    activeLiveSession = false;
+                }
+
+                allAssets.forEach(a => {
+                    const shouldShow = appMode === 'fleet' || yardAssetIds.includes(a.id);
+
+                    if (!markers[a.id]) {
+                        const iconHTML = `<div class="pin-inner" id="pin-${a.id}"></div><div class="pin-label">${a.id}</div>`;
+                        markers[a.id] = L.marker([0,0], {
+                            icon: L.divIcon({ className: 'custom-pin', html: iconHTML, iconSize: [20, 20] })
+                        }).addTo(assetLayer);
+                        trails[a.id] = L.polyline(a.path, { color: 'var(--color-accent)', weight: 1, opacity: 0.2, dashArray: '4,4' }).addTo(historyLayer);
+                    }
+
+                    const marker = markers[a.id];
+                    const trail = trails[a.id];
+
+                    if (!shouldShow) {
+                        marker.setOpacity(0);
+                        trail.setStyle({ opacity: 0 });
+                        return;
                     } else {
-                        const totalPoints = a.path.length - 1;
-                        const pointIndex = Math.floor(progress * totalPoints);
-                        const nextIndex = Math.min(pointIndex + 1, totalPoints);
-                        const innerRatio = (progress * totalPoints) - pointIndex;
-                        const p1 = a.path[pointIndex], p2 = a.path[nextIndex];
-                        currentPos = [p1[0] + (p2[0] - p1[0]) * innerRatio, p1[1] + (p2[1] - p1[1]) * innerRatio];
-                        speed = (getDistance(p1, p2) / (8 / totalPoints)).toFixed(1);
+                        marker.setOpacity(1);
+                        trail.setStyle({ opacity: 0.2 });
                     }
 
-                    markers[a.id].setLatLng(currentPos);
-
-                    if (a.isBreachDemo) {
-                        const isInside = geofence.getBounds().contains(currentPos);
-                        const notify = document.getElementById(`notify-${a.id}`), pin = document.getElementById(`pin-${a.id}`);
-                        const badgeText = document.getElementById(`text-${a.id}`), badgeColor = document.getElementById(`badge-${a.id}`), badgeDot = document.getElementById(`dot-${a.id}`);
-                        if (!isInside && progress > 0.77) {
-                            notify.classList.add('visible'); if (pin) pin.classList.add('breached');
-                            badgeText.textContent = "EXIT DETECTED"; badgeColor.style.color = 'var(--color-danger)'; badgeDot.style.background = 'var(--color-danger)';
-                        } else {
-                            notify.classList.remove('visible'); if (pin) pin.classList.remove('breached');
-                            badgeText.textContent = "ONLINE"; badgeColor.style.color = 'var(--color-success)'; badgeDot.style.background = 'var(--color-success)';
+                    // --- MATH & MOVEMENT ---
+                    let pos;
+                    if(isLive && isPlaying) {
+                        const elapsed = (Date.now() - loopStart) / a.loopDuration;
+                        pos = interpolate(a.liveLoop, elapsed % 1);
+                    } else {
+                        // --- ZOOM LOGIC ---
+                        let effectiveProgress = rawProgress;
+                        if(timelineZoom && a.id === 'MTRAC-6') {
+                            // Map slider 0-100% to Path 50%-90% (Incident Window)
+                            effectiveProgress = 0.5 + (rawProgress * 0.4);
                         }
+                        pos = interpolate(a.path, effectiveProgress);
+                    }
+                    
+                    marker.setLatLng(pos);
+
+                    // --- BREACH LOGIC (Robust) ---
+                    if(a.isBreachDemo) {
+                        const p = document.getElementById(`pin-${a.id}`);
+                        const n = document.getElementById(`notify-${a.id}`);
+                        
+                        const isInside = isPointInPoly(pos, mainGeofencePoints);
+                        
+                        // Lower threshold (0.50) + Poly check
+                        // Note: If zoomed, we are almost always in the breach window, so visuals update instantly
+                        const breached = !isInside; // Simplified: if it's out, it's out. 
+                        
+                        if(p) p.classList.toggle('breached', breached);
+                        
+                        if(n && appMode === 'fleet') n.classList.toggle('visible', breached);
+
+                        if(appMode === 'yard' && breached) breachDetected = true;
                     }
 
-                    if (a.id === selectedAssetId) {
-                        document.getElementById('coords').textContent = `${currentPos[0].toFixed(4)}° N, ${currentPos[1].toFixed(4)}° W`;
-                        document.getElementById('speed-meter').textContent = `VELOCITY: ${speed > 0.1 ? speed : '0.0'} MPH`;
-                        document.getElementById('stat-dist').textContent = `${a.calculatedDist} MI`;
-                        document.getElementById('stat-stops').textContent = a.calculatedStops;
-                        document.getElementById('stat-origin').textContent = a.originName;
+                    if(appMode === 'fleet' && a.id === selectedAssetId) {
+                        document.getElementById('hud-coords').textContent = `${pos[0].toFixed(4)}° N, ${pos[1].toFixed(4)}° W`;
+                        document.getElementById('slot-3-value').textContent = a.originName;
+                        let dist = 0; 
+                        for(let i=0; i<a.path.length-1; i++) {
+                            const dLat=(a.path[i+1][0]-a.path[i][0])*69; const dLon=(a.path[i+1][1]-a.path[i][1])*53;
+                            dist += Math.sqrt(dLat*dLat + dLon*dLon);
+                        }
+                        document.getElementById('slot-1-value').textContent = dist.toFixed(2) + " MI";
+                        document.getElementById('slot-2-value').textContent = "2";
+                    }
+                    if(appMode === 'yard') {
+                         document.getElementById('hud-coords').textContent = `${pos[0].toFixed(4)}° N, ${pos[1].toFixed(4)}° W`;
                     }
                 });
 
-                const startMins = 4 * 60 + 30, currentMinsTotal = startMins + parseInt(val * 0.48);
-                const h = Math.floor(currentMinsTotal / 60), m = Math.floor(currentMinsTotal % 60);
-                document.getElementById('timeline-time').textContent = `TIME: ${h > 12 ? h - 12 : (h === 0 ? 12 : h)}:${m.toString().padStart(2, '0')}:00 ${h >= 12 ? 'PM' : 'AM'}`;
-                
-                const statusLabel = document.getElementById('replay-status'), modeLabel = document.getElementById('mode-label');
-                if (!selectedAssetId) {
-                    statusLabel.textContent = "LIVE DATA LINK"; statusLabel.style.color = "var(--color-accent)";
-                    modeLabel.textContent = "FLEET VIEW"; modeLabel.style.color = "var(--color-accent)";
-                } else if (isIncidentMode) {
-                    statusLabel.textContent = "INCIDENT FORENSICS ACTIVE"; statusLabel.style.color = "var(--color-danger)";
-                    modeLabel.textContent = "CRITICAL ANALYSIS"; modeLabel.style.color = "var(--color-danger)";
-                } else if (isLive) {
-                    statusLabel.textContent = "LIVE DATA LINK"; statusLabel.style.color = "var(--color-accent)";
-                    modeLabel.textContent = "OPERATIONAL HUD"; modeLabel.style.color = "var(--color-accent)";
-                } else {
-                    statusLabel.textContent = "REPLAY ANALYSIS"; statusLabel.style.color = "var(--color-warning)";
-                    modeLabel.textContent = "TELEMETRY REVIEW"; modeLabel.style.color = "var(--color-warning)";
-                }
-            };
-
-            const togglePlayback = () => {
-                isPlaying = !isPlaying;
-                const playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon');
-                
-                if (isPlaying) {
-                    playIcon.style.display = 'none'; 
-                    pauseIcon.style.display = 'block';
-                    
-                    if (parseInt(slider.value) >= 1000) {
-                        // In live mode, switch to live loop animation
-                        liveLoopStart = Date.now();
-                        const loop = () => {
-                            updateTimeline(1000); 
-                            if (isPlaying && parseInt(slider.value) === 1000) animationFrameId = requestAnimationFrame(loop);
-                        };
-                        loop();
+                // --- YARD ALERTS ---
+                if(appMode === 'yard') {
+                    const hudSub = document.getElementById('hud-sub');
+                    const alertVal = document.getElementById('slot-2-value');
+                    if(breachDetected) {
+                        hudSub.textContent = "SECURITY ALERT";
+                        hudSub.className = "sub-label alert";
+                        alertVal.textContent = "1";
+                        alertVal.classList.add('alert');
                     } else {
-                        // In history playback
-                        playbackInterval = setInterval(() => {
-                            let val = parseInt(slider.value) + 2;
-                            if (val > 1000) { 
-                                val = 1000;
-                                clearInterval(playbackInterval);
-                                liveLoopStart = Date.now();
-                                const loop = () => {
-                                    updateTimeline(1000);
-                                    if (isPlaying && parseInt(slider.value) === 1000) animationFrameId = requestAnimationFrame(loop);
-                                };
-                                loop();
-                                return;
-                            }
-                            slider.value = val; updateTimeline(val);
-                        }, 100);
+                        hudSub.textContent = "SECURE";
+                        hudSub.className = "sub-label success";
+                        alertVal.textContent = "0";
+                        alertVal.classList.remove('alert');
                     }
+                }
+
+                // --- TIME ---
+                // If Zoomed, show incident time (e.g., 12:00-12:15). If normal, show full day.
+                let mins;
+                if(timelineZoom) {
+                     // Incident window: roughly 12:00 PM starts around 60% of shift
+                     // Just mapping strictly to 12:00PM range for demo
+                     mins = (12*60) + (rawProgress * 15); // 15 minute window
                 } else {
-                    playIcon.style.display = 'block'; 
-                    pauseIcon.style.display = 'none';
-                    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                    if (playbackInterval) clearInterval(playbackInterval);
+                     mins = 4*60+30 + (rawProgress * 480);
+                }
+                
+                const h = Math.floor(mins/60); const m = Math.floor(mins%60);
+                document.getElementById('time-log').textContent = `LOG: ${h>12?h-12:h}:${m.toString().padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+                
+                // --- TIMELINE LABEL ---
+                if(isPlaying && isLive) {
+                    document.getElementById('time-status').textContent = "LIVE DATA LINK";
+                    document.getElementById('time-status').style.color = "var(--color-accent)";
+                } else {
+                    document.getElementById('time-status').textContent = timelineZoom ? "INCIDENT PLAYBACK (ZOOM)" : "HISTORICAL PLAYBACK";
+                    document.getElementById('time-status').style.color = "var(--color-warning)";
                 }
             };
 
-            document.getElementById('incident-bar').onclick = triggerIncidentMode;
-            document.getElementById('overlay-toggle').onclick = () => document.getElementById('map-controls').classList.toggle('expanded');
-            document.getElementById('play-pause-btn').onclick = togglePlayback;
-            
-            slider.oninput = (e) => { 
-                if (isPlaying) togglePlayback(); 
-                isIncidentMode = false; updateTimeline(e.target.value); 
+            const animLoop = () => {
+                if(isPlaying) {
+                    let val = parseInt(document.getElementById('timeline').value);
+                    if (val < 1000) {
+                        // Playback History
+                        val += 2; // Speed
+                        if (val > 1000) val = 1000;
+                        document.getElementById('timeline').value = val;
+                        updateSystem(val);
+                    } else {
+                        // Live Mode
+                        updateSystem(1000);
+                    }
+                }
+                // If paused, we rely on user input (slider)
+                
+                document.getElementById('icon-play').style.display = isPlaying ? 'none' : 'block';
+                document.getElementById('icon-pause').style.display = isPlaying ? 'block' : 'none';
+                
+                requestAnimationFrame(animLoop);
             };
-            
-            document.getElementById('toggle-assets').onchange = e => e.target.checked ? map.addLayer(assetGroup) : map.removeLayer(assetGroup);
-            document.getElementById('toggle-geofence').onchange = e => e.target.checked ? map.addLayer(geofence) : map.removeLayer(geofence);
-            document.getElementById('toggle-history').onchange = e => e.target.checked ? map.addLayer(historyGroup) : map.removeLayer(historyGroup);
 
-            // Init
-            renderSidebar();
-            // Start Loop immediately
-            liveLoopStart = Date.now();
-            const startLoop = () => {
-                updateTimeline(1000);
-                if (isPlaying && parseInt(slider.value) === 1000) animationFrameId = requestAnimationFrame(startLoop);
-            };
-            startLoop();
+            mainGeofence.on('click', () => setMode('yard'));
+            document.getElementById('btn-back').onclick = () => setMode('fleet');
+            
+            const slider = document.getElementById('timeline');
+            slider.oninput = (e) => { isPlaying = false; updateSystem(e.target.value); };
+            document.getElementById('btn-play').onclick = () => isPlaying = !isPlaying;
+
+            // Initial Start
+            setMode('fleet');
+            animLoop();
         });
     </script>
 </body>
