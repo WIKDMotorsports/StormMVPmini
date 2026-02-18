@@ -185,11 +185,18 @@
             font-size: 9px; font-family: var(--font-mono); color: var(--color-text-muted); margin-bottom: 6px;
         }
         .timeline-main-row { display: flex; align-items: center; gap: 12px; position: relative; }
+        
         .play-btn {
-            background: none; border: none; color: var(--color-accent); width: 16px; height: 16px;
+            background: none; border: none; 
+            color: rgba(255, 255, 255, 0.4); /* MATCHING BAR GREY */
+            width: 16px; height: 16px;
             display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 5;
+            transition: all 0.2s ease;
         }
+        /* ADDED SVG RULE FOR COLOR INHERITANCE */
+        .play-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .play-btn:hover { color: #fff; transform: scale(1.1); }
+        
         .timeline-slider {
             -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.1);
             border-radius: 2px; outline: none; position: relative; z-index: 4; cursor: pointer; flex: 1;
@@ -215,16 +222,16 @@
             box-shadow: 0 0 8px var(--color-danger);
             z-index: 3;
             pointer-events: none;
-            /* Positioned via JS logic (left: 77%, width: 23%) */
-            left: 77%; width: 23%;
+            /* Corrected Data Alignment: MTRAC-6 breaches at approx 65% of path */
+            left: 65%; width: 35%;
             border-radius: 0 2px 2px 0;
             opacity: 0.6;
             display: none; /* Hidden by default, shown via JS on specific asset */
         }
         .timeline-alert-bar.visible { display: block; }
-        /* When zoomed, the alert bar needs to shift visual position because the scale changed */
+        /* Zoomed Adjustment: (65% path - 50% start) / 40% window = 37.5% slider pos */
         .timeline-slider.zoomed ~ .timeline-alert-bar.visible {
-            left: 50%; width: 50%; /* Approximating the zoom shift */
+            left: 37.5%; width: 62.5%; 
         }
 
         /* Markers */
@@ -628,12 +635,12 @@
 
                     // --- MATH & MOVEMENT ---
                     let pos;
+                    let effectiveProgress = rawProgress;
                     if(isLive && isPlaying) {
                         const elapsed = (Date.now() - loopStart) / a.loopDuration;
                         pos = interpolate(a.liveLoop, elapsed % 1);
                     } else {
                         // --- ZOOM LOGIC ---
-                        let effectiveProgress = rawProgress;
                         if(timelineZoom && a.id === 'MTRAC-6') {
                             // Map slider 0-100% to Path 50%-90% (Incident Window)
                             effectiveProgress = 0.5 + (rawProgress * 0.4);
@@ -669,7 +676,18 @@
                             const dLat=(a.path[i+1][0]-a.path[i][0])*69; const dLon=(a.path[i+1][1]-a.path[i][1])*53;
                             dist += Math.sqrt(dLat*dLat + dLon*dLon);
                         }
-                        document.getElementById('slot-1-value').textContent = dist.toFixed(2) + " MI";
+                        
+                        // Velocity Logic (MPH)
+                        const speedMPH = dist / (a.loopDuration / 3600000);
+                        document.getElementById('hud-sub').textContent = `VELOCITY: ${speedMPH.toFixed(1)} MPH`;
+
+                        // Cumulative Distance Logic
+                        let currentDist = dist;
+                        if (!isLive) {
+                            currentDist = dist * effectiveProgress;
+                        }
+                        document.getElementById('slot-1-value').textContent = currentDist.toFixed(2) + " MI";
+
                         document.getElementById('slot-2-value').textContent = "2";
                     }
                     if(appMode === 'yard') {
