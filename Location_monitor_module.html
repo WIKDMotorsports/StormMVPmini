@@ -39,17 +39,16 @@
         }
 
         /* Mode-Specific Overrides via Body Class */
-        body.mode-yard {
-            --theme-hue: 260; /* Purple */
-        }
+        body.mode-yard { --theme-hue: 260; /* Purple */ }
+        body.mode-health { --theme-hue: 200; /* Keep Blue for Health */ }
 
         body {
             background-color: var(--color-bg-primary);
             color: var(--color-text-primary);
             font-family: var(--font-primary);
-            margin: 0; padding: 40px;
+            margin: 0; padding: 20px;
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
-            overflow: hidden; /* Prevent scroll on zoom */
+            overflow-x: hidden;
         }
 
         /* Transitions */
@@ -58,7 +57,11 @@
             transition: all 0.4s ease-in-out;
         }
 
-        .component-wrapper { max-width: 1100px; width: 100%; }
+        .component-wrapper { 
+            max-width: 1600px; /* Increased from 1100px for "Really Big" feel */
+            width: 95vw; 
+            margin: 0 auto;
+        }
 
         .monitor-card {
             background: var(--color-bg-card);
@@ -67,7 +70,7 @@
             padding: 32px;
             display: flex; flex-direction: column; gap: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            min-height: 700px;
+            /* Removed fixed min-height to allow ratio-driven sizing */
         }
 
         /* Unified Header */
@@ -84,24 +87,73 @@
         }
 
         .monitor-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin: 0 0 8px 0; }
-        .monitor-desc { font-size: 14px; color: var(--color-text-secondary); margin: 0; max-width: 600px; height: 40px; /* Fixed height to prevent jump */ }
+        .monitor-desc { font-size: 14px; color: var(--color-text-secondary); margin: 0; max-width: 600px; height: 40px; }
 
+        /* Action Buttons */
+        .header-actions { display: flex; gap: 12px; }
         .action-btn {
             font-size: 10px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;
             cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;
             padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 4px;
             background: rgba(255,255,255,0.02);
-            opacity: 0; pointer-events: none; transform: translateX(10px);
         }
-        .action-btn.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
         .action-btn:hover { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-dim); }
+        .action-btn.hide { display: none; }
 
-        /* Interface Layout */
+        /* --- Interface Containers --- */
         .interface-container {
             display: grid; grid-template-columns: 300px 1fr; background: #0c0c14;
             border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--border-radius-md);
-            overflow: hidden; width: 100%; aspect-ratio: 16 / 9;
+            overflow: hidden; width: 100%; 
+            aspect-ratio: 16 / 9; /* Strictly locked ratio */
+            max-height: calc(100vh - 200px); /* Ensures content doesn't overflow screen vertically */
         }
+
+        /* Hide map interface in health mode */
+        body.mode-health .interface-container { display: none; }
+
+        /* --- New Health Container --- */
+        .health-container {
+            display: none; flex-direction: column; width: 100%; animation: fadeIn 0.4s ease;
+            aspect-ratio: 16 / 9; background: #0c0c14; border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: var(--border-radius-md); overflow: hidden;
+            max-height: calc(100vh - 200px);
+        }
+        body.mode-health .health-container { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Health Metrics Top Row */
+        .health-metrics-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; 
+            padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(10, 10, 15, 0.98);
+        }
+        .health-metric-card { 
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); 
+            border-radius: var(--border-radius-sm); padding: 16px 20px; display: flex; flex-direction: column; 
+        }
+        .hm-val { font-family: var(--font-mono); font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+        .hm-label { font-size: 10px; color: var(--color-text-tertiary); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+        /* Health Table Area */
+        .health-table-wrapper { 
+            overflow-y: auto; flex: 1; background: transparent;
+            scrollbar-width: thin; scrollbar-color: var(--color-border) transparent;
+        }
+        .health-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .health-table th { 
+            padding: 16px 20px; font-size: 10px; color: var(--color-text-muted); 
+            text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.06); 
+            background: rgba(0,0,0,0.4); font-weight: 600; position: sticky; top: 0; z-index: 2;
+        }
+        .health-table td { 
+            padding: 16px 20px; font-size: 11px; color: var(--color-text-secondary); 
+            border-bottom: 1px solid rgba(255,255,255,0.03); font-family: var(--font-mono); 
+        }
+        .health-table tbody tr { transition: background 0.2s; }
+        .health-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .health-table td strong { color: #fff; font-family: var(--font-display); letter-spacing: 0.5px; }
+
 
         /* Sidebar */
         .sidebar {
@@ -193,7 +245,6 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 5;
             transition: all 0.2s ease;
         }
-        /* ADDED SVG RULE FOR COLOR INHERITANCE */
         .play-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .play-btn:hover { color: #fff; transform: scale(1.1); }
         
@@ -201,13 +252,8 @@
             -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.1);
             border-radius: 2px; outline: none; position: relative; z-index: 4; cursor: pointer; flex: 1;
         }
-        .timeline-slider.zoomed {
-            background: rgba(251, 191, 36, 0.2); /* Warning/Amber bg */
-        }
-        .timeline-slider.zoomed::-webkit-slider-thumb {
-            background: var(--color-warning);
-            box-shadow: 0 0 10px var(--color-warning);
-        }
+        .timeline-slider.zoomed { background: rgba(251, 191, 36, 0.2); }
+        .timeline-slider.zoomed::-webkit-slider-thumb { background: var(--color-warning); box-shadow: 0 0 10px var(--color-warning); }
         .timeline-slider::-webkit-slider-thumb {
             -webkit-appearance: none; width: 12px; height: 12px; background: var(--color-accent);
             border-radius: 50%; box-shadow: 0 0 10px var(--color-accent); cursor: pointer; transition: all 0.3s;
@@ -215,49 +261,29 @@
         
         /* Timeline Alert Bar */
         .timeline-alert-bar {
-            position: absolute;
-            top: 50%; transform: translateY(-50%);
-            height: 4px;
-            background: var(--color-danger);
-            box-shadow: 0 0 8px var(--color-danger);
-            z-index: 3;
-            pointer-events: none;
-            /* Corrected Data Alignment: MTRAC-6 breaches at approx 65% of path */
-            left: 65%; width: 35%;
-            border-radius: 0 2px 2px 0;
-            opacity: 0.6;
-            display: none; /* Hidden by default, shown via JS on specific asset */
+            position: absolute; top: 50%; transform: translateY(-50%); height: 4px;
+            background: var(--color-danger); box-shadow: 0 0 8px var(--color-danger); z-index: 3; pointer-events: none;
+            left: 65%; width: 35%; border-radius: 0 2px 2px 0; opacity: 0.6; display: none;
         }
         .timeline-alert-bar.visible { display: block; }
-        /* Zoomed Adjustment: (65% path - 50% start) / 40% window = 37.5% slider pos */
-        .timeline-slider.zoomed ~ .timeline-alert-bar.visible {
-            left: 37.5%; width: 62.5%; 
-        }
+        .timeline-slider.zoomed ~ .timeline-alert-bar.visible { left: 37.5%; width: 62.5%; }
 
         /* Markers */
-        .custom-pin { background: transparent; transition: opacity 0.3s; }
+        .custom-pin { background: transparent; transition: opacity 0.3s; cursor: pointer !important; }
         .pin-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 0 6px currentColor; }
         .pin-inner { width: 10px; height: 10px; background: var(--color-accent); border: 1.5px solid #fff; border-radius: 50%; box-shadow: 0 0 8px var(--color-accent); }
         .pin-inner.breached { background: var(--color-danger); box-shadow: 0 0 12px var(--color-danger); animation: pulse 1s infinite; }
         .pin-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 2px 6px; border-radius: 2px; font-size: 8.5px; color: #fff; font-family: var(--font-mono); white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); }
         
         /* Infrastructure Marker */
-        .infra-marker {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6;
-        }
-        .infra-icon {
-            width: 16px; height: 16px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(255,255,255,0.5);
-        }
-        .infra-label {
-            font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap;
-        }
+        .infra-marker { display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6; }
+        .infra-icon { width: 16px; height: 16px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(255,255,255,0.5); }
+        .infra-label { font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap; }
 
         .notification-pill {
             margin-top: 8px; padding: 6px 10px; border-radius: 4px; font-size: 8.5px;
             background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25);
-            color: var(--color-danger); display: none; animation: slideIn 0.3s ease; font-family: var(--font-mono);
-            cursor: pointer;
+            color: var(--color-danger); display: none; animation: slideIn 0.3s ease; font-family: var(--font-mono); cursor: pointer;
         }
         .notification-pill:hover { background: rgba(239, 68, 68, 0.2); }
         .notification-pill.visible { display: block; }
@@ -288,14 +314,60 @@
                     <h3 id="ui-title" class="monitor-title">Telemetry & Incident Reconstruction</h3>
                     <p id="ui-desc" class="monitor-desc">Full-fleet historical oversight. Monitor MTRAC flight vectors and triggered geofence incidents.</p>
                 </div>
-                <div id="btn-back" class="action-btn">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Return to Fleet View
+                
+                <!-- Expanded Action Buttons -->
+                <div class="header-actions">
+                    <div id="btn-health" class="action-btn">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        System Health
+                    </div>
+                    <div id="btn-back" class="action-btn hide">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Return to Map View
+                    </div>
                 </div>
             </div>
 
-            <!-- Unified Interface -->
-            <div class="interface-container">
+            <!-- NEW: Device Health Monitor Container -->
+            <div class="health-container" id="health-container">
+                <!-- Top Metrics Grid -->
+                <div class="health-metrics-grid">
+                    <div class="health-metric-card">
+                        <div class="hm-val" style="color: var(--color-success)" id="hm-val-online">142</div>
+                        <div class="hm-label">ONLINE</div>
+                    </div>
+                    <div class="health-metric-card">
+                        <div class="hm-val" style="color: var(--color-warning)" id="hm-val-idle">3</div>
+                        <div class="hm-label">IDLE</div>
+                    </div>
+                    <div class="health-metric-card">
+                        <div class="hm-val" style="color: var(--color-danger)" id="hm-val-offline">0</div>
+                        <div class="hm-label">OFFLINE</div>
+                    </div>
+                </div>
+
+                <!-- Tabular Data -->
+                <div class="health-table-wrapper">
+                    <table class="health-table">
+                        <thead>
+                            <tr>
+                                <th>Device ID</th>
+                                <th>Status</th>
+                                <th>VPN State</th>
+                                <th>Heartbeat</th>
+                                <th>Battery Level</th>
+                                <th>Firmware</th>
+                            </tr>
+                        </thead>
+                        <tbody id="health-tbody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MAP Interface Container -->
+            <div class="interface-container" id="map-container">
                 <div class="sidebar">
                     <div class="sidebar-header" id="sidebar-header-container">
                         <!-- Static elements toggled by CSS -->
@@ -395,9 +467,9 @@
             let appMode = 'fleet';
             let isPlaying = true;
             let loopStart = Date.now();
-            let activeLiveSession = false; // NEW: State to track live session continuity
+            let activeLiveSession = false; 
             let selectedAssetId = null;
-            let timelineZoom = false; // NEW: Zoom state for timeline
+            let timelineZoom = false; 
             let markers = {}; 
             let infraMarkers = []; 
             let trails = {}; 
@@ -406,11 +478,11 @@
             const map = L.map('map', { center: [32.894, -97.035], zoom: 13, zoomControl: false, attributionControl: false });
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
             
-            // Layers
+            // Layers - ORDER MATTERS for click priority
             const historyLayer = L.layerGroup().addTo(map);
-            const assetLayer = L.layerGroup().addTo(map);
             const infraLayer = L.layerGroup().addTo(map);
             const subZoneLayer = L.layerGroup().addTo(map); 
+            const assetLayer = L.layerGroup().addTo(map); // Assets on top
             
             // Geofences
             const mainGeofencePoints = [[32.896, -97.034], [32.896, -97.026], [32.89, -97.026], [32.89, -97.034]];
@@ -420,14 +492,14 @@
             const yardGeofence = L.polygon([[32.896, -97.034], [32.896, -97.026], [32.890, -97.026], [32.890, -97.034]],
                 { color: '#4ade80', weight: 2, fillColor: '#4ade80', fillOpacity: 0.1, dashArray: '5, 10' });
 
-            // Sub-Geofences
+            // Sub-Geofences - Non-interactive so they don't block clicks
             const subZones = [
                 L.polygon([[32.8945, -97.034], [32.8945, -97.030], [32.8930, -97.030], [32.8930, -97.034]], 
-                    { color: '#38bdf8', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' }), 
+                    { color: '#38bdf8', weight: 1, fillOpacity: 0.05, dashArray: '2, 4', interactive: false }), 
                 L.polygon([[32.8960, -97.029], [32.8960, -97.027], [32.8950, -97.027], [32.8950, -97.029]], 
-                    { color: '#fbbf24', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' }), 
+                    { color: '#fbbf24', weight: 1, fillOpacity: 0.05, dashArray: '2, 4', interactive: false }), 
                 L.polygon([[32.8915, -97.031], [32.8915, -97.026], [32.8900, -97.026], [32.8900, -97.031]], 
-                    { color: '#ef4444', weight: 1, fillOpacity: 0.05, dashArray: '2, 4' })
+                    { color: '#ef4444', weight: 1, fillOpacity: 0.05, dashArray: '2, 4', interactive: false })
             ];
 
             mainGeofence.bindTooltip("Hangar Ops South - Enter Facility View", { sticky: true, direction: 'top' });
@@ -464,20 +536,14 @@
                 `;
                 item.onclick = (e) => {
                     if(e.target.closest('.notification-pill')) {
-                        // --- ZOOM & ALERT LOGIC ---
                         isPlaying = false;
                         timelineZoom = true; 
                         document.getElementById('timeline').classList.add('zoomed');
-                        
-                        // Select MTRAC-6 explicitly
                         selectAsset(a.id);
-                        
-                        // Set slider to middle (50%) to represent the breach moment in zoom mode
                         document.getElementById('timeline').value = 500; 
                         updateSystem(500); 
                         return;
                     }
-                    // If clicking normal list item, reset zoom
                     timelineZoom = false;
                     document.getElementById('timeline').classList.remove('zoomed');
                     selectAsset(a.id);
@@ -494,7 +560,8 @@
                     </div>
                 `;
                 const m = L.marker(node.loc, {
-                    icon: L.divIcon({ className: 'custom-pin', html: iconHTML, iconSize: [40, 40] })
+                    icon: L.divIcon({ className: 'custom-pin', html: iconHTML, iconSize: [40, 40] }),
+                    interactive: false // Don't block asset clicks
                 });
                 infraMarkers.push(m);
             });
@@ -503,9 +570,12 @@
                 selectedAssetId = id;
                 document.querySelectorAll('.asset-item').forEach(el => el.classList.remove('active'));
                 const target = document.querySelector(`.asset-item[data-id="${id}"]`);
-                if(target) target.classList.add('active');
+                if(target) {
+                    target.classList.add('active');
+                    // Scroll into view if needed
+                    target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
 
-                // Alert Bar Visiblity
                 const alertBar = document.getElementById('timeline-alert-bar');
                 const asset = allAssets.find(a => a.id === id);
                 if (asset && asset.isBreachDemo) {
@@ -514,25 +584,82 @@
                     alertBar.classList.remove('visible');
                 }
                 
-                // If we switched assets manually, make sure system updates
                 updateSystem(document.getElementById('timeline').value);
             }
+
+            // --- HEALTH TABLE POPULATION ---
+            const populateHealthTable = () => {
+                const tbody = document.getElementById('health-tbody');
+                tbody.innerHTML = '';
+                
+                document.getElementById('hm-val-online').textContent = "142";
+                document.getElementById('hm-val-idle').textContent = "3";
+                document.getElementById('hm-val-offline').textContent = "0";
+
+                const tableData = [...allAssets];
+                for(let i=16; i<=25; i++) {
+                    tableData.push({ id: `MTRAC-${i}`, status: i % 5 === 0 ? 'Idle' : 'Online' });
+                }
+
+                tableData.forEach(a => {
+                    const isOnline = a.status === 'Online';
+                    const vpn = isOnline ? '<span style="color:var(--color-success)">SECURE (IPSec)</span>' : '<span style="color:var(--color-warning)">STANDBY</span>';
+                    const hb = isOnline ? '<span style="color:var(--color-text-secondary)">Just now</span>' : '<span style="color:var(--color-text-muted)">4m ago</span>';
+                    const batt = Math.floor(Math.random() * (isOnline ? 40 : 80)) + (isOnline ? 60 : 20);
+                    const battColor = batt > 80 ? 'var(--color-success)' : (batt > 40 ? 'var(--color-warning)' : 'var(--color-danger)');
+                    const battBar = `
+                        <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:6px; overflow:hidden;">
+                            <div style="width:${batt}%; height:100%; background:${battColor};"></div>
+                        </div>`;
+                    const fw = `v2.4.${Math.floor(Math.random()*4)}`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${a.id}</strong></td>
+                        <td>
+                            <div class="status-badge" style="color:${isOnline ? 'var(--color-success)' : 'var(--color-warning)'}">
+                                <div class="status-dot" style="background:currentColor"></div>
+                                <span>${a.status}</span>
+                            </div>
+                        </td>
+                        <td>${vpn}</td>
+                        <td>${hb}</td>
+                        <td style="min-width:120px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:10px;">
+                                <span>INTERNAL</span> <span style="color:${battColor}">${batt}%</span>
+                            </div>
+                            ${battBar}
+                        </td>
+                        <td>${fw}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            };
 
             // --- CONTROLLERS ---
             const setMode = (mode) => {
                 appMode = mode;
-                document.body.className = mode === 'yard' ? 'mode-yard' : 'mode-fleet';
+                document.body.className = `mode-${mode}`;
 
-                // Reset zoom when changing main modes
+                const btnBack = document.getElementById('btn-back');
+                const btnHealth = document.getElementById('btn-health');
+
                 timelineZoom = false;
                 document.getElementById('timeline').classList.remove('zoomed');
 
-                if (mode === 'yard') {
+                if (mode === 'health') {
+                    document.getElementById('ui-label').textContent = "Device Health Monitor";
+                    document.getElementById('ui-title').textContent = "Fleet Telemetry & Diagnostics";
+                    document.getElementById('ui-desc').textContent = "Tabular fleet overview showing VPN state, heartbeat timestamps, battery levels, and firmware versions across all deployed hardware.";
+                    btnHealth.classList.add('hide');
+                    btnBack.classList.remove('hide');
+                    populateHealthTable();
+                } else if (mode === 'yard') {
                     document.getElementById('ui-label').textContent = "Facility Monitor";
                     document.getElementById('ui-title').textContent = "Hangar Ops South: Depot SE-4";
                     document.getElementById('ui-desc').textContent = "Real-time facility boundaries, asset allocation tracking, and perimeter security logs.";
-                    document.getElementById('btn-back').classList.add('visible');
-                    
+                    btnHealth.classList.add('hide');
+                    btnBack.classList.remove('hide');
                     document.getElementById('stats-title').textContent = "Sector Status";
                     document.getElementById('slot-1-label').textContent = "Active Devices";
                     document.getElementById('slot-1-value').textContent = "12";
@@ -541,24 +668,20 @@
                     document.getElementById('slot-2-value').className = "stat-value"; 
                     document.getElementById('slot-3-label').textContent = "Monitored Assets";
                     document.getElementById('slot-3-value').textContent = "4";
-
                     document.getElementById('hud-mode').textContent = "PERIMETER STATUS";
                     document.getElementById('hud-sub').textContent = "SECURE";
                     document.getElementById('hud-sub').className = "sub-label success";
-
                     map.flyTo([32.8930, -97.0300], 16, { duration: 1.5 });
                     mainGeofence.removeFrom(map);
                     yardGeofence.addTo(map);
-                    
                     infraMarkers.forEach(m => m.addTo(infraLayer));
                     subZones.forEach(z => z.addTo(subZoneLayer));
-
-                } else {
+                } else { // Fleet Mode
                     document.getElementById('ui-label').textContent = "Forensic Analysis";
                     document.getElementById('ui-title').textContent = "Telemetry & Incident Reconstruction";
                     document.getElementById('ui-desc').textContent = "Full-fleet historical oversight. Monitor MTRAC flight vectors and triggered geofence incidents.";
-                    document.getElementById('btn-back').classList.remove('visible');
-
+                    btnHealth.classList.remove('hide');
+                    btnBack.classList.add('hide');
                     document.getElementById('stats-title').textContent = "Log Analytics";
                     document.getElementById('slot-1-label').textContent = "Distance";
                     document.getElementById('slot-1-value').textContent = "--.-- MI";
@@ -566,17 +689,18 @@
                     document.getElementById('slot-2-value').textContent = "--";
                     document.getElementById('slot-3-label').textContent = "Origin";
                     document.getElementById('slot-3-value').textContent = "AWAITING SELECTION";
-
                     document.getElementById('hud-mode').textContent = "FLEET VIEW";
                     document.getElementById('hud-sub').textContent = "VELOCITY: --.- MPH";
                     document.getElementById('hud-sub').className = "sub-label";
-
                     map.flyTo([32.894, -97.035], 13, { duration: 1.5 });
                     yardGeofence.removeFrom(map);
                     mainGeofence.addTo(map);
-
                     infraLayer.clearLayers();
                     subZoneLayer.clearLayers();
+                }
+
+                if (mode !== 'health') {
+                    setTimeout(() => map.invalidateSize(), 10);
                 }
 
                 document.querySelectorAll('.asset-item').forEach(item => {
@@ -603,7 +727,6 @@
                 const rawProgress = val / 1000;
                 let breachDetected = false;
 
-                // Sync Live Animation Start for Smoothness
                 if (isLive && isPlaying) {
                     if (!activeLiveSession) {
                         loopStart = Date.now();
@@ -618,9 +741,14 @@
 
                     if (!markers[a.id]) {
                         const iconHTML = `<div class="pin-inner" id="pin-${a.id}"></div><div class="pin-label">${a.id}</div>`;
-                        markers[a.id] = L.marker([0,0], {
+                        const marker = L.marker([0,0], {
                             icon: L.divIcon({ className: 'custom-pin', html: iconHTML, iconSize: [20, 20] })
                         }).addTo(assetLayer);
+                        
+                        // NEW: Make marker selectable on click
+                        marker.on('click', () => selectAsset(a.id));
+                        markers[a.id] = marker;
+                        
                         trails[a.id] = L.polyline(a.path, { color: 'var(--color-accent)', weight: 1, opacity: 0.2, dashArray: '4,4' }).addTo(historyLayer);
                     }
 
@@ -633,24 +761,22 @@
                         return;
                     } else {
                         marker.setOpacity(1);
-                        // Highlight selected path, dim the rest
                         if (a.id === selectedAssetId) {
                             trail.setStyle({ opacity: 0.9, weight: 2 });
+                            marker.setZIndexOffset(1000); // Selected on top
                         } else {
                             trail.setStyle({ opacity: 0.15, weight: 1 });
+                            marker.setZIndexOffset(0);
                         }
                     }
 
-                    // --- MATH & MOVEMENT ---
                     let pos;
                     let effectiveProgress = rawProgress;
                     if(isLive && isPlaying) {
                         const elapsed = (Date.now() - loopStart) / a.loopDuration;
                         pos = interpolate(a.liveLoop, elapsed % 1);
                     } else {
-                        // --- ZOOM LOGIC ---
                         if(timelineZoom && a.id === 'MTRAC-6') {
-                            // Map slider 0-100% to Path 50%-90% (Incident Window)
                             effectiveProgress = 0.5 + (rawProgress * 0.4);
                         }
                         pos = interpolate(a.path, effectiveProgress);
@@ -658,21 +784,13 @@
                     
                     marker.setLatLng(pos);
 
-                    // --- BREACH LOGIC (Robust) ---
                     if(a.isBreachDemo) {
                         const p = document.getElementById(`pin-${a.id}`);
                         const n = document.getElementById(`notify-${a.id}`);
-                        
                         const isInside = isPointInPoly(pos, mainGeofencePoints);
-                        
-                        // Lower threshold (0.50) + Poly check
-                        // Note: If zoomed, we are almost always in the breach window, so visuals update instantly
-                        const breached = !isInside; // Simplified: if it's out, it's out. 
-                        
+                        const breached = !isInside; 
                         if(p) p.classList.toggle('breached', breached);
-                        
                         if(n && appMode === 'fleet') n.classList.toggle('visible', breached);
-
                         if(appMode === 'yard' && breached) breachDetected = true;
                     }
 
@@ -684,35 +802,23 @@
                             const dLat=(a.path[i+1][0]-a.path[i][0])*69; const dLon=(a.path[i+1][1]-a.path[i][1])*53;
                             dist += Math.sqrt(dLat*dLat + dLon*dLon);
                         }
-                        
-                        // Velocity Logic (Realistic Mock based on Vehicle Type)
                         let displaySpeed = a.baseSpeed;
                         if (displaySpeed > 0) {
-                            // Adds realistic organic fluctuation to the speed readout
                             const variance = isPlaying ? (Date.now() / 800) : (rawProgress * 50);
                             displaySpeed = displaySpeed * (0.92 + 0.08 * Math.sin(variance + a.baseSpeed));
                         }
-                        // Drop to exactly zero if stopped at the start or end of historical path
-                        if (!isLive && (rawProgress === 0 || rawProgress === 1)) {
-                            displaySpeed = 0;
-                        }
+                        if (!isLive && (rawProgress === 0 || rawProgress === 1)) displaySpeed = 0;
                         document.getElementById('hud-sub').textContent = `VELOCITY: ${displaySpeed.toFixed(1)} MPH`;
-
-                        // Cumulative Distance Logic
                         let currentDist = dist;
-                        if (!isLive) {
-                            currentDist = dist * effectiveProgress;
-                        }
+                        if (!isLive) currentDist = dist * effectiveProgress;
                         document.getElementById('slot-1-value').textContent = currentDist.toFixed(2) + " MI";
-
                         document.getElementById('slot-2-value').textContent = "2";
                     }
-                    if(appMode === 'yard') {
+                    if(appMode === 'yard' && a.id === selectedAssetId) {
                          document.getElementById('hud-coords').textContent = `${pos[0].toFixed(4)}° N, ${pos[1].toFixed(4)}° W`;
                     }
                 });
 
-                // --- YARD ALERTS ---
                 if(appMode === 'yard') {
                     const hudSub = document.getElementById('hud-sub');
                     const alertVal = document.getElementById('slot-2-value');
@@ -729,21 +835,13 @@
                     }
                 }
 
-                // --- TIME ---
-                // If Zoomed, show incident time (e.g., 12:00-12:15). If normal, show full day.
                 let mins;
-                if(timelineZoom) {
-                     // Incident window: roughly 12:00 PM starts around 60% of shift
-                     // Just mapping strictly to 12:00PM range for demo
-                     mins = (12*60) + (rawProgress * 15); // 15 minute window
-                } else {
-                     mins = 4*60+30 + (rawProgress * 480);
-                }
+                if(timelineZoom) mins = (12*60) + (rawProgress * 15);
+                else mins = 4*60+30 + (rawProgress * 480);
                 
                 const h = Math.floor(mins/60); const m = Math.floor(mins%60);
                 document.getElementById('time-log').textContent = `LOG: ${h>12?h-12:h}:${m.toString().padStart(2,'0')} ${h>=12?'PM':'AM'}`;
                 
-                // --- TIMELINE LABEL ---
                 if(isPlaying && isLive) {
                     document.getElementById('time-status').textContent = "LIVE DATA LINK";
                     document.getElementById('time-status').style.color = "var(--color-accent)";
@@ -757,32 +855,32 @@
                 if(isPlaying) {
                     let val = parseInt(document.getElementById('timeline').value);
                     if (val < 1000) {
-                        // Playback History
-                        val += 2; // Speed
+                        val += 2; 
                         if (val > 1000) val = 1000;
                         document.getElementById('timeline').value = val;
                         updateSystem(val);
                     } else {
-                        // Live Mode
                         updateSystem(1000);
                     }
                 }
-                // If paused, we rely on user input (slider)
-                
                 document.getElementById('icon-play').style.display = isPlaying ? 'none' : 'block';
                 document.getElementById('icon-pause').style.display = isPlaying ? 'block' : 'none';
-                
                 requestAnimationFrame(animLoop);
             };
 
             mainGeofence.on('click', () => setMode('yard'));
             document.getElementById('btn-back').onclick = () => setMode('fleet');
+            document.getElementById('btn-health').onclick = () => setMode('health');
             
             const slider = document.getElementById('timeline');
             slider.oninput = (e) => { isPlaying = false; updateSystem(e.target.value); };
             document.getElementById('btn-play').onclick = () => isPlaying = !isPlaying;
 
-            // Initial Start
+            // NEW: Invalidate size on window resize to keep locked ratio working with Leaflet
+            window.addEventListener('resize', () => {
+                map.invalidateSize();
+            });
+
             setMode('fleet');
             animLoop();
         });
