@@ -123,9 +123,9 @@
             display: none; /* Hidden by default */
         }
         .zone-badge {
-            font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 1px;
-            color: #fff; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 4px;
-            width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+            color: var(--color-text-secondary); padding: 0; background: transparent;
+            width: 100%; text-align: left; border: none; text-transform: uppercase;
             display: none; /* Hidden by default */
         }
         
@@ -250,7 +250,7 @@
             display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(255,255,255,0.5);
         }
         .infra-label {
-            font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.5px;
+            font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.5px; white-space: nowrap;
         }
 
         .notification-pill {
@@ -367,26 +367,29 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- DATA ---
             const allAssets = [
-                { id: 'MTRAC-15', status: 'Online', loc: 'Region: North Texas', originName: 'LAX Terminal 4 (04:30 AM)', loopDuration: 75000, path: [[33.94, -118.41], [33.43, -112.01], [33.43, -112.01], [30.19, -97.66], [30.19, -97.66], [32.89, -97.03]], liveLoop: [[32.89, -97.03], [32.892, -97.033], [32.894, -97.035], [32.896, -97.032], [32.893, -97.029], [32.89, -97.03]] },
-                { id: 'MTRAC-12', status: 'Online', loc: 'Approach: DFW', originName: 'Houston IAH (04:30 AM)', loopDuration: 68000, path: [[29.99, -95.34], [30.50, -95.80], [31.20, -96.30], [31.90, -96.70], [32.50, -96.90], [32.90, -97.04]], liveLoop: [[32.90, -97.04], [32.903, -97.042], [32.906, -97.045], [32.904, -97.048], [32.901, -97.046], [32.90, -97.04]] },
-                { id: 'MTRAC Lite-8', status: 'Online', loc: 'Terminal D', originName: 'Gate D14', loopDuration: 90000, path: [[32.902, -97.045], [32.902, -97.045], [32.903, -97.045], [32.902, -97.044], [32.902, -97.045]], liveLoop: [[32.902, -97.045], [32.9022, -97.0452], [32.9024, -97.0448], [32.9021, -97.0447], [32.902, -97.045]] },
-                { id: 'MTRAC-6', status: 'Online', loc: 'Perimeter Ops', isBreachDemo: true, originName: 'Hangar Ops South', loopDuration: 55000, path: [[32.893, -97.03], [32.893, -97.03], [32.895, -97.028], [32.891, -97.027], [32.893, -97.031], [32.893, -97.031], [32.89, -97.028], [32.889, -97.025], [32.887, -97.022], [32.883, -97.015]], liveLoop: [[32.883, -97.015], [32.880, -97.010], [32.875, -97.005], [32.880, -97.010], [32.883, -97.015]] },
-                { id: 'MTRAC-5', status: 'Online', loc: 'Hangar 4', originName: 'Maintenance Bay', loopDuration: 62000, path: [[32.92, -97.045], [32.915, -97.043], [32.912, -97.041], [32.91, -97.04]], liveLoop: [[32.91, -97.04], [32.912, -97.042], [32.91, -97.04]] },
-                { id: 'MTRAC Micro-3', status: 'Idle', loc: 'Gate A12', originName: 'Gate A12 (Fixed)', loopDuration: 120000, path: [[32.908, -97.039], [32.908, -97.039]], liveLoop: [[32.908, -97.039], [32.90805, -97.03905], [32.908, -97.039]] },
-                { id: 'MTRAC-1', status: 'Online', loc: 'Cargo Bay 3', originName: 'Logistics Center', loopDuration: 45000, path: [[32.87, -97.04], [32.88, -97.04], [32.88, -97.05]], liveLoop: [[32.88, -97.05], [32.882, -97.052], [32.88, -97.05]] }
+                { id: 'MTRAC-15', status: 'Online', loc: 'Region: North Texas', originName: 'LAX Terminal 4 (04:30 AM)', loopDuration: 75000, baseSpeed: 512, path: [[33.94, -118.41], [33.43, -112.01], [33.43, -112.01], [30.19, -97.66], [30.19, -97.66], [32.89, -97.03]], liveLoop: [[32.89, -97.03], [32.892, -97.033], [32.894, -97.035], [32.896, -97.032], [32.893, -97.029], [32.89, -97.03]] },
+                { id: 'MTRAC-12', status: 'Online', loc: 'Approach: DFW', originName: 'Houston IAH (04:30 AM)', loopDuration: 68000, baseSpeed: 345, path: [[29.99, -95.34], [30.50, -95.80], [31.20, -96.30], [31.90, -96.70], [32.50, -96.90], [32.90, -97.04]], liveLoop: [[32.90, -97.04], [32.903, -97.042], [32.906, -97.045], [32.904, -97.048], [32.901, -97.046], [32.90, -97.04]] },
+                { id: 'MTRAC Lite-8', status: 'Online', loc: 'Terminal D', originName: 'Gate D14', loopDuration: 90000, baseSpeed: 14, path: [[32.902, -97.045], [32.902, -97.045], [32.903, -97.045], [32.902, -97.044], [32.902, -97.045]], liveLoop: [[32.902, -97.045], [32.9022, -97.0452], [32.9024, -97.0448], [32.9021, -97.0447], [32.902, -97.045]] },
+                { id: 'MTRAC-6', status: 'Online', loc: 'Perimeter Ops', isBreachDemo: true, originName: 'Hangar Ops South', loopDuration: 55000, baseSpeed: 32, path: [[32.893, -97.03], [32.893, -97.03], [32.895, -97.028], [32.891, -97.027], [32.893, -97.031], [32.893, -97.031], [32.89, -97.028], [32.889, -97.025], [32.887, -97.022], [32.883, -97.015]], liveLoop: [[32.883, -97.015], [32.880, -97.010], [32.875, -97.005], [32.880, -97.010], [32.883, -97.015]] },
+                { id: 'MTRAC-5', status: 'Online', loc: 'Hangar 4', originName: 'Maintenance Bay', loopDuration: 62000, baseSpeed: 18, path: [[32.92, -97.045], [32.915, -97.043], [32.912, -97.041], [32.91, -97.04]], liveLoop: [[32.91, -97.04], [32.912, -97.042], [32.91, -97.04]] },
+                { id: 'MTRAC Micro-3', status: 'Idle', loc: 'Gate A12', originName: 'Gate A12 (Fixed)', loopDuration: 120000, baseSpeed: 0, path: [[32.908, -97.039], [32.908, -97.039]], liveLoop: [[32.908, -97.039], [32.90805, -97.03905], [32.908, -97.039]] },
+                { id: 'MTRAC-1', status: 'Online', loc: 'Cargo Bay 3', originName: 'Logistics Center', loopDuration: 45000, baseSpeed: 24, path: [[32.87, -97.04], [32.88, -97.04], [32.88, -97.05]], liveLoop: [[32.88, -97.05], [32.882, -97.052], [32.88, -97.05]] },
+                { id: 'MTRAC-FUEL-1', status: 'Online', loc: 'Fuel Depot', originName: 'Fuel Supply Node', loopDuration: 85000, baseSpeed: 12, path: [[32.8935, -97.031], [32.8925, -97.030], [32.8910, -97.027]], liveLoop: [[32.8910, -97.027], [32.8912, -97.0275], [32.8910, -97.027]] },
+                { id: 'MTRAC-SEC-2', status: 'Online', loc: 'Perimeter', originName: 'Security HQ', loopDuration: 140000, baseSpeed: 18, path: [[32.895, -97.033], [32.895, -97.027], [32.891, -97.027], [32.891, -97.033], [32.895, -97.033]], liveLoop: [[32.895, -97.033], [32.8948, -97.033], [32.895, -97.033]] },
+                { id: 'MTRAC-MAINT-4', status: 'Idle', loc: 'Maintenance Zone', originName: 'Repair Bay', loopDuration: 110000, baseSpeed: 5, path: [[32.8940, -97.033], [32.8945, -97.030]], liveLoop: [[32.8945, -97.030], [32.8945, -97.030]] }
             ];
 
             // Static Infrastructure Nodes for Yard Mode
             const infraNodes = [
                 { loc: [32.8935, -97.031], label: "FUEL DEPOT" },
                 { loc: [32.8955, -97.028], label: "SERVER A" },
-                { loc: [32.8910, -97.027], label: "GATE N-1" },
+                { loc: [32.8910, -97.027], label: "TARMAC OPS" },
                 { loc: [32.8940, -97.033], label: "MAINTENANCE" },
                 { loc: [32.8905, -97.030], label: "CARGO LINK" },
             ];
 
             // Filter sets
-            const yardAssetIds = ['MTRAC-6', 'MTRAC-5', 'MTRAC Lite-8', 'MTRAC Micro-3'];
+            const yardAssetIds = ['MTRAC-6', 'MTRAC-FUEL-1', 'MTRAC-SEC-2', 'MTRAC-MAINT-4'];
             
             // --- STATE ---
             let appMode = 'fleet';
@@ -415,7 +418,7 @@
                 { color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.08, weight: 2, dashArray: '8, 8' }).addTo(map);
             
             const yardGeofence = L.polygon([[32.896, -97.034], [32.896, -97.026], [32.890, -97.026], [32.890, -97.034]],
-                { color: '#a78bfa', weight: 2, fillColor: '#a78bfa', fillOpacity: 0.1, dashArray: '5, 10' });
+                { color: '#4ade80', weight: 2, fillColor: '#4ade80', fillOpacity: 0.1, dashArray: '5, 10' });
 
             // Sub-Geofences
             const subZones = [
@@ -630,7 +633,12 @@
                         return;
                     } else {
                         marker.setOpacity(1);
-                        trail.setStyle({ opacity: 0.2 });
+                        // Highlight selected path, dim the rest
+                        if (a.id === selectedAssetId) {
+                            trail.setStyle({ opacity: 0.9, weight: 2 });
+                        } else {
+                            trail.setStyle({ opacity: 0.15, weight: 1 });
+                        }
                     }
 
                     // --- MATH & MOVEMENT ---
@@ -677,9 +685,18 @@
                             dist += Math.sqrt(dLat*dLat + dLon*dLon);
                         }
                         
-                        // Velocity Logic (MPH)
-                        const speedMPH = dist / (a.loopDuration / 3600000);
-                        document.getElementById('hud-sub').textContent = `VELOCITY: ${speedMPH.toFixed(1)} MPH`;
+                        // Velocity Logic (Realistic Mock based on Vehicle Type)
+                        let displaySpeed = a.baseSpeed;
+                        if (displaySpeed > 0) {
+                            // Adds realistic organic fluctuation to the speed readout
+                            const variance = isPlaying ? (Date.now() / 800) : (rawProgress * 50);
+                            displaySpeed = displaySpeed * (0.92 + 0.08 * Math.sin(variance + a.baseSpeed));
+                        }
+                        // Drop to exactly zero if stopped at the start or end of historical path
+                        if (!isLive && (rawProgress === 0 || rawProgress === 1)) {
+                            displaySpeed = 0;
+                        }
+                        document.getElementById('hud-sub').textContent = `VELOCITY: ${displaySpeed.toFixed(1)} MPH`;
 
                         // Cumulative Distance Logic
                         let currentDist = dist;
