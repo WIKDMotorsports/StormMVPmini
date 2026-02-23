@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyberStorm Operations Dashboard | Previs</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Location Monitor Core Colors */
+            --color-bg-void: #000000;
+            --color-bg-primary: #050505;
+            --color-panel-bg: rgba(10, 10, 15, 0.95);
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-subtle: rgba(255, 255, 255, 0.04);
+            
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-text-tertiary: rgba(255, 255, 255, 0.4);
+            --color-text-muted: rgba(255, 255, 255, 0.3);
+            
+            /* Status Colors */
+            --color-accent: #38bdf8;
+            --color-accent-dim: rgba(56, 189, 248, 0.1);
+            --color-success: #4ade80;
+            --color-warning: #fbbf24;
+            --color-danger: #ef4444;
+            --color-process: #a78bfa;
+            --color-serve: #fb923c;
+            
+            /* Typography */
+            --font-primary: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            
+            /* Borders */
+            --border-radius-lg: 12px;
+            --border-radius-md: 8px;
+            --border-radius-sm: 4px;
+        }
+
+        /* ============================================
+           FULLSCREEN LAYOUT LOCK
+           ============================================ */
+        body {
+            background-color: var(--color-bg-void);
+            color: var(--color-text-primary);
+            font-family: var(--font-primary);
+            margin: 0; 
+            padding: 0;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100vw; 
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* ============================================
+           APP CANVAS (16:9 STRICTLY Constrained)
+           ============================================ */
+        .app-container {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            max-width: 100vw;
+            max-height: 100vh;
+            background: #0c0c14;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Grid */
+        .app-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============================================
+           CHROME HEADER
+           ============================================ */
+        .dash-chrome {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--color-border);
+            z-index: 10;
+        }
+
+        .dash-dots { display: flex; gap: 6px; }
+        .dash-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); }
+        .dash-dot:nth-child(1) { background: #ff5f57; }
+        .dash-dot:nth-child(2) { background: #febc2e; }
+        .dash-dot:nth-child(3) { background: #28c840; }
+
+        .dash-title {
+            margin-left: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           DASHBOARD BODY GRID
+           ============================================ */
+        .dash-body {
+            flex: 1;
+            min-height: 0; /* CRITICAL: Prevents flex children from blowing out bounds */
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr auto;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .dash-panel {
+            background: var(--color-panel-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 0; /* CRITICAL: Enforces interior scrolling/clipping */
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-panel-wide {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            padding: 20px 24px;
+        }
+
+        .dash-panel-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           MODULE LIST (Panel 1)
+           ============================================ */
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto; /* Allow scrolling if it gets too tight on small heights */
+            scrollbar-width: none; /* Hide scrollbar for clean look */
+        }
+
+        .module-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            padding: 10px 12px;
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--color-border-subtle);
+            transition: all 0.2s ease;
+        }
+
+        .module-row:hover { background: rgba(255, 255, 255, 0.03); }
+
+        .module-status {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .module-status.active { background: var(--color-success); box-shadow: 0 0 8px rgba(74, 222, 128, 0.5); }
+        .module-status.idle { background: var(--color-warning); box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+        .module-status.standby { background: rgba(255, 255, 255, 0.2); }
+
+        .module-status.active::after {
+            content: ''; position: absolute; inset: -3px; border: 1px solid var(--color-success);
+            border-radius: 50%; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+
+        .module-name { color: var(--color-text-secondary); font-weight: 500; min-width: 120px; }
+        .module-data { color: var(--color-text-primary); margin-left: auto; }
+
+        /* ============================================
+           THROUGHPUT CHART (Panel 2)
+           ============================================ */
+        .throughput-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .throughput-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            flex: 1;
+            padding-top: 10px;
+            min-height: 0; /* Let flex control height fully */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tp-bar {
+            flex: 1;
+            background: linear-gradient(to top, rgba(56, 189, 248, 0.25), rgba(56, 189, 248, 0.05));
+            border-radius: 2px 2px 0 0;
+            min-height: 4px;
+            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tp-bar::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--color-accent); border-radius: 2px 2px 0 0;
+        }
+
+        /* ============================================
+           PIPELINE FLOW (Bottom Panel - Left)
+           ============================================ */
+        .pipeline-section {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            flex-wrap: nowrap; /* Forces nodes to stay in a row */
+        }
+
+        .pipeline-node {
+            flex: 1; /* Nodes grow fluidly to absorb extra space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: clamp(8px, 0.8vw, 11px); /* Responsive font scaling */
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0,0,0,0.6);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pipeline-node.source { color: var(--color-accent); border-color: rgba(56, 189, 248, 0.3); }
+        .pipeline-node.process { color: var(--color-process); border-color: rgba(167, 139, 250, 0.3); }
+        .pipeline-node.store { color: var(--color-success); border-color: rgba(74, 222, 128, 0.3); }
+        .pipeline-node.serve { color: var(--color-serve); border-color: rgba(251, 146, 60, 0.3); }
+
+        .pipeline-arrow { 
+            color: var(--color-text-muted); 
+            font-size: 14px; 
+            flex-shrink: 0; 
+            display: flex;
+            align-items: center;
+        }
+
+        /* ============================================
+           CONNECTION STATS (Bottom Panel - Right)
+           ============================================ */
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            justify-content: center;
+            border-left: 1px solid var(--color-border);
+            padding-left: 24px;
+        }
+
+        .conn-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .conn-stat {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--border-radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .conn-stat-val {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .conn-stat-val span { font-size: 10px; color: var(--color-accent); }
+
+        .conn-stat-name {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Chrome Header -->
+        <div class="dash-chrome">
+            <div class="dash-dots">
+                <div class="dash-dot"></div>
+                <div class="dash-dot"></div>
+                <div class="dash-dot"></div>
+            </div>
+            <span class="dash-title">syberstorm:// operations-dashboard</span>
+        </div>
+
+        <!-- Dashboard Grid Body -->
+        <div class="dash-body">
+            
+            <!-- Panel 1: Active Modules -->
+            <div class="dash-panel">
+                <div class="dash-panel-label">Active Modules</div>
+                <div class="module-list">
+                    <div class="module-row">
+                        <span class="module-status active"></span> 
+                        <span class="module-name">Asset Tracker</span> 
+                        <span class="module-data"><span id="asset-count">24,612</span> assets</span>
+                    </div>
+                    <div class="module-row">
+                        <span class="module-status active"></span> 
+                        <span class="module-name">Device Health</span> 
+                        <span class="module-data">142 online</span>
+                    </div>
+                    <div class="module-row">
+                        <span class="module-status active"></span> 
+                        <span class="module-name">Geofence Engine</span> 
+                        <span class="module-data">8 zones</span>
+                    </div>
+                    <div class="module-row">
+                        <span class="module-status idle"></span> 
+                        <span class="module-name">Alert System</span> 
+                        <span class="module-data" style="color: var(--color-warning);">3 pending</span>
+                    </div>
+                    <div class="module-row" style="opacity: 0.6;">
+                        <span class="module-status standby"></span> 
+                        <span class="module-name">Path Replay</span> 
+                        <span class="module-data">standby</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Ingestion Rate -->
+            <div class="dash-panel throughput-container">
+                <div class="dash-panel-label">Ingestion Rate (events/sec)</div>
+                <div class="throughput-bars" id="throughput-bars">
+                    <!-- Bars injected via JS for dynamic animation -->
+                </div>
+            </div>
+
+            <!-- Panel 3: Pipeline & Stats (Wide Bottom Row) -->
+            <div class="dash-panel dash-panel-wide">
+                
+                <div class="pipeline-section">
+                    <div class="dash-panel-label">Data Pipeline Telemetry</div>
+                    <div class="pipeline-flow">
+                        <span class="pipeline-node source">EDGE DEVICE</span>
+                        <span class="pipeline-arrow">→</span>
+                        <span class="pipeline-node process">INGEST API</span>
+                        <span class="pipeline-arrow">→</span>
+                        <span class="pipeline-node process">VALIDATE</span>
+                        <span class="pipeline-arrow">→</span>
+                        <span class="pipeline-node store">STORE</span>
+                        <span class="pipeline-arrow">→</span>
+                        <span class="pipeline-node serve">DASHBOARD</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="dash-panel-label">Global Network</div>
+                    <div class="conn-stats">
+                        <div class="conn-stat">
+                            <div class="conn-stat-val" id="stat-latency">12<span>ms</span></div>
+                            <div class="conn-stat-name">Avg Latency</div>
+                        </div>
+                        <div class="conn-stat">
+                            <div class="conn-stat-val">99.99<span>%</span></div>
+                            <div class="conn-stat-name">Uptime</div>
+                        </div>
+                        <div class="conn-stat">
+                            <div class="conn-stat-val" id="stat-conn">4,281<span></span></div>
+                            <div class="conn-stat-name">Active Conn</div>
+                        </div>
+                        <div class="conn-stat">
+                            <div class="conn-stat-val" style="color: var(--color-success)">AES-256</div>
+                            <div class="conn-stat-name">Encryption</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup Throughput Bars
+            const barContainer = document.getElementById('throughput-bars');
+            const numBars = 32; // More thin bars fit the location monitor aesthetic better
+            const bars = [];
+
+            for (let i = 0; i < numBars; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'tp-bar';
+                const initHeight = Math.floor(Math.random() * 60) + 20;
+                bar.style.height = `${initHeight}%`;
+                barContainer.appendChild(bar);
+                bars.push(bar);
+            }
+
+            // Animate Throughput Bars
+            setInterval(() => {
+                bars.forEach(bar => {
+                    const currentHeight = parseInt(bar.style.height);
+                    let newHeight = currentHeight + (Math.floor(Math.random() * 40) - 20);
+                    
+                    if (newHeight > 95) newHeight = 95;
+                    if (newHeight < 15) newHeight = 15;
+                    
+                    bar.style.height = `${newHeight}%`;
+                });
+            }, 800);
+
+            // Animate Connection Stats
+            const latencyEl = document.getElementById('stat-latency');
+            const connEl = document.getElementById('stat-conn');
+            let baseConn = 4281;
+
+            setInterval(() => {
+                const lat = Math.floor(Math.random() * 4) + 11;
+                latencyEl.innerHTML = `${lat}<span>ms</span>`;
+
+                baseConn += Math.floor(Math.random() * 5) - 2;
+                connEl.innerHTML = `${baseConn.toLocaleString()}<span></span>`;
+            }, 2500);
+
+            // Animate Asset count
+            const assetEl = document.getElementById('asset-count');
+            let baseAssets = 24612;
+            setInterval(() => {
+                if(Math.random() > 0.5) {
+                    baseAssets += Math.floor(Math.random() * 3);
+                    assetEl.innerText = baseAssets.toLocaleString();
+                }
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
